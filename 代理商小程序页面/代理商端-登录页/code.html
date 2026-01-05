@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>蒙庆烟花 - 代理商登录</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f20d0d",
+              "primary-dark": "#c40b0b",
+              "background-light": "#f8f5f5",
+              "background-dark": "#221010",
+              "gold": "#ffda7c", 
+              "wechat": "#07c160",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+              "body": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            backgroundImage: {
+                'festive-gradient': 'radial-gradient(circle at 50% 10%, #ff5e5e 0%, #f20d0d 60%, #990000 100%)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- Header Section -->
+<div class="relative w-full h-[45vh] bg-festive-gradient flex flex-col items-center pt-16 px-6 pb-24 overflow-hidden rounded-b-[3rem] shadow-xl z-0" data-alt="Red festive background gradient with abstract firework patterns">
+<!-- Abstract Decoration Elements -->
+<div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden">
+<span class="material-symbols-outlined absolute -top-12 -left-12 text-[12rem] text-white rotate-12">local_fire_department</span>
+<span class="material-symbols-outlined absolute top-1/4 -right-16 text-[14rem] text-gold -rotate-12">explosion</span>
+<span class="material-symbols-outlined absolute bottom-0 left-10 text-[8rem] text-gold rotate-45">celebration</span>
+</div>
+<!-- Logo & Branding -->
+<div class="z-10 flex flex-col items-center text-center space-y-5 mt-4">
+<!-- Icon Logo -->
+<div class="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-gold/50 flex items-center justify-center shadow-2xl ring-4 ring-white/5">
+<span class="material-symbols-outlined text-6xl text-gold drop-shadow-md">local_fire_department</span>
+</div>
+<!-- Text -->
+<div class="flex flex-col items-center space-y-2">
+<h1 class="text-white text-4xl font-extrabold tracking-wide drop-shadow-lg filter" style="font-family: 'Noto Sans SC', sans-serif;">蒙庆烟花</h1>
+<div class="flex items-center gap-3">
+<div class="h-[1px] w-8 bg-gold/70"></div>
+<p class="text-white/90 text-sm font-semibold tracking-widest uppercase text-gold">代理商订货平台</p>
+<div class="h-[1px] w-8 bg-gold/70"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Login Card Section -->
+<div class="flex-1 px-4 -mt-24 z-10 w-full max-w-md mx-auto pb-8">
+<div class="bg-white dark:bg-[#2c1818] rounded-xl shadow-2xl p-6 sm:p-8 border border-white/50 dark:border-white/5 relative backdrop-blur-sm">
+<!-- Invitation Banner -->
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center gap-1.5 bg-red-50 dark:bg-red-900/20 text-primary dark:text-red-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-red-100 dark:border-red-900/30 shadow-sm">
+<span class="material-symbols-outlined text-base">verified</span>
+<span>张经理邀请您加入蒙庆烟花</span>
+</div>
+</div>
+<!-- Login Form -->
+<form action="#" class="space-y-6">
+<!-- Phone Input -->
+<div class="space-y-1.5">
+<label class="block text-sm font-bold text-gray-800 dark:text-gray-200 ml-1" for="phone">手机号</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">smartphone</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-background-light dark:bg-[#3a2222] border-none focus:ring-2 focus:ring-primary/20 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 transition-all font-medium text-base shadow-inner" id="phone" name="phone" placeholder="请输入手机号" type="tel"/>
+</div>
+</div>
+<!-- Verification Code Input -->
+<div class="space-y-1.5">
+<label class="block text-sm font-bold text-gray-800 dark:text-gray-200 ml-1" for="code">验证码</label>
+<div class="relative group flex gap-3">
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">shield</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-background-light dark:bg-[#3a2222] border-none focus:ring-2 focus:ring-primary/20 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 transition-all font-medium text-base shadow-inner" id="code" name="code" placeholder="请输入验证码" type="text"/>
+</div>
+<button class="px-5 py-2 bg-white dark:bg-[#3a2222] border border-red-100 dark:border-red-900/50 text-primary dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 font-bold text-sm transition-colors whitespace-nowrap shadow-sm active:scale-95" type="button">
+                            获取验证码
+                        </button>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-gradient-to-r from-primary to-[#d90000] hover:from-[#d90000] hover:to-[#b00000] text-white font-bold py-4 px-6 rounded-lg shadow-lg shadow-red-500/30 transform active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 text-lg tracking-wide" type="button">
+                    登 录
+                </button>
+</form>
+<!-- Social Login Divider -->
+<div class="mt-10 relative">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-200 dark:border-white/10"></div>
+</div>
+<div class="relative flex justify-center text-xs font-medium uppercase tracking-wider">
+<span class="px-4 bg-white dark:bg-[#2c1818] text-gray-400">其他登录方式</span>
+</div>
+</div>
+<!-- Social Icons -->
+<div class="mt-6 flex justify-center">
+<button class="group flex flex-col items-center gap-2 transition-transform hover:-translate-y-1">
+<div class="w-14 h-14 rounded-full bg-wechat/10 flex items-center justify-center border border-wechat/20 group-hover:bg-wechat group-hover:shadow-lg group-hover:shadow-wechat/30 transition-all duration-300">
+<span class="material-symbols-outlined text-wechat group-hover:text-white text-3xl">chat_bubble</span>
+</div>
+<span class="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-wechat transition-colors">微信登录</span>
+</button>
+</div>
+<!-- Footer Agreement -->
+<div class="mt-10 pt-2 flex items-start gap-3 justify-center">
+<div class="flex items-center h-5">
+<input aria-describedby="agreement-description" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700 cursor-pointer" id="agreement" name="agreement" type="checkbox"/>
+</div>
+<div class="text-xs text-gray-500 dark:text-gray-400 leading-5">
+<label class="cursor-pointer select-none" for="agreement">
+                        我已阅读并同意 
+                        <a class="font-bold text-slate-800 dark:text-slate-200 hover:text-primary dark:hover:text-primary underline decoration-slate-300 decoration-1 underline-offset-2" href="#">《用户协议》</a>
+                        和
+                        <a class="font-bold text-slate-800 dark:text-slate-200 hover:text-primary dark:hover:text-primary underline decoration-slate-300 decoration-1 underline-offset-2" href="#">《隐私政策》</a>
+</label>
+</div>
+</div>
+</div>
+<!-- Bottom decorative padding -->
+<div class="h-8"></div>
+</div>
+</body></html>

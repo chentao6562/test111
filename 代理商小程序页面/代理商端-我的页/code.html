@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>代理商端-我的页</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f2110d",
+                        "primary-dark": "#c20d0a",
+                        "background-light": "#f8f6f5",
+                        "background-dark": "#221010",
+                        "gold-light": "#FFF9C4",
+                        "gold-dark": "#FBC02D",
+                        "surface": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "system-ui", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'card': '0 0 15px rgba(0,0,0,0.03)',
+                        'floating': '0 10px 30px -5px rgba(242, 17, 13, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Festive background pattern simulation */
+        .bg-pattern-clouds {
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 20%),
+                              radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 antialiased min-h-screen flex flex-col pb-24">
+<!-- Header Section -->
+<header class="relative w-full bg-gradient-to-b from-primary to-primary-dark pb-24 pt-14 px-6 rounded-b-[2.5rem] shadow-lg overflow-hidden">
+<!-- Decorative Background Elements -->
+<div class="absolute inset-0 bg-pattern-clouds opacity-60 pointer-events-none"></div>
+<div class="absolute top-[-20%] right-[-10%] w-64 h-64 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute bottom-0 left-[-10%] w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex items-center gap-5">
+<!-- Avatar -->
+<div class="relative group">
+<div class="w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr from-yellow-200 via-yellow-400 to-yellow-600 shadow-lg">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-primary">
+<img alt="Agent Profile Picture" class="w-full h-full object-cover" data-alt="Portrait of a smiling asian man with blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6xOSCWUTg4eASphxQDZntOHaXgKOLG2nA-kTHwcvr5T4YhUm9FhaLL3_gpeFLORj_4uQ1jPsJgds2y6cS7gC9BVGQklouRxVpX8HGUrEpU3kp_sUTftBe-dufQFvfT-lduDYOHDMYfZ-dctfegKKRSIEkdJvPJb7wY5z5dVG2sOAk8voWpdGouQzhXO2MUokbDpfLuuy1CJKZjF-_oTfeA6oiy1Ubd3bUtmbEuNulq4dj3dT1JhNG68f8FzGC7Cv1uEGQTWkBvqJZ"/>
+</div>
+</div>
+</div>
+<!-- User Info -->
+<div class="flex flex-col text-white gap-1">
+<div class="flex items-center gap-3">
+<h1 class="text-xl font-bold tracking-tight">张三 (Zhang San)</h1>
+<!-- VIP Tag -->
+<div class="px-2.5 py-0.5 bg-gradient-to-r from-[#FFF176] to-[#FBC02D] rounded-full flex items-center gap-1 shadow-sm border border-white/20">
+<span class="material-symbols-outlined text-[14px] text-[#795548]" style="font-variation-settings: 'FILL' 1;">crown</span>
+<span class="text-[10px] font-bold text-[#5D4037] leading-none pt-[1px]">一级代理商</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-white/90 text-sm">
+<p class="font-medium opacity-90">ID: 88888888</p>
+<span class="w-1 h-1 rounded-full bg-white/60"></span>
+<p class="font-light">Happy New Year!</p>
+</div>
+</div>
+<!-- Edit Icon -->
+<button class="ml-auto text-white/80 hover:text-white transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+</header>
+<!-- Order Dashboard Card (Floating) -->
+<div class="px-4 -mt-16 relative z-20 w-full max-w-lg mx-auto">
+<div class="bg-surface rounded-2xl shadow-floating p-5 border border-white/50 backdrop-blur-sm">
+<!-- Card Header -->
+<div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
+<h2 class="text-gray-800 text-lg font-bold flex items-center gap-2">
+<span class="w-1 h-4 bg-primary rounded-full"></span>
+                    我的订单
+                </h2>
+<a class="text-xs text-gray-500 flex items-center hover:text-primary transition-colors font-medium" href="#">
+                    全部订单 
+                    <span class="material-symbols-outlined text-base">chevron_right</span>
+</a>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-between items-start px-1">
+<!-- Item 1 -->
+<button class="flex flex-col items-center gap-2 group w-1/4">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-gray-600 text-[28px] group-hover:text-primary transition-colors">credit_card</span>
+<!-- Badge -->
+<span class="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-white">5</span>
+</div>
+<span class="text-xs text-gray-600 font-medium">待支付</span>
+</button>
+<!-- Item 2 -->
+<button class="flex flex-col items-center gap-2 group w-1/4">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-gray-600 text-[28px] group-hover:text-primary transition-colors">inventory_2</span>
+<span class="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-white">3</span>
+</div>
+<span class="text-xs text-gray-600 font-medium">待备货</span>
+</button>
+<!-- Item 3 -->
+<button class="flex flex-col items-center gap-2 group w-1/4">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-gray-600 text-[28px] group-hover:text-primary transition-colors">local_shipping</span>
+<span class="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-white">2</span>
+</div>
+<span class="text-xs text-gray-600 font-medium">待提货</span>
+</button>
+<!-- Item 4 -->
+<button class="flex flex-col items-center gap-2 group w-1/4">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-gray-600 text-[28px] group-hover:text-primary transition-colors">check_circle</span>
+<!-- No badge for completed usually, or simple one -->
+<span class="absolute -top-1 -right-2 bg-gray-400 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-white">8</span>
+</div>
+<span class="text-xs text-gray-600 font-medium">已完成</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Function Lists -->
+<div class="px-4 mt-5 space-y-5 w-full max-w-lg mx-auto flex-1">
+<!-- Account Related -->
+<div class="space-y-3">
+<h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-2">账户相关</h3>
+<div class="bg-surface rounded-2xl shadow-card overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">个人信息</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">地址管理</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</div>
+<!-- Finance Related -->
+<div class="space-y-3">
+<h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-2">财务相关</h3>
+<div class="bg-surface rounded-2xl shadow-card overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600">
+<span class="material-symbols-outlined text-[20px]">paid</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">分润中心</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</div>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">提现记录</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</div>
+<!-- Other -->
+<div class="space-y-3">
+<h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider ml-2">其他</h3>
+<div class="bg-surface rounded-2xl shadow-card overflow-hidden">
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-pink-50 flex items-center justify-center text-pink-500">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">联系客服</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</div>
+<span class="text-sm font-semibold text-gray-800">设置</span>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</div>
+<!-- Logout Button -->
+<button class="w-full py-4 text-center text-gray-400 text-sm font-medium hover:text-primary transition-colors">
+            退出登录
+        </button>
+</div>
+<!-- Bottom Navigation (TabBar) -->
+<nav class="fixed bottom-0 w-full bg-surface border-t border-gray-100 shadow-[0_-5px_20px_rgba(0,0,0,0.03)] z-50 safe-area-bottom">
+<div class="flex justify-around items-center h-[60px] pb-1">
+<a class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="text-[10px] font-medium">分类</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary gap-1 relative" href="#">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+<span class="text-[10px] font-medium">购物车</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1" href="#">
+<span class="material-symbols-outlined text-[24px] fill-current" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-bold">我的</span>
+</a>
+</div>
+</nav>
+<!-- iOS Safe Area Spacer -->
+<div class="h-6 w-full bg-white"></div>
+</body></html>

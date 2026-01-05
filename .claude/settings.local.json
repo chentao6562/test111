@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(mysql --version:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: 完成BE-01项目初始化\n\n- 创建NestJS 10项目结构\n- 配置TypeORM连接MySQL数据库\n- 实现统一响应格式拦截器\n- 实现全局异常过滤器\n- 实现业务异常类和错误码枚举\n- 实现验证管道\n- 创建健康检查模块\n- 配置Swagger文档\n- 添加测试脚本\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git commit:*)",
+      "Bash(ssh:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(cmd /c \"claude mcp add chrome-devtools npx chrome-devtools-mcp@latest --scope user\")",
+      "Bash(powershell -Command:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(del \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\.git\\\\index.lock\")",
+      "Bash(ls -la \"c:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\apps\"\" 2>&1 || ls -la \"/c/Users/Administrator/Desktop/烟花4/apps/ \")"
+    ]
+  }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agent Promotion Poster</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734",
+                        "primary-dark": "#b91c1c",
+                        "gold": "#fbbf24",
+                        "gold-dark": "#d97706",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d1b1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+                        "body": ["Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                    boxShadow: {
+                        'poster': '0 20px 40px -5px rgba(229, 55, 52, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .text-shadow-gold {
+            text-shadow: 0 2px 4px rgba(180, 83, 9, 0.3);
+        }
+        
+        .bg-pattern-clouds {
+            background-image: radial-gradient(circle at 50% 120%, rgba(255,255,255,0.1) 20%, transparent 20%),
+                              radial-gradient(circle at 20% 110%, rgba(255,255,255,0.1) 15%, transparent 15%),
+                              radial-gradient(circle at 80% 110%, rgba(255,255,255,0.1) 15%, transparent 15%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm p-4 justify-between border-b border-gray-100 dark:border-gray-800">
+<button class="text-slate-800 dark:text-white flex size-10 shrink-0 items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h2 class="text-slate-800 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">推广海报</h2>
+</div>
+<!-- Main Scrollable Area -->
+<div class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<!-- Poster Preview Area -->
+<div class="w-full px-8 py-6 flex justify-center perspective-1000">
+<!-- The Poster Card Itself -->
+<div class="relative w-full aspect-[9/16] max-w-[320px] flex flex-col rounded-2xl overflow-hidden shadow-poster ring-4 ring-white dark:ring-gray-800 transform transition-transform duration-500 group">
+<!-- Poster Background -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary via-[#d32f2f] to-[#8e0000] bg-pattern-clouds">
+<!-- Decorative Abstract Circles -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3"></div>
+</div>
+<!-- Poster Content -->
+<div class="relative z-10 flex flex-col h-full text-white">
+<!-- Header / Branding -->
+<div class="pt-8 px-6 text-center">
+<div class="inline-flex items-center justify-center gap-1.5 opacity-90 mb-2">
+<span class="material-symbols-outlined text-yellow-300 text-sm">local_fire_department</span>
+<span class="text-xs font-medium tracking-widest uppercase text-yellow-200">MengQing Fireworks</span>
+<span class="material-symbols-outlined text-yellow-300 text-sm">local_fire_department</span>
+</div>
+<h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 to-yellow-400 tracking-tight leading-tight mb-1 filter drop-shadow-sm">
+                                蒙庆烟花
+                            </h1>
+<div class="bg-gradient-to-r from-transparent via-white/20 to-transparent h-[1px] w-full my-2"></div>
+<h2 class="text-2xl font-bold text-white tracking-widest text-shadow-gold">新春钜惠</h2>
+</div>
+<!-- Product Image Area -->
+<div class="flex-1 flex items-center justify-center p-4 relative">
+<!-- Glowing effect behind product -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-48 h-48 bg-yellow-500/20 rounded-full blur-2xl animate-pulse"></div>
+</div>
+<div class="w-48 h-48 bg-center bg-contain bg-no-repeat z-10 relative drop-shadow-2xl transform rotate-3 transition-transform group-hover:rotate-0 duration-500" data-alt="Festive red fireworks box packaging with gold accents" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCtIn6A2pxUz9UI_uy8FKcsFVUNBNO0LiGldeWlvlCa4Yi_Mrkc7vL7xmtEy6k_jlAjjrY1VjfRQM0Yrho0Wu8A9RyKs-DJvnnWFKQ7c5kftwADznnBuBUJxwB6RD1r3w6me9Nu-PDdsqGSqfNbZu9eblvRnku_5OLRQtQ8_mEYOk61r603ztZRFwH2tsa3fxavYZF5nnG7wBXFJEAKt6ToJYDi1cBStW1_5UCSCPWlo6NjGyiHre0r8lxU2UA6CrYd-qDl02pXMU4c");'>
+</div>
+<!-- Discount Badge -->
+<div class="absolute bottom-6 right-6 bg-yellow-400 text-red-900 font-bold px-3 py-1 rounded-lg shadow-lg transform rotate-[-5deg] z-20 border-2 border-white">
+<span class="text-xs">限时</span>
+<span class="text-xl">8.8折</span>
+</div>
+</div>
+<!-- Agent & QR Footer -->
+<div class="mt-auto bg-white m-3 p-3 rounded-xl shadow-lg flex flex-row items-center gap-3">
+<!-- QR Code -->
+<div class="bg-gray-100 p-1 rounded-lg shrink-0">
+<span class="material-symbols-outlined text-4xl text-gray-800">qr_code_2</span>
+</div>
+<!-- Agent Info -->
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<div class="size-6 rounded-full bg-gray-200 bg-cover bg-center shrink-0" data-alt="Portrait of agent Li Ming smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDYt2PnhfYEoflOeDLf83GQZKpvzmHvhN8LUpHi9GZ659Hq1xU0cVm7H0gcEDC7CK0mxROj0orxJGmOlMa11606G8NEMWTpE0s_nTrPn0GrhNVO-Dm1nu6BBmV00i8lxJyFtIlO1nkEGqotQ62cx0vKtwhBKtI4gQ-JAqxx9Un_PRVXAwyKGDHAP9JT_3haIZx2BxI8MapUDyl_iLw-C7ec6Ofmp1i1W2VTL_ssYmvummkrvEnoQBNv2l_AnAo_5b7p3s0WYxImXQKc")'></div>
+<span class="text-gray-900 font-bold text-sm truncate">代理商: 李明</span>
+</div>
+<p class="text-[10px] text-gray-500 leading-tight">长按识别二维码<br/>立即进入订货</p>
+</div>
+<!-- CTA Button Graphic (Visual only) -->
+<div class="bg-primary/10 rounded-full p-2 shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">touch_app</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Title Text -->
+<div class="px-5 pt-2 pb-3">
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight">选择模版 (Templates)</h2>
+</div>
+<!-- StoryCarousel / Template Selector -->
+<div class="flex w-full overflow-x-auto no-scrollbar px-5 pb-6">
+<div class="flex min-w-min flex-row items-start justify-start gap-4">
+<!-- Item 1: Active -->
+<div class="flex flex-col gap-2 w-[88px] cursor-pointer group">
+<div class="relative w-full aspect-[9/16] rounded-lg overflow-hidden border-2 border-primary shadow-lg ring-2 ring-primary/20 transition-all transform group-active:scale-95">
+<div class="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800" data-alt="Red festive template preview showing fireworks pattern"></div>
+<!-- Mini content simulation -->
+<div class="absolute top-2 left-2 w-8 h-1 bg-white/30 rounded-full"></div>
+<div class="absolute bottom-2 left-2 right-2 h-6 bg-white rounded-sm"></div>
+<!-- Checkmark overlay -->
+<div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+<div class="bg-primary text-white rounded-full p-1 shadow-sm">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+</div>
+</div>
+<p class="text-primary font-semibold text-xs text-center">新春版</p>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col gap-2 w-[88px] cursor-pointer group opacity-70 hover:opacity-100 transition-opacity">
+<div class="relative w-full aspect-[9/16] rounded-lg overflow-hidden border-2 border-transparent group-hover:border-gray-300 dark:group-hover:border-gray-600 shadow-sm transition-all transform group-active:scale-95 bg-orange-50">
+<div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-500" data-alt="Gold luxury template preview showing geometric patterns"></div>
+<div class="absolute top-2 left-2 w-8 h-1 bg-white/30 rounded-full"></div>
+<div class="absolute bottom-2 left-2 right-2 h-6 bg-white/90 rounded-sm"></div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 font-medium text-xs text-center">喜庆版</p>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col gap-2 w-[88px] cursor-pointer group opacity-70 hover:opacity-100 transition-opacity">
+<div class="relative w-full aspect-[9/16] rounded-lg overflow-hidden border-2 border-transparent group-hover:border-gray-300 dark:group-hover:border-gray-600 shadow-sm transition-all transform group-active:scale-95 bg-white">
+<div class="absolute inset-0 bg-slate-50 border border-slate-100" data-alt="Minimalist white template preview with simple red text"></div>
+<div class="absolute top-4 left-0 right-0 flex justify-center"><div class="w-6 h-6 rounded-full bg-red-100"></div></div>
+<div class="absolute bottom-2 left-2 right-2 h-6 bg-slate-100 rounded-sm"></div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 font-medium text-xs text-center">简约版</p>
+</div>
+<!-- Item 4 -->
+<div class="flex flex-col gap-2 w-[88px] cursor-pointer group opacity-70 hover:opacity-100 transition-opacity">
+<div class="relative w-full aspect-[9/16] rounded-lg overflow-hidden border-2 border-transparent group-hover:border-gray-300 dark:group-hover:border-gray-600 shadow-sm transition-all transform group-active:scale-95 bg-slate-800">
+<div class="absolute inset-0 bg-gradient-to-tr from-slate-900 to-slate-700" data-alt="Modern dark template preview with neon effects"></div>
+<div class="absolute top-4 left-2 w-4 h-4 rounded-full bg-red-500 blur-sm"></div>
+<div class="absolute bottom-2 left-2 right-2 h-6 bg-slate-800 border border-slate-600 rounded-sm"></div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 font-medium text-xs text-center">黑金版</p>
+</div>
+</div>
+</div>
+</div>
+<!-- ButtonGroup (Fixed Bottom) -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-background-light dark:bg-background-dark border-t border-gray-100 dark:border-gray-800 p-4 z-50">
+<div class="flex gap-3">
+<!-- Secondary Button -->
+<button class="flex-1 flex items-center justify-center gap-2 h-12 px-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-xl">download</span>
+<span class="text-sm font-bold truncate">保存到相册</span>
+</button>
+<!-- Primary Button -->
+<button class="flex-1 flex items-center justify-center gap-2 h-12 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white shadow-lg shadow-red-500/30 transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-xl">share</span>
+<span class="text-sm font-bold truncate">分享给好友</span>
+</button>
+</div>
+<!-- Safe area spacing for iOS Home Indicator -->
+<div class="h-4 w-full"></div>
+</div>
+</div>
+</body></html>

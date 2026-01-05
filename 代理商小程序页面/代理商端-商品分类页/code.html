@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>烟花批发 - 商品分类</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734",
+                        "primary-dark": "#b91c1c",
+                        "accent-gold": "#f59e0b",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d1b1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", "Noto Sans SC", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 h-screen flex flex-col overflow-hidden">
+<header class="bg-gradient-to-r from-primary to-primary-dark pt-safe-top pb-3 px-4 shadow-md z-30 shrink-0">
+<div class="h-2"></div>
+<div class="flex items-center gap-3">
+<div class="flex-1 flex items-center bg-white/95 dark:bg-surface-dark/95 backdrop-blur-sm rounded-full h-10 px-3 shadow-inner">
+<span class="material-symbols-outlined text-primary/70 text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm flex-1 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 h-full py-0 pl-2" placeholder="搜索烟花名称或编号..." type="text"/>
+</div>
+<button class="flex flex-col items-center justify-center text-white active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-[26px]">qr_code_scanner</span>
+<span class="text-[10px] font-medium leading-none mt-0.5">扫一扫</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<aside class="w-[28%] min-w-[100px] max-w-[120px] bg-[#f2f2f2] dark:bg-[#1a1a1a] h-full overflow-y-auto no-scrollbar flex flex-col pb-24 border-r border-slate-200 dark:border-slate-800">
+<button class="relative w-full py-4 px-2 flex flex-col items-center gap-1.5 bg-background-light dark:bg-background-dark group transition-colors">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-primary rounded-r-full"></div>
+<span class="material-symbols-outlined text-primary text-[28px] fill-1">flare</span>
+<span class="text-primary text-xs font-bold text-center leading-tight">礼花弹</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px]">cake</span>
+<span class="text-xs font-medium text-center leading-tight">组合烟花</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px]">whatshot</span>
+<span class="text-xs font-medium text-center leading-tight">鞭炮</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px]">toys</span>
+<span class="text-xs font-medium text-center leading-tight">儿童烟花</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px]">card_giftcard</span>
+<span class="text-xs font-medium text-center leading-tight">套装礼盒</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px] text-accent-gold">schedule</span>
+<span class="text-xs font-medium text-center leading-tight text-accent-gold">限时特惠</span>
+</button>
+<button class="w-full py-4 px-2 flex flex-col items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+<span class="text-xs font-medium text-center leading-tight">库存清仓</span>
+</button>
+</aside>
+<main class="flex-1 h-full overflow-y-auto no-scrollbar bg-background-light dark:bg-background-dark p-3 pb-24 relative">
+<div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0" style="background-image: radial-gradient(#e53734 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative z-10 mb-4 rounded-xl overflow-hidden shadow-sm h-24">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent-gold/90 mix-blend-multiply"></div>
+<img class="w-full h-full object-cover" data-alt="Red fireworks exploding in dark night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-GObBOGkXOJNnBAca8Uh9_j3uI_EiVJ-mLVYQ7l_2_fJkr0OafKIHq1tPRe-_j5tt2i50g8EMa8_M_vrXYiFibSYs5JLElzXBaNtwLyu3AwMYWOCmo-LSufixSUsGuEzSbcdgp2ciQAr3fjCzpk5_8mnQsg2FhLW7nrlhVotrtu1fChsdeBRxDOkYdkVeDjM1Mniph4U5dGrpqEibw6YSWfyqZ7NLhXq9Jc8UCj3xurp3eSObTHXA8bO29vU43e8mE2z6x81yyf3i"/>
+<div class="absolute inset-0 flex items-center px-4">
+<div>
+<h2 class="text-white font-bold text-xl drop-shadow-md">专业礼花弹系列</h2>
+<p class="text-white/90 text-xs font-medium">量大从优 欢迎选购</p>
+</div>
+</div>
+</div>
+<div class="relative z-10 grid grid-cols-2 gap-3">
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Colorful fireworks cake packaging" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0MpcUiRB_oqhVEF5JVkYY0Nauu85_d1Ia7W7lITbC6QES96bJegzrTHZI16Ybn7F2z1Z5Kl-wTn5CyWFDAcOXwcCc4T8U1A0VXrB7BniBD5V51HKQFV3DD1s5j42muWDyY9W6AQcP275yUJVnYvvEx_qc5N1ptQddgA7Nct3LsUGwqBeyf3lF2NW9Qj4qq9KyMYRlikwIEvWrPCI4ezngnK7Uhl74b7JQ-Ip110B5Nk9xA2xQoAnzsQGsv0JZ8pSlKRjNyk7e0j59"/>
+<div class="absolute top-1 left-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">热销</div>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">鸿运当头 88发组合盆花</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: FW-8801</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥188</span>
+<span class="text-slate-400 text-[10px] line-through decoration-slate-400">¥250</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Single large aerial shell firework" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK8GigatdmvleDsd1MRjI1Feg_Cxx08m0UDj1trpzlkWs1Nls0DpV2kZ9Xfv24h__iQJ08PVAzKCVNPtr6nat_Vo5KVG41JpRitXgMVqYaRbvn8ugp1mNxG6IEuTRbU1WMGHqovC6dXtBVrJDB6sIJ5Nsc--L8vXRzQXfBdjiuEMWNpJyGxlgbf1rN9h3GfEBcgJeI2lJz_WB5bEPTEdboxPQVuxQVBjk8qGgmmlRoYdEBQXyXFeQYMYc0VhOVzerqkLJPyc_XDNJC"/>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">金龙献瑞 4寸礼花弹 (12发/箱)</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: SH-4002</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥420</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Bright red firecracker packaging" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSBwWPc7vBHM8yZoLCWOjXOizbn7phlF1F9C429zejXHsIFi7vLj6TMfI6QL5sfiaX1bEvNDmaT3RQaqqPmjNKKk6psbGEGBFYDq1eBOPjy6BCkH4egakBTQXuDT_P3mWZHmqBy3eXb5pv7TlLfay5A3ZIdSmaoZ38brcrCA3qlJPEZkEA4NL2rcr-yjoNth34EQpHmbzTI4bvMvSXos4XsPVH0r3rcc2heNhaKwedXuv4C9dejDxko4zdgFkkoePcFIsb8I9inDcP"/>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">雷霆万钧 1000响大地红鞭炮</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: FC-1000</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥45</span>
+<span class="text-slate-400 text-[10px] line-through decoration-slate-400">¥60</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Sparkler firework glowing in dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEmu0YTRPkP1iHyVpHhXpdRjB60rIBjoH8ZnpuX__GGnQ3NvR_eDw54zYELXDinLGZS8ayPFRJwQcW-aPL82glUjz5k2xt8-92vVE1rUYcaRfm3fb66Mvxzi_6lnr8bbfecV7bNWQw_pGAXoV312nv5Fee3XtoVMdwtxZI_DSk_2F_LYRDM1D8CxMKYYhIcrPURf0e1WZrgrNP-wLqhI0q_QAGLii1QMx21206Dz9becBvJ1fs5cysMJjqri9KG1_bn-i5vQN50Hc9"/>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">梦幻仙女棒 (50支/盒)</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: SP-050</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥12</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Night sky illuminated by multiple fireworks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW8l-VjlqrZY6nDNstoYqltwvkiLnm1QDwCwJIVFjIDmnSAc0uC-1v9K7RKnp0rl5i7fW33LPDg8LPepCJoporcEyZ4ZDOd6cTAkAePlpv_l7CvgYvYIiw9HHzujPDjil_G86_vOd-NM0OhLXGW4giearmBTTEpiJ-K23Jo-hgvxkY64ygft5T_H8SQwEoSuICeNBZOBwMX7Y8QBTeRCX8SgQUTQ8qxCg9yL9ySoYdmCD8Xvlqih0iC2gaI-n-vrulmItJ8lZxsKka"/>
+<div class="absolute top-1 left-1 bg-accent-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">新品</div>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">星河璀璨 大型组合烟花</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: GB-2024</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥320</span>
+<span class="text-slate-400 text-[10px] line-through decoration-slate-400">¥380</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+<div class="aspect-square relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Fountain firework shooting sparks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbpVxXCYcnXAYkD1IyZdQHDxA0Nflz5TxQdRmQohhH679eRrq1_1pOxzVKP9bUUi8nO6kPkx-y1ODMAL_rHy4QBTqur7yg_qkzg4JV7FvNp-6BZKll2Q1YnKswnRwf2sgqJBwOuHfzd0RRch0qC_iqqHmJEpG4RkpvJhv3F9olYrYaSK2a7RqNU0AfLNbl5SVRzLL9_fB1etF_KmdyjBOC2jDucteCvpCV82BmdgaxHm2qRiBXohGga9Zu-qvaOfttKouh4quUDE8L"/>
+</div>
+<div class="p-2 flex flex-col flex-1 justify-between">
+<div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-medium leading-snug line-clamp-2">银色喷泉 加大号喷花</h3>
+<p class="text-[10px] text-slate-400 mt-1">编号: FN-XL1</p>
+</div>
+<div class="mt-2 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="text-primary font-bold text-base leading-none">¥65</span>
+</div>
+<button class="bg-primary/10 active:bg-primary text-primary active:text-white border border-primary/20 hover:bg-primary hover:text-white transition-colors rounded h-7 px-2 text-xs font-medium flex items-center">
+                                订货
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<div class="h-6"></div> 
+</main>
+</div>
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 pb-safe-bottom z-40">
+<div class="flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center w-full gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px] fill-1">category</span>
+<span class="text-[10px] font-medium">分类</span>
+</a>
+<a class="relative flex flex-col items-center justify-center w-full gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+<span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">3</span>
+</div>
+<span class="text-[10px] font-medium">购物车</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</a>
+</div>
+</nav>
+<style>
+        .pb-safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        .pt-safe-top {
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+    </style>
+
+</body></html>

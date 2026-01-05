@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>创建采购单 - 蒙庆内部代理商订货系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        /* Custom Scrollbar for table if needed */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+        .chinese-pattern-bg {
+            background-color: #fbf8f8;
+            background-image: radial-gradient(#e63333 0.5px, transparent 0.5px), radial-gradient(#e63333 0.5px, #fbf8f8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.03;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e63333", // Chinese Red
+                        "primary-hover": "#c92a2a",
+                        "secondary": "#fdf2f2",
+                        "background-light": "#fbf8f8",
+                        "background-dark": "#211111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d1b1b",
+                        "border-light": "#e6d0d0",
+                        "border-dark": "#4a2b2b",
+                        "text-main": "#1b0e0e",
+                        "text-sub": "#964f4f",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "Noto Sans SC", "sans-serif"],
+                        "body": ["Manrope", "Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main font-body min-h-screen flex flex-col">
+<!-- Decorative Background Pattern -->
+<div class="fixed inset-0 chinese-pattern-bg pointer-events-none z-0"></div>
+<div class="relative z-10 flex flex-col flex-grow w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 py-6">
+<a class="text-text-sub hover:text-primary text-sm font-medium transition-colors" href="#">首页</a>
+<span class="material-symbols-outlined text-text-sub text-sm">chevron_right</span>
+<a class="text-text-sub hover:text-primary text-sm font-medium transition-colors" href="#">采购管理</a>
+<span class="material-symbols-outlined text-text-sub text-sm">chevron_right</span>
+<span class="text-text-main text-sm font-bold">创建采购单</span>
+</div>
+<!-- Page Header -->
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<h1 class="text-text-main text-3xl md:text-4xl font-black tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-4xl">inventory_2</span>
+                        创建采购单
+                    </h1>
+<span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-primary">
+                        草稿
+                    </span>
+</div>
+<p class="text-text-sub text-base pl-1">填写采购详情，制定新春补货计划</p>
+</div>
+<div class="flex gap-3">
+<!-- Top Actions if needed -->
+</div>
+</div>
+<!-- Section 1: Basic Information -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-[0_2px_8px_-2px_rgba(230,51,51,0.1)] border border-border-light dark:border-border-dark p-6 mb-6">
+<div class="flex items-center gap-2 mb-6 border-b border-border-light dark:border-border-dark pb-4">
+<span class="material-symbols-outlined text-primary">assignment</span>
+<h3 class="text-lg font-bold text-text-main">基本信息</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+<!-- Supplier Selection -->
+<div class="lg:col-span-5 flex flex-col gap-2">
+<label class="text-sm font-bold text-text-main">供应商 <span class="text-primary">*</span></label>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<select class="w-full h-11 pl-4 pr-10 rounded-lg border border-border-light bg-background-light text-text-main focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer outline-none transition-all">
+<option disabled="" selected="" value="">请选择或搜索供应商</option>
+<option value="1">北京鸿运礼品有限公司</option>
+<option value="2">上海福满堂包装厂</option>
+<option value="3">广州喜庆食品批发</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none">expand_more</span>
+</div>
+<button class="flex items-center justify-center h-11 px-4 rounded-lg border border-border-light bg-white text-primary hover:bg-secondary font-medium transition-colors whitespace-nowrap group">
+<span class="material-symbols-outlined text-lg mr-1 group-hover:scale-110 transition-transform">add</span>
+                            新增供应商
+                        </button>
+</div>
+</div>
+<!-- Date Picker -->
+<div class="lg:col-span-3 flex flex-col gap-2">
+<label class="text-sm font-bold text-text-main">预计到货日期 <span class="text-primary">*</span></label>
+<div class="relative">
+<input class="w-full h-11 pl-4 pr-4 rounded-lg border border-border-light bg-background-light text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-text-sub" type="date" value="2024-02-01"/>
+</div>
+</div>
+<!-- Spacer for grid alignment if needed -->
+<div class="hidden lg:block lg:col-span-4"></div>
+<!-- Remarks -->
+<div class="lg:col-span-8 flex flex-col gap-2">
+<label class="text-sm font-bold text-text-main">备注信息</label>
+<textarea class="w-full p-4 rounded-lg border border-border-light bg-background-light text-text-main focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none h-24 placeholder:text-text-sub" placeholder="请输入采购单备注信息，例如：春节备货加急..."></textarea>
+</div>
+</div>
+</div>
+<!-- Section 2: Product List -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-[0_2px_8px_-2px_rgba(230,51,51,0.1)] border border-border-light dark:border-border-dark flex-1 flex flex-col min-h-[400px]">
+<div class="p-6 border-b border-border-light dark:border-border-dark flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+<h3 class="text-lg font-bold text-text-main">采购商品</h3>
+</div>
+<button class="flex items-center gap-2 h-10 px-5 rounded-lg bg-primary text-white hover:bg-primary-hover font-bold shadow-md shadow-red-200 transition-all active:scale-95">
+<span class="material-symbols-outlined text-xl">add</span>
+                    添加商品
+                </button>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto w-full flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-background-light border-b border-border-light">
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[35%]">商品信息</th>
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[15%]">规格</th>
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[15%]">采购价</th>
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[15%]">采购数量</th>
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[15%]">小计</th>
+<th class="py-4 px-6 text-xs font-bold text-text-sub uppercase tracking-wider w-[5%] text-center">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light">
+<!-- Item 1 -->
+<tr class="hover:bg-secondary/30 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="h-14 w-14 rounded-lg bg-stone-100 flex-shrink-0 overflow-hidden border border-border-light relative">
+<img alt="Red decorative lantern packaging" class="w-full h-full object-cover" data-alt="Red festive lantern gift box product shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrxEKKAqBGcOvSGHq6JPhnkcjndu7hNqf8j8m6ZI1CAuNQBJPFzPryDzzsM6Xh3B64W6pReEnOqCiTCiCJ-i0vdsZoXRMwsFFOelSQXVsXBev9uXObUqM7qzfReu5VKhCkFVEOvEkgrjZDa72nT7Ed-Bw_BOiScCR-RtYT4r2-8hAP2gYpdKAFhTx4TbO__5tvXAewiguUju1yZhQ3jwX-RILJ0pTkcpMsumgheU50-OzSNOa7PrzNyjWtCWT_nFakjO_dzS1t-Qs"/>
+</div>
+<div>
+<p class="font-bold text-text-main text-sm line-clamp-1">2024龙年大吉豪华礼盒套装</p>
+<p class="text-xs text-text-sub mt-0.5">编码: MQ-2024-001</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-2 py-1 rounded bg-stone-100 text-xs font-medium text-text-sub border border-stone-200">
+                                    12件/箱
+                                </span>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-medium text-text-main">¥128.00</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center w-28 h-9 rounded-lg border border-border-light bg-white overflow-hidden">
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<input class="flex-1 w-full h-full text-center text-sm font-semibold text-text-main border-none focus:ring-0 p-0" min="1" type="number" value="10"/>
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-bold text-primary">¥1,280.00</span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="p-2 rounded-full hover:bg-red-50 text-text-sub hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</td>
+</tr>
+<!-- Item 2 -->
+<tr class="hover:bg-secondary/30 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="h-14 w-14 rounded-lg bg-stone-100 flex-shrink-0 overflow-hidden border border-border-light">
+<img alt="Chinese knot decoration" class="w-full h-full object-cover" data-alt="Traditional red chinese knot decoration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtTv4h0-tTLBZ1IGuzjYd70bAQClSdqEt-lEXdZx1EuTHXsXlP4MxYxqWTriXWTxxb6NUxs5E0xcouvp8aN-9hUQx8crPULMFSxINtZTeB7UsiEBD9jO8OmBNrPkhgmFXJ41fK6GEyagW9BCNoF1EJ6dgvBPNbHoH0SV1iVrBux46xcNM3pCg0RDFaoXKkvt_aBbeVCXhYPhiFZjbcIegPnzxEFzmn8ybfjteq5N881V3T2kzn8aqEpxXA1iNSk9gc4X7LXfrJbyc"/>
+</div>
+<div>
+<p class="font-bold text-text-main text-sm line-clamp-1">新春大号中国结挂饰</p>
+<p class="text-xs text-text-sub mt-0.5">编码: MQ-2024-058</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-2 py-1 rounded bg-stone-100 text-xs font-medium text-text-sub border border-stone-200">
+                                    单个装
+                                </span>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-medium text-text-main">¥45.50</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center w-28 h-9 rounded-lg border border-border-light bg-white overflow-hidden">
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<input class="flex-1 w-full h-full text-center text-sm font-semibold text-text-main border-none focus:ring-0 p-0" min="1" type="number" value="20"/>
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-bold text-primary">¥910.00</span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="p-2 rounded-full hover:bg-red-50 text-text-sub hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</td>
+</tr>
+<!-- Item 3 -->
+<tr class="hover:bg-secondary/30 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-4">
+<div class="h-14 w-14 rounded-lg bg-stone-100 flex-shrink-0 overflow-hidden border border-border-light">
+<img alt="Red envelopes fan spread" class="w-full h-full object-cover" data-alt="Set of red envelopes for new year" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDzNJA03r8avS0iaacA0MCFrz1d9T35JN1jvfLF2ofkHL1VllY3TizZNFgoyGE8ExLoWpYloLfKbM_YU9DwVAEn1a0DfT79clwDMTL-IKrkV18znHtazDJr3TbhmaEelXBkbNrrpUu4XHaU6DSLqOaZEcPUBYrUHDRxzSwILgV7164V2JWQFRiyEM0gaRSkPDq86L351NjzqswodTjcEO8TndvfwiEc_BMe-I-w7y4W3RQsGJ_DIwBdW67xen9JkSf4SKzqgZAbg"/>
+</div>
+<div>
+<p class="font-bold text-text-main text-sm line-clamp-1">龙纹烫金红包 (50个/包)</p>
+<p class="text-xs text-text-sub mt-0.5">编码: MQ-2024-088</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-2 py-1 rounded bg-stone-100 text-xs font-medium text-text-sub border border-stone-200">
+                                    50包/箱
+                                </span>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-medium text-text-main">¥8.00</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center w-28 h-9 rounded-lg border border-border-light bg-white overflow-hidden">
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<input class="flex-1 w-full h-full text-center text-sm font-semibold text-text-main border-none focus:ring-0 p-0" min="1" type="number" value="100"/>
+<button class="w-8 h-full flex items-center justify-center text-text-sub hover:bg-stone-50 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-sm font-bold text-primary">¥800.00</span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="p-2 rounded-full hover:bg-red-50 text-text-sub hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Empty State hint (visual only) -->
+<!-- <div class="flex flex-col items-center justify-center py-16 text-text-sub">
+                <span class="material-symbols-outlined text-6xl text-border-light mb-4">shopping_basket</span>
+                <p>暂无商品，请点击上方按钮添加</p>
+            </div> -->
+</div>
+</div>
+<!-- Sticky Footer Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-border-light dark:border-border-dark shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<span class="text-xs text-text-sub font-medium">商品种类</span>
+<span class="text-xl font-bold text-text-main font-display">3</span>
+</div>
+<div class="w-px h-8 bg-border-light"></div>
+<div class="flex flex-col">
+<span class="text-xs text-text-sub font-medium">商品总数</span>
+<span class="text-xl font-bold text-text-main font-display">130</span>
+</div>
+<div class="w-px h-8 bg-border-light"></div>
+<div class="flex items-end gap-2">
+<span class="text-sm text-text-main font-bold mb-1">采购总额:</span>
+<span class="text-3xl font-black text-primary font-display leading-none">¥2,990.00</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 h-11 rounded-lg border border-border-light text-text-main font-bold hover:bg-background-light hover:border-text-sub transition-all">
+                    保存草稿
+                </button>
+<button class="px-8 h-11 rounded-lg bg-primary text-white font-bold shadow-lg shadow-red-200 hover:bg-primary-hover hover:shadow-red-300 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+                    提交审核
+                </button>
+</div>
+</div>
+</div>
+</body></html>

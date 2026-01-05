@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>库存查询 - 蒙庆订货系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e63333",
+              "background-light": "#f8f6f6",
+              "background-dark": "#211111",
+              "gold-accent": "#D4AF37",
+            },
+            fontFamily: {
+              "display": ["Manrope", "Noto Sans SC", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            boxShadow: {
+                'festive': '0 4px 20px -2px rgba(230, 51, 51, 0.1)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for table */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b0e0e] antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-30 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e6d0d0] bg-white/90 backdrop-blur-md px-10 py-3 shadow-sm dark:bg-[#1a1a1a]/90 dark:border-b-[#333]">
+<div class="flex items-center gap-4 text-[#1b0e0e] dark:text-white">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[24px]">dataset</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">蒙庆订货系统</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#666] hover:text-primary transition-colors text-sm font-medium leading-normal dark:text-[#aaa]" href="#">首页</a>
+<a class="text-[#666] hover:text-primary transition-colors text-sm font-medium leading-normal dark:text-[#aaa]" href="#">订货中心</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">库存查询</a>
+<a class="text-[#666] hover:text-primary transition-colors text-sm font-medium leading-normal dark:text-[#aaa]" href="#">订单管理</a>
+<a class="text-[#666] hover:text-primary transition-colors text-sm font-medium leading-normal dark:text-[#aaa]" href="#">财务中心</a>
+</div>
+<div class="flex gap-3 items-center">
+<button class="flex size-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-[#f3e8e8] hover:bg-[#e6d0d0] text-[#1b0e0e] transition-colors dark:bg-[#333] dark:text-white dark:hover:bg-[#444]">
+<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar with festive background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTZv4iQvHV8MAC0-wqvmXtYV2HQidZW-sd2suHOT60Z69acOpLjL5bNiw6xenqRRcRAMdKQT1g2QJqKsj_aSdXpX8ch9PP-x_lYxOeIuOA6IYzNh7P4m3mTHuJLfUajYtNxP6IaHUeL0B_PojxVfGCHVySwixk-Aw0BvxLHM4UuKtVuzUEzSC7wENmTrPmVoHzsrDf5B0NCuKCYAu8op_shyKoCaQOkUjyQFxIOxz2mhJpx_yBfsl75kxjA3o5aXpnfpaBWM3YywI");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col p-6 md:px-12 md:py-8 gap-6">
+<!-- Page Header & Stats -->
+<div class="flex flex-col gap-6">
+<div class="flex flex-wrap justify-between items-center gap-4">
+<div>
+<h1 class="text-[#1b0e0e] dark:text-white text-3xl font-bold leading-tight">库存查询</h1>
+<p class="text-[#964f4f] mt-1 text-sm font-normal">实时监控商品库存状态，确保春节备货充足</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 h-10 rounded-lg border border-[#e6d0d0] hover:bg-[#fbf8f8] bg-white text-[#1b0e0e] text-sm font-medium transition-colors dark:bg-[#2a2a2a] dark:border-[#444] dark:text-white dark:hover:bg-[#333]">
+<span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+<span>导出报表</span>
+</button>
+<button class="flex items-center gap-2 px-4 h-10 rounded-lg bg-primary hover:bg-red-700 text-white text-sm font-medium shadow-festive transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+<span>新增商品</span>
+</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="flex flex-col gap-1 rounded-xl bg-white p-5 border border-[#e6d0d0] shadow-sm relative overflow-hidden dark:bg-[#1a1a1a] dark:border-[#333]">
+<div class="flex items-center justify-between">
+<p class="text-[#666] text-sm font-medium dark:text-[#aaa]">商品总数 (SKU)</p>
+<span class="material-symbols-outlined text-primary/40" style="font-size: 24px;">inventory_2</span>
+</div>
+<p class="text-[#1b0e0e] dark:text-white text-2xl font-bold mt-2">2,845</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="bg-green-100 text-green-700 text-xs px-1.5 py-0.5 rounded font-medium">+12 新增</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col gap-1 rounded-xl bg-white p-5 border border-[#e6d0d0] shadow-sm dark:bg-[#1a1a1a] dark:border-[#333]">
+<div class="flex items-center justify-between">
+<p class="text-[#666] text-sm font-medium dark:text-[#aaa]">库存总量</p>
+<span class="material-symbols-outlined text-primary/40" style="font-size: 24px;">warehouse</span>
+</div>
+<p class="text-[#1b0e0e] dark:text-white text-2xl font-bold mt-2">145,200</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded font-medium">充足</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col gap-1 rounded-xl bg-white p-5 border border-[#e6d0d0] shadow-sm dark:bg-[#1a1a1a] dark:border-[#333]">
+<div class="flex items-center justify-between">
+<p class="text-[#666] text-sm font-medium dark:text-[#aaa]">VIP 锁定库存</p>
+<span class="material-symbols-outlined text-gold-accent" style="font-size: 24px;">lock</span>
+</div>
+<p class="text-gold-accent text-2xl font-bold mt-2">3,400</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="text-[#666] text-xs dark:text-[#888]">待发货订单占用</span>
+</div>
+</div>
+<!-- Card 4 (Actionable) -->
+<div class="group cursor-pointer flex flex-col gap-1 rounded-xl bg-white p-5 border border-primary/30 hover:border-primary shadow-sm hover:shadow-festive transition-all relative dark:bg-[#1a1a1a] dark:border-primary/50">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-primary" style="font-size: 64px;">warning</span>
+</div>
+<div class="flex items-center justify-between z-10">
+<p class="text-[#666] group-hover:text-primary text-sm font-medium transition-colors dark:text-[#aaa]">库存预警</p>
+<span class="material-symbols-outlined text-primary" style="font-size: 24px;">notifications_active</span>
+</div>
+<p class="text-primary text-2xl font-bold mt-2 z-10">12</p>
+<div class="flex items-center gap-1 mt-1 z-10">
+<span class="text-primary text-xs underline font-medium">点击筛选缺货商品</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-white rounded-xl border border-[#e6d0d0] p-4 shadow-sm flex flex-col gap-4 dark:bg-[#1a1a1a] dark:border-[#333]">
+<div class="flex flex-wrap items-end gap-4">
+<!-- Input 1 -->
+<div class="flex flex-col gap-1.5 flex-1 min-w-[200px]">
+<label class="text-xs font-semibold text-[#666] dark:text-[#aaa]">商品名称/编码</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 h-10 rounded-lg border border-[#e6d0d0] bg-[#fbf8f8] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all dark:bg-[#2a2a2a] dark:border-[#444] dark:text-white" placeholder="输入名称或编码" type="text"/>
+</div>
+</div>
+<!-- Input 2 -->
+<div class="flex flex-col gap-1.5 flex-1 min-w-[160px]">
+<label class="text-xs font-semibold text-[#666] dark:text-[#aaa]">商品分类</label>
+<div class="relative">
+<select class="w-full px-4 h-10 rounded-lg border border-[#e6d0d0] bg-[#fbf8f8] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer dark:bg-[#2a2a2a] dark:border-[#444] dark:text-white">
+<option value="">全部分类</option>
+<option value="gift">新年礼盒</option>
+<option value="candy">散装糖果</option>
+<option value="drink">酒水饮料</option>
+<option value="nut">坚果干货</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px] pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Input 3 -->
+<div class="flex flex-col gap-1.5 flex-1 min-w-[160px]">
+<label class="text-xs font-semibold text-[#666] dark:text-[#aaa]">库存状态</label>
+<div class="relative">
+<select class="w-full px-4 h-10 rounded-lg border border-[#e6d0d0] bg-[#fbf8f8] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer dark:bg-[#2a2a2a] dark:border-[#444] dark:text-white">
+<option value="">全部状态</option>
+<option value="normal">库存充足</option>
+<option value="warning">库存紧张</option>
+<option value="low">缺货/预警</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px] pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Input 4 -->
+<div class="flex flex-col gap-1.5 flex-1 min-w-[160px]">
+<label class="text-xs font-semibold text-[#666] dark:text-[#aaa]">条形码</label>
+<input class="w-full px-4 h-10 rounded-lg border border-[#e6d0d0] bg-[#fbf8f8] text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all dark:bg-[#2a2a2a] dark:border-[#444] dark:text-white" placeholder="扫描或输入条码" type="text"/>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-3 pb-0.5">
+<button class="h-10 px-6 rounded-lg bg-primary hover:bg-red-700 text-white text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                        查询
+                    </button>
+<button class="h-10 px-4 rounded-lg border border-[#e6d0d0] hover:bg-[#fbf8f8] text-[#666] text-sm font-medium transition-colors dark:border-[#444] dark:text-[#aaa] dark:hover:bg-[#333]">
+                        重置
+                    </button>
+</div>
+</div>
+<!-- Quick Filter Tags -->
+<div class="flex gap-2 border-t border-[#f0e6e6] pt-3 dark:border-[#333]">
+<span class="text-xs font-medium text-[#999] py-1 self-center mr-2 dark:text-[#666]">常用筛选:</span>
+<label class="cursor-pointer group">
+<input class="peer hidden" name="quick_filter" type="radio"/>
+<span class="px-3 py-1 rounded-full text-xs bg-[#f3e8e8] text-[#666] peer-checked:bg-primary peer-checked:text-white transition-colors dark:bg-[#2a2a2a] dark:text-[#aaa]">仅显示缺货</span>
+</label>
+<label class="cursor-pointer group">
+<input class="peer hidden" name="quick_filter" type="radio"/>
+<span class="px-3 py-1 rounded-full text-xs bg-[#f3e8e8] text-[#666] peer-checked:bg-primary peer-checked:text-white transition-colors dark:bg-[#2a2a2a] dark:text-[#aaa]">VIP专属商品</span>
+</label>
+<label class="cursor-pointer group">
+<input class="peer hidden" name="quick_filter" type="radio"/>
+<span class="px-3 py-1 rounded-full text-xs bg-[#f3e8e8] text-[#666] peer-checked:bg-primary peer-checked:text-white transition-colors dark:bg-[#2a2a2a] dark:text-[#aaa]">库存 &gt; 1000</span>
+</label>
+</div>
+</div>
+<!-- Data Table -->
+<div class="flex-1 rounded-xl border border-[#e6d0d0] bg-white shadow-sm overflow-hidden flex flex-col dark:bg-[#1a1a1a] dark:border-[#333]">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#fbf8f8] sticky top-0 z-10 dark:bg-[#222]">
+<tr>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] w-[30%] dark:border-[#333] dark:text-[#aaa]">商品信息</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa]">分类</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-right">总库存</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-right">可用</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-right">VIP锁定</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-right">预警值</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-center">状态</th>
+<th class="p-4 text-xs font-bold text-[#666] uppercase tracking-wider border-b border-[#e6d0d0] dark:border-[#333] dark:text-[#aaa] text-center w-[150px]">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#f0e6e6] dark:divide-[#333]">
+<!-- Row 1 -->
+<tr class="hover:bg-[#fff5f5] transition-colors group dark:hover:bg-[#252525]">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 flex-shrink-0 bg-cover bg-center border border-[#e6d0d0]" data-alt="Red gift box with golden ribbon" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBARQsnMgmcKXsYY5M1PCvxiOdOaVrAcDjXQkbZITupS_kGBLftShkH4UzSx4Tmi3hBaiwGqZJsXmTg72KGuQzESRPukXE3ofYoxGmvSWsyzvklsxz5xliuUVm79cPPnm32Dz4vujiHydxmU9CkdNdTu-InBW-iiI9BHs8MXE6eas9q3jMjeW62NFS7woOgw771b6cEA_9NRcvBEDPexz-CFqSzRifdu5qGUZCMPqEbVThgYLOdGHiCEg3-xvRCbmQL5cWx5JpKgo8");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#1b0e0e] dark:text-white">蒙庆·富贵花开新年礼盒</span>
+<span class="text-xs text-[#964f4f] dark:text-[#888]">编码: MQ-2024-A01</span>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm text-[#1b0e0e] dark:text-[#ccc]">新年礼盒</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-medium text-right dark:text-[#ccc]">1,200</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-bold text-right dark:text-white">1,050</td>
+<td class="p-4 text-sm text-gold-accent font-medium text-right">150</td>
+<td class="p-4 text-sm text-[#666] text-right dark:text-[#888]">100</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">库存充足</span>
+</td>
+<td class="p-4 text-center">
+<div class="flex items-center justify-center gap-2">
+<button class="text-[#666] hover:text-primary p-1 rounded transition-colors" title="明细">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-primary hover:text-red-800 p-1 rounded transition-colors font-medium text-sm" title="调整库存">
+                                        调整
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Row 2 (Warning) -->
+<tr class="hover:bg-[#fff5f5] transition-colors bg-[#fffbfb] dark:bg-[#1a1a1a] dark:hover:bg-[#252525]">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 flex-shrink-0 bg-cover bg-center border border-[#e6d0d0]" data-alt="Bag of assorted candies" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA1BXjkULlboOxIETk6MtwLiNBDosTCdro6uyLriaPo-XvifQRp6p94w79VFqVSbhwrf4TVtFhoSfCY4vwALgh37Vf3aRxKHwkHpLrwyNnq-dn1J2Vt3WWWCyzc7lOc2_uAR_QL0V4-OazLoWJ_vfu7Ekp_HOd1PXba2IELdY2kJqymQ08m5Nxro4UN2Sy6AsuKCHLrcZdEih3ZgA8b7Pn1064zL4F6hWgto5bzlUiMFlTAk9BWEdxzxYGYFrCfcSOr5KZSZ_r_gUc");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#1b0e0e] dark:text-white">金玉满堂什锦糖果 (500g)</span>
+<span class="text-xs text-[#964f4f] dark:text-[#888]">编码: MQ-CANDY-B05</span>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm text-[#1b0e0e] dark:text-[#ccc]">散装糖果</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-medium text-right dark:text-[#ccc]">85</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-bold text-right dark:text-white">45</td>
+<td class="p-4 text-sm text-gold-accent font-medium text-right">40</td>
+<td class="p-4 text-sm text-[#666] text-right dark:text-[#888]">50</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">库存紧张</span>
+</td>
+<td class="p-4 text-center">
+<div class="flex items-center justify-center gap-2">
+<button class="text-[#666] hover:text-primary p-1 rounded transition-colors" title="明细">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-primary hover:text-red-800 p-1 rounded transition-colors font-medium text-sm" title="调整库存">
+                                        调整
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Row 3 (Alert) -->
+<tr class="hover:bg-[#fff5f5] transition-colors dark:hover:bg-[#252525]">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 flex-shrink-0 bg-cover bg-center border border-[#e6d0d0]" data-alt="Traditional Chinese liquor bottle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAoom6le4aEX9aaVeGT44FUtZ8mX6L9W-zTxPw9eIztxVgvpqQm4G4O2CbCcVFJqqi9OERiT5usp-iATpEZwtY5VjoXpmtkxyBSXIpQ4SUHFYIyPPMq5vNGd7pKHIEwthi1FSYAuPVYPCF9EUp-hYfTIgnUzXErBQN5Vywfl2IeqaY_FocVo-AnbQVyJnnr_BUk8sDTnITi8LR9oqpThM22KUsbkq93ZrpDfWOAVfKavR3iDA4uRMlUkzWkhbk559NJ-hYRBzXYN9g");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#1b0e0e] dark:text-white">蒙庆特酿 52度白酒</span>
+<span class="text-xs text-[#964f4f] dark:text-[#888]">编码: MQ-LIQ-C02</span>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm text-[#1b0e0e] dark:text-[#ccc]">酒水饮料</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-medium text-right dark:text-[#ccc]">5</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-bold text-right text-primary dark:text-primary">0</td>
+<td class="p-4 text-sm text-gold-accent font-medium text-right">5</td>
+<td class="p-4 text-sm text-[#666] text-right dark:text-[#888]">20</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">缺货预警</span>
+</td>
+<td class="p-4 text-center">
+<div class="flex items-center justify-center gap-2">
+<button class="text-[#666] hover:text-primary p-1 rounded transition-colors" title="明细">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-primary hover:text-red-800 p-1 rounded transition-colors font-medium text-sm" title="调整库存">
+                                        调整
+                                    </button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-[#fff5f5] transition-colors dark:hover:bg-[#252525]">
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 flex-shrink-0 bg-cover bg-center border border-[#e6d0d0]" data-alt="Mixed nuts package" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBO8UeqxdPYzzH55ULhuqiV5UQQAkaUz_Hu6rVZQpF_wlxCrUXS_fKWVW-i16VpyKblJOosAbGzVlrhtiELC5fwNqyzBZJ5EgUNvjivp9Cev_SNLbH7Uy1lhR3SXtEDrPWLw54htF1cR24va17MIUOciwt4aVEfSZlCqJSQsXZDfpS_GwWGghNE3as1x6CniaxC_u_CC7gnOuI7Vir2fGOWyw2qbsfrlPlU35f_z1Zi-WjCniVNFkbPpt53B6M0jWqo5oWQtWYcYno");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#1b0e0e] dark:text-white">每日坚果礼盒 (30袋入)</span>
+<span class="text-xs text-[#964f4f] dark:text-[#888]">编码: MQ-NUT-D08</span>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm text-[#1b0e0e] dark:text-[#ccc]">坚果干货</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-medium text-right dark:text-[#ccc]">2,500</td>
+<td class="p-4 text-sm text-[#1b0e0e] font-bold text-right dark:text-white">2,480</td>
+<td class="p-4 text-sm text-gold-accent font-medium text-right">20</td>
+<td class="p-4 text-sm text-[#666] text-right dark:text-[#888]">100</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">库存充足</span>
+</td>
+<td class="p-4 text-center">
+<div class="flex items-center justify-center gap-2">
+<button class="text-[#666] hover:text-primary p-1 rounded transition-colors" title="明细">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="text-primary hover:text-red-800 p-1 rounded transition-colors font-medium text-sm" title="调整库存">
+                                        调整
+                                    </button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between border-t border-[#f0e6e6] bg-[#fbf8f8] px-4 py-3 sm:px-6 dark:bg-[#222] dark:border-[#333]">
+<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+<div>
+<p class="text-sm text-[#666] dark:text-[#aaa]">
+                            显示第 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">2845</span> 条
+                        </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+<a class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:ring-[#444] dark:hover:bg-[#333]" href="#">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</a>
+<a aria-current="page" class="relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href="#">1</a>
+<a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-white dark:ring-[#444] dark:hover:bg-[#333]" href="#">2</a>
+<a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-white dark:ring-[#444] dark:hover:bg-[#333]" href="#">3</a>
+<span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0 dark:text-[#888] dark:ring-[#444]">...</span>
+<a class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:ring-[#444] dark:hover:bg-[#333]" href="#">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal Backdrop & Content -->
+<!-- Ideally triggered via JS, here shown static for design demonstration -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
+<div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+<!-- Backdrop -->
+<div aria-hidden="true" class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+<!-- Modal Panel -->
+<div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border-t-4 border-primary dark:bg-[#1e1e1e] dark:border-primary/80">
+<div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-[#1e1e1e]">
+<div class="sm:flex sm:items-start">
+<div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10 dark:bg-red-900/30">
+<span class="material-symbols-outlined text-primary text-[24px]">edit_note</span>
+</div>
+<div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+<h3 class="text-lg font-bold leading-6 text-[#1b0e0e] flex justify-between items-center dark:text-white" id="modal-title">
+                                库存调整
+                                <span class="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded dark:bg-[#333] dark:text-[#aaa]">MQ-CANDY-B05</span>
+</h3>
+<!-- Product Summary -->
+<div class="mt-4 p-3 bg-[#fbf8f8] rounded-lg border border-[#e6d0d0] flex justify-between items-center dark:bg-[#252525] dark:border-[#333]">
+<div>
+<p class="text-sm font-bold text-[#1b0e0e] dark:text-white">金玉满堂什锦糖果 (500g)</p>
+<p class="text-xs text-[#666] dark:text-[#aaa]">当前总库存</p>
+</div>
+<div class="text-2xl font-bold text-[#1b0e0e] dark:text-white">85</div>
+</div>
+<!-- Form -->
+<div class="mt-4 flex flex-col gap-4">
+<!-- Adjustment Type -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2 dark:text-[#ccc]">调整类型</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center hover:bg-[#fff5f5] hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-[#fff5f5] has-[:checked]:text-primary transition-all dark:border-[#444] dark:hover:bg-[#2a2a2a] dark:text-[#ccc] dark:has-[:checked]:bg-[#330000]">
+<input checked="" class="hidden" name="adj_type" type="radio"/>
+<span class="material-symbols-outlined text-[20px] mb-1">add_circle</span>
+<span class="text-xs font-bold">入库 (+)</span>
+</label>
+<label class="cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center hover:bg-[#fff5f5] hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-[#fff5f5] has-[:checked]:text-primary transition-all dark:border-[#444] dark:hover:bg-[#2a2a2a] dark:text-[#ccc] dark:has-[:checked]:bg-[#330000]">
+<input class="hidden" name="adj_type" type="radio"/>
+<span class="material-symbols-outlined text-[20px] mb-1">remove_circle</span>
+<span class="text-xs font-bold">出库/损耗 (-)</span>
+</label>
+<label class="cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center hover:bg-[#fff5f5] hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-[#fff5f5] has-[:checked]:text-primary transition-all dark:border-[#444] dark:hover:bg-[#2a2a2a] dark:text-[#ccc] dark:has-[:checked]:bg-[#330000]">
+<input class="hidden" name="adj_type" type="radio"/>
+<span class="material-symbols-outlined text-[20px] mb-1">sync_alt</span>
+<span class="text-xs font-bold">盘点重置 (=)</span>
+</label>
+</div>
+</div>
+<!-- Quantity -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1 dark:text-[#ccc]">调整数量</label>
+<div class="flex items-center gap-4">
+<input class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-3 h-10 dark:bg-[#2a2a2a] dark:ring-[#444] dark:text-white" placeholder="0" type="number"/>
+<div class="text-sm text-[#666] whitespace-nowrap dark:text-[#aaa]">
+                                            调整后库存: <span class="font-bold text-primary">85</span>
+</div>
+</div>
+</div>
+<!-- Reason -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1 dark:text-[#ccc]">调整原因</label>
+<textarea class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-3 resize-none dark:bg-[#2a2a2a] dark:ring-[#444] dark:text-white" placeholder="请输入调整备注说明..." rows="2"></textarea>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-[#252525]">
+<button class="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto transition-colors" type="button">确认调整</button>
+<button class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors dark:bg-[#333] dark:text-white dark:ring-[#444] dark:hover:bg-[#444]" type="button">取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

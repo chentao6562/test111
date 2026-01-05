@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Details - CNY Festive</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734",
+                        "primary-dark": "#b91c1c",
+                        "gold": "#D4AF37",
+                        "gold-light": "#FDE68A",
+                        "background-light": "#fbf8f8",
+                        "background-dark": "#211111",
+                        "surface-dark": "#2a1a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "festive": "0 10px 15px -3px rgba(229, 55, 52, 0.1), 0 4px 6px -2px rgba(229, 55, 52, 0.05)",
+                        "gold": "0 0 0 1px #D4AF37, 0 4px 6px -1px rgba(212, 175, 55, 0.2)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Festive background pattern */
+        .bg-festive {
+            background-color: #fbf8f8;
+            background-image: radial-gradient(#e53734 0.5px, transparent 0.5px), radial-gradient(#e53734 0.5px, #fbf8f8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-blend-mode: multiply;
+            opacity: 1;
+        }
+        
+        .dark .bg-festive {
+            background-color: #211111;
+            background-image: radial-gradient(#e53734 0.5px, transparent 0.5px), radial-gradient(#e53734 0.5px, #211111 0.5px);
+            opacity: 0.2;
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(to bottom, #FDE68A, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Subtle Background Pattern -->
+<div class="fixed inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-festive"></div>
+<!-- Top Navigation Bar -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#e53734] to-[#c42020] text-white shadow-md">
+<div class="flex items-center justify-between p-4 pt-safe-top h-[60px] max-w-lg mx-auto w-full">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">订单详情</h2>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="relative z-10 flex flex-col items-center w-full min-h-screen pt-[70px] pb-[100px] max-w-lg mx-auto px-4 gap-4">
+<!-- Status Card -->
+<div class="w-full rounded-2xl bg-gradient-to-br from-[#e53734] to-[#b91c1c] p-6 text-white shadow-festive relative overflow-hidden group">
+<!-- Decorative Elements -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:bg-white/15 transition-all duration-700"></div>
+<div class="absolute -left-10 -bottom-10 w-32 h-32 bg-gold/20 rounded-full blur-xl"></div>
+<!-- Status Header -->
+<div class="relative z-10 flex items-center gap-4 mb-8">
+<div class="size-14 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
+<span class="material-symbols-outlined gold-text-gradient" style="font-size: 32px; -webkit-text-fill-color: #FDE68A;">check_circle</span>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tight mb-1">已完成</h1>
+<p class="text-white/80 text-sm font-medium">订单已顺利完成，感谢您的惠顾</p>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="relative z-10">
+<div class="flex items-center justify-between relative mb-2">
+<!-- Line Background -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/20 rounded-full"></div>
+<!-- Active Line (Full width for completed) -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gold-light rounded-full"></div>
+<!-- Steps -->
+<div class="relative z-10 flex flex-col items-center gap-1 w-8">
+<div class="size-3 rounded-full bg-gold-light shadow-[0_0_0_4px_rgba(229,55,52,1)]"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1 w-8">
+<div class="size-3 rounded-full bg-gold-light shadow-[0_0_0_4px_rgba(229,55,52,1)]"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1 w-8">
+<div class="size-3 rounded-full bg-gold-light shadow-[0_0_0_4px_rgba(229,55,52,1)]"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1 w-8">
+<div class="size-3 rounded-full bg-gold-light shadow-[0_0_0_4px_rgba(229,55,52,1)]"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-1 w-8">
+<div class="size-5 rounded-full bg-gold flex items-center justify-center shadow-[0_0_0_4px_rgba(229,55,52,1)]">
+<span class="material-symbols-outlined text-[12px] text-primary font-bold">check</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] font-medium text-white/90 px-0">
+<span class="w-12 text-center -ml-2">待支付</span>
+<span class="w-12 text-center -ml-1">待备货</span>
+<span class="w-12 text-center">备货中</span>
+<span class="w-12 text-center -mr-1">待提货</span>
+<span class="w-12 text-center -mr-2 text-gold-light font-bold">已完成</span>
+</div>
+</div>
+</div>
+<!-- Pickup Code Card (Hero) -->
+<div class="w-full bg-white dark:bg-surface-dark rounded-2xl shadow-sm p-6 flex flex-col items-center border border-red-100 dark:border-red-900/30">
+<div class="flex items-center justify-between w-full mb-6 pb-3 border-b border-dashed border-red-100 dark:border-red-900/50">
+<h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">qr_code_scanner</span>
+                    【提货码】
+                </h3>
+<button class="flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                    刷新
+                </button>
+</div>
+<!-- QR Container with Festive Gold Border -->
+<div class="p-4 bg-white rounded-xl shadow-[0_0_0_4px_#fbf8f8,0_0_0_5px_#D4AF37] mb-6 relative">
+<!-- Corner Decorations -->
+<div class="absolute -top-1.5 -left-1.5 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg z-10"></div>
+<div class="absolute -top-1.5 -right-1.5 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg z-10"></div>
+<div class="absolute -bottom-1.5 -left-1.5 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg z-10"></div>
+<div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg z-10"></div>
+<img alt="QR Code for order pickup" class="w-[200px] h-[200px] object-cover mix-blend-multiply opacity-90" data-alt="A scannable QR code pattern inside a gold frame" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj77htZYKHQoBj--z4wTjIzsOOetuyCgGb7sxJGKUzEI65Zer46Vqq2AR2mnNNdec3oaOjVrJ2BejVSnIuNQIMCeugYzYYXhYfCF6i7RnvFG0eqte22xho1Oai0PW1UFyk9debPvA0LkL8DBJz6ir9dJPjqeG3vwUaGoB1qGGeTx9eOwTg5EgYuWDWgkY9uNqNhkuTVAk7UmmTEBiec_f0ok4wWEdsDEJ1c0Ruafx_RL-iprHZvS5KatMlah_DoT8ApsI3EWbUuw79"/>
+</div>
+<p class="text-3xl font-mono font-bold text-slate-800 dark:text-slate-100 tracking-wider mb-2 selection:bg-primary selection:text-white">MQ20250128001</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg">
+<span class="material-symbols-outlined text-base text-primary">store</span>
+                到店出示此二维码提货
+            </p>
+</div>
+<!-- Order Information Card -->
+<div class="w-full bg-white dark:bg-surface-dark rounded-2xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+<div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+<span class="w-1 h-4 bg-primary rounded-full"></span>
+<h3 class="font-bold text-slate-800 dark:text-slate-100">订单信息</h3>
+</div>
+<div class="p-5 space-y-4 text-sm">
+<div class="flex justify-between items-start">
+<span class="text-slate-500 shrink-0">订单编号</span>
+<div class="flex items-center gap-2 text-right">
+<span class="text-slate-800 dark:text-slate-200 font-mono">202501288888</span>
+<button class="text-slate-400 hover:text-primary transition-colors" title="Copy">
+<span class="material-symbols-outlined text-base">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-start">
+<span class="text-slate-500 shrink-0">下单时间</span>
+<span class="text-slate-800 dark:text-slate-200 text-right">2025-01-28 14:30:05</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="text-slate-500 shrink-0">取货方式</span>
+<span class="text-slate-800 dark:text-slate-200 text-right font-medium">门店自提</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="text-slate-500 shrink-0">联系人/电话</span>
+<div class="text-right">
+<p class="text-slate-800 dark:text-slate-200 font-medium">王老板</p>
+<p class="text-slate-600 dark:text-slate-400 font-mono">138 0013 8000</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Product List Card -->
+<div class="w-full bg-white dark:bg-surface-dark rounded-2xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+<div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+<span class="w-1 h-4 bg-primary rounded-full"></span>
+<h3 class="font-bold text-slate-800 dark:text-slate-100">商品清单</h3>
+<span class="text-xs text-slate-400 ml-auto">共 2 件商品</span>
+</div>
+<div class="p-5 space-y-5">
+<!-- Item 1 -->
+<div class="flex gap-4">
+<div class="w-20 h-20 rounded-lg bg-slate-100 dark:bg-slate-800 bg-cover bg-center shrink-0 border border-slate-200 dark:border-slate-700" data-alt="Red firework box thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDYxfTHs8OJwwo7u_kyCKt6CQdmV_6XjDTD-HQX1fqh5VGi1uH4VTQ_386k-7p5rVia8F5093ml6OH4zc6pQDdSptEhEf8gSVwCqrKjl3Lf1i8LpUlSfkHGNP9Gk4qWJYxSOagJ2QPtRYzfqZ90EWsPn6ApUgMlQLQvA0jwbDhSMrSr_yKXxhSBR7I-ScjlNtYnwQtJYYjVh7foZk4qtql3CBFJ_0Usg_jsXGv4Ww24SWl6gSekjNMhuyOtZFmkxrgnZMYDG2n-jZ8-');"></div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-2 leading-snug">88发红牡丹 / Red Peony 88-Shot Cake Fireworks (Premium)</h4>
+<p class="text-xs text-slate-500 mt-1">规格: 1箱/12发</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-bold">¥500.00</span>
+<span class="text-slate-600 dark:text-slate-400 text-sm">x 10</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+<!-- Item 2 -->
+<div class="flex gap-4">
+<div class="w-20 h-20 rounded-lg bg-slate-100 dark:bg-slate-800 bg-cover bg-center shrink-0 border border-slate-200 dark:border-slate-700" data-alt="Gold sparkle fireworks thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiZU9428BnQ5vi8gwRISsd_8NZIzNMcu--gVOqSEOvvlb4heUWPBGqiJAgLjHd1V0fq8jWk7xaGi6FcRPkOrFwFq8KTkcKEQ7qBjEJqwC4ow2k5Hjd1c8Aglo-dMfkg5A9wqBWfMOPdy-RUAMaFTV0ILqjhPdlfLSxwLqPDpCKl1MXSrciS39tF2s5h03v13UKFYad91HfT49PRTFGZ2nSp0Vlnr5b-FUj5IVCtEePi9ADCwqoF4r6k6pPE6N0Go9YPHrvcvZuZleC');"></div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-2 leading-snug">金玉满堂组合 / Golden Hall Celebration Pack</h4>
+<p class="text-xs text-slate-500 mt-1">规格: 组合套装</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-primary font-bold">¥288.00</span>
+<span class="text-slate-600 dark:text-slate-400 text-sm">x 2</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Price Summary Card -->
+<div class="w-full bg-white dark:bg-surface-dark rounded-2xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800 mb-4">
+<div class="p-5 space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">商品金额</span>
+<span class="text-slate-800 dark:text-slate-200 font-medium">¥5,576.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">锁货费</span>
+<span class="text-slate-800 dark:text-slate-200 font-medium">¥50.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">优惠减免</span>
+<span class="text-primary font-medium">-¥26.00</span>
+</div>
+<div class="my-3 border-t border-dashed border-slate-200 dark:border-slate-700"></div>
+<div class="flex justify-between items-end">
+<span class="text-slate-800 dark:text-slate-100 font-bold">合计</span>
+<div class="flex items-baseline gap-1 text-primary">
+<span class="text-sm font-bold">¥</span>
+<span class="text-2xl font-bold">5,600.00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] pb-8 pt-3 px-4">
+<div class="max-w-lg mx-auto w-full flex gap-3">
+<button class="flex-1 h-12 rounded-xl border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200 font-medium bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">support_agent</span>
+                联系客服
+            </button>
+<button class="flex-1 h-12 rounded-xl bg-gradient-to-r from-[#e53734] to-[#c42020] text-white font-bold text-base flex items-center justify-center shadow-lg shadow-red-500/30 hover:shadow-red-500/40 transition-all active:scale-[0.98]">
+                再次订货
+            </button>
+</div>
+</div>
+</body></html>

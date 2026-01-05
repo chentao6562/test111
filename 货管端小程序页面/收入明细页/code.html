@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>收入明细页 - Cargo Mover Wallet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#398e3d",
+              "primary-dark": "#2d7a31",
+              "background-light": "#f6f8f6",
+              "background-dark": "#151d15",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1e261e",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-[#111811] dark:text-gray-100 antialiased selection:bg-primary selection:text-white">
+<div class="max-w-md mx-auto min-h-screen relative flex flex-col shadow-2xl overflow-hidden bg-background-light dark:bg-background-dark">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between p-4 sticky top-0 z-10 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[#111811] dark:text-white" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">我的钱包</h2>
+<div class="w-0"></div> <!-- Spacer for centering -->
+</header>
+<!-- Hero Card (ProfileHeader modified) -->
+<div class="px-4 pb-2">
+<div class="relative w-full rounded-2xl bg-gradient-to-br from-[#4caf50] to-[#2e7d32] p-6 shadow-lg shadow-green-900/10 overflow-hidden text-white">
+<!-- Decorative background elements -->
+<div class="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 rounded-full bg-white opacity-10 blur-2xl"></div>
+<div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 rounded-full bg-yellow-300 opacity-20 blur-xl"></div>
+<div class="relative z-10 flex flex-col gap-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 opacity-90">
+<span class="text-sm font-medium">可提现余额</span>
+<span class="material-symbols-outlined text-sm" style="font-size: 16px;">visibility</span>
+</div>
+<div class="flex items-baseline justify-between">
+<h1 class="text-4xl font-bold tracking-tight">¥580.00</h1>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-white/20">
+<div class="flex flex-col gap-1">
+<p class="text-xs text-green-50 opacity-80">今日收入</p>
+<p class="text-sm font-semibold">¥200.00</p>
+</div>
+<div class="w-px h-8 bg-white/20 mx-4"></div>
+<div class="flex flex-col gap-1 flex-1">
+<p class="text-xs text-green-50 opacity-80">本月收入</p>
+<p class="text-sm font-semibold">¥2,450.00</p>
+</div>
+<button class="bg-white text-primary hover:bg-green-50 active:scale-95 transition-all text-sm font-bold py-2 px-4 rounded-lg shadow-sm flex items-center gap-1">
+<span>立即提现</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="mt-2 sticky top-[60px] z-10 bg-background-light dark:bg-background-dark pt-2">
+<div class="flex border-b border-gray-200 dark:border-gray-700 px-4">
+<button class="relative flex flex-col items-center justify-center px-4 pb-3 pt-2 flex-1 group">
+<span class="text-primary dark:text-green-400 text-sm font-bold tracking-[0.015em] mb-1">收入明细</span>
+<div class="absolute bottom-0 w-8 h-[3px] bg-primary rounded-t-full"></div>
+</button>
+<button class="relative flex flex-col items-center justify-center px-4 pb-3 pt-2 flex-1 group">
+<span class="text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 text-sm font-medium tracking-[0.015em] mb-1 transition-colors">提现记录</span>
+<div class="absolute bottom-0 w-8 h-[3px] bg-transparent group-hover:bg-gray-200 rounded-t-full transition-colors"></div>
+</button>
+</div>
+</div>
+<!-- List Section -->
+<div class="flex-1 flex flex-col gap-3 p-4 pb-10">
+<!-- Summary Month Header -->
+<div class="flex justify-between items-center px-1">
+<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">2025年1月</span>
+<span class="text-xs text-gray-400">收入 ¥105.00</span>
+</div>
+<!-- List Item 1 -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">forklift</span>
+</div>
+<div>
+<h3 class="text-[#111811] dark:text-white font-bold text-base">VIP移库任务</h3>
+<p class="text-gray-400 text-xs mt-0.5">#FW20250128003</p>
+</div>
+</div>
+<p class="text-primary dark:text-green-400 font-bold text-lg">+¥40.00</p>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-700/50 my-3"></div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-gray-300" style="font-size: 14px;">schedule</span>
+                        2025-01-28 15:30
+                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-medium text-xs">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                        已结算
+                    </span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">package_2</span>
+</div>
+<div>
+<h3 class="text-[#111811] dark:text-white font-bold text-base">普通搬运任务</h3>
+<p class="text-gray-400 text-xs mt-0.5">#FW20250128002</p>
+</div>
+</div>
+<p class="text-primary dark:text-green-400 font-bold text-lg">+¥65.00</p>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-700/50 my-3"></div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-gray-300" style="font-size: 14px;">schedule</span>
+                        2025-01-28 12:10
+                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-medium text-xs">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                        已结算
+                    </span>
+</div>
+</div>
+<!-- List Item 3 (Older) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer opacity-70 hover:opacity-100">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">local_shipping</span>
+</div>
+<div>
+<h3 class="text-[#111811] dark:text-white font-bold text-base">长途运输补贴</h3>
+<p class="text-gray-400 text-xs mt-0.5">#FW20250127009</p>
+</div>
+</div>
+<p class="text-primary dark:text-green-400 font-bold text-lg">+¥120.00</p>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-700/50 my-3"></div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-gray-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-gray-300" style="font-size: 14px;">schedule</span>
+                        2025-01-27 09:45
+                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium text-xs">
+<span class="size-1.5 rounded-full bg-gray-400"></span>
+                        已入账
+                    </span>
+</div>
+</div>
+<!-- End of list state -->
+<div class="py-6 text-center">
+<p class="text-xs text-gray-400">仅展示近3个月的收入明细</p>
+</div>
+</div>
+</div>
+</body></html>

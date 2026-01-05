@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>备货管理</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1975d2",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-dark": "#1a2632",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-primary shadow-md">
+<div class="flex items-center justify-between px-4 h-14">
+<button class="text-white p-2 -ml-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="text-white text-lg font-bold tracking-tight">备货管理</h1>
+<button class="text-white p-2 -mr-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors" title="打印标签">
+<span class="material-symbols-outlined text-[24px]">print</span>
+</button>
+</div>
+<!-- Tabs -->
+<div class="flex items-center justify-between px-2 pt-2 bg-primary">
+<button class="flex-1 pb-3 relative text-white opacity-100 font-semibold text-sm transition-all">
+<span>待备货(5)</span>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-t-sm"></div>
+</button>
+<button class="flex-1 pb-3 relative text-blue-100 opacity-70 hover:opacity-100 font-medium text-sm transition-all">
+<span>备货中(2)</span>
+</button>
+<button class="flex-1 pb-3 relative text-blue-100 opacity-70 hover:opacity-100 font-medium text-sm transition-all">
+<span>已完成</span>
+</button>
+</div>
+</header>
+<!-- Spacer for Fixed Header -->
+<div class="h-[104px]"></div>
+<!-- Main Content -->
+<main class="p-4 space-y-4">
+<!-- Search / Filter (Optional but recommended for warehouse) -->
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 material-symbols-outlined text-[20px]">search</span>
+<input class="w-full bg-white dark:bg-surface-dark border-none rounded-lg py-3 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-sm focus:ring-2 focus:ring-primary" placeholder="搜索订单号、客户姓名..." type="text"/>
+</div>
+<!-- Order Card 1: Pending -->
+<div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded">自提</span>
+<h3 class="font-bold text-base text-slate-900 dark:text-white">DD20231027001</h3>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400">10:30</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-1">客户</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">张三</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-1">商品数量</span>
+<span class="text-sm font-bold text-slate-700 dark:text-slate-200">5 件</span>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 mb-4 flex items-center gap-3">
+<div class="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-md bg-cover bg-center shrink-0" data-alt="product thumbnail" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCF1th-rcoNIhM_mO2XK-a4u5YeXB1KDRIzyMuSoFTldOP2qWasp9IGQztwt1t9Hqh6mcKy0iF1v3PJSspL0AR39yNvbNLD93fs5-8lhmDjo6OXfpLnwHlGyKQ0yj7iI3SIWy603RzNaZDzlXOMuapdkJqT4_mnuoBT6pECFo4mQ-iMkSkXOvY87PrUvdwp1ctPiCdgo0q36jVCrP5rUot-8LVu6oV67DasnboHz3JrRMjkoEuYO_8PKAb6UiUk874oCHE4cgLCGw');"></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium truncate text-slate-800 dark:text-slate-200">无线蓝牙鼠标 - 黑色</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">库位: A-01-02 等...</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+                    开始备货
+                </button>
+</div>
+</div>
+<!-- Order Card 2: Pending -->
+<div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs font-bold px-2 py-1 rounded">配送</span>
+<h3 class="font-bold text-base text-slate-900 dark:text-white">DD20231027008</h3>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400">11:15</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-1">客户</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">李四</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-1">商品数量</span>
+<span class="text-sm font-bold text-slate-700 dark:text-slate-200">12 件</span>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 mb-4 flex items-center gap-3">
+<div class="flex -space-x-3 overflow-hidden">
+<img alt="Product 1" class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-surface-dark" data-alt="product preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKOjRKK0E0gdGLqQyYX8uVhUyzcz9mvb5ryKEjH-vcUdmpmwqNWxGAS-qM2yDqQWsAa22euDnsu9xazzELdAMY3g0eP3FFKzdBjJAxK-ZlSa8koP3Y-l3SXfARhOzcvBjKk5U85REcLI0rXZJMs5rMsJtnfdyqxDUWd1ywJFr3pwyAOh2a8L-eDBxQgBIjIM-RAZCZbJQV_VFg0r-wYPixWleW7o7fkvx_W2oZvMvUsZNrLp2f11C3-TvinukjVbEOSnBPapnQhQ"/>
+<img alt="Product 2" class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-surface-dark" data-alt="product preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaVV8YKteENZsFHOflwhYoKRjnleg9m1QLZ_jvMFwrQUgqjIWYvJB3arS3ddBRIl0a1C1OWPWC_HaU79wrvFbIunbHb5Bh4MFZdoq6FLGI8APr-FdEtBXTrf17b4pnZEfj77vDtmHN6wHLfBNn2gb5ckCzZxaWrvzeWKnshen69zgYqkfE8zmfoYz-2mbeqtVwAte8RSHmaT0hGjmJBsB7ZbNwYess9gAeKL4IaXVO32bRBerPCEjAOvkRAknzo2VDTscdUSeYGA"/>
+<img alt="Product 3" class="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-surface-dark" data-alt="product preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhhl3eGaeHGzfLXKahWYNUDxzNyixGvS7FdB_jPz80dwtnNvVRkFxO5yPmD58FPhTcBtZosoA_k_2-Qu1ecEARV1b60AoD9V9Iag-6WvNGhppzPIuqKAQdP4TpNPw9FT_Y0HJuZNzMSy_rcw4TzTfFbfdWLOTqJnZKEhG8TQNrK5OgPKoTExOeLvs9E8ODeZZ0A5xA3kW5PfypjJ5P8GD34JM6PIhZ2gOKAfbtPB-Cag2z94OMwsSR2OiOueXX8LUBSkpYyDW0yw"/>
+</div>
+<span class="text-xs text-slate-500 dark:text-slate-400 ml-2">共3种商品</span>
+</div>
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+                    开始备货
+                </button>
+</div>
+</div>
+<!-- Detail View Concept (Inline Expansion or Separate Section Simulation) -->
+<div class="pt-6">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold mb-4 flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full block"></span>
+                备货详情示例 <span class="text-sm font-normal text-slate-500 dark:text-slate-400 ml-auto">DD20231027001</span>
+</h2>
+<!-- Detail List -->
+<div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700">
+<!-- Item 1 -->
+<div class="p-4 flex items-center gap-4">
+<div class="relative shrink-0">
+<div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-lg bg-cover bg-center" data-alt="item image" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeG5BUqbcRUNPI3KzW9j5JxjVbGmh4Yl_7FFXzw6pJKqnH8Gx4dwAdX-sffvhQ_7xIKmDBS4gewItHUeeozhlB6sm2T5xuFoXJJWOgwbMt9faKF-fxLMXfEGAEiDH5ss_rXEBhvdi52alLo7gWEzHFm6eBjIUqu-Y3jnj3nU-Fo40tn4u15v5WxE_lQzdnJTDXmbW0TNP6nMercDzNl3_Xxs98kLexpnBsdDIoUkgcBq1_E87HyAZWjCEceUXKfUF03GqACBgzag');"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="font-medium text-slate-900 dark:text-white text-sm truncate pr-2">人体工学办公椅 - 灰色</h4>
+<span class="text-sm font-bold text-slate-900 dark:text-white">x1</span>
+</div>
+<div class="mt-1 flex items-center gap-2">
+<span class="text-xs text-slate-500 dark:text-slate-400">SKU: 992831</span>
+</div>
+<div class="mt-2 inline-flex items-center px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs font-bold rounded">
+<span class="material-symbols-outlined text-[14px] mr-1">location_on</span>
+                            库位: B-04-12
+                        </div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-11 h-11 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center peer-checked:bg-green-500 peer-checked:border-green-500 transition-all">
+<span class="material-symbols-outlined text-white opacity-0 peer-checked:opacity-100 text-[24px]">check</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-4 flex items-center gap-4 bg-slate-50/50 dark:bg-slate-800/20">
+<div class="relative shrink-0">
+<div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-lg bg-cover bg-center opacity-50" data-alt="item image" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBv5xA4lizsAgg9-pP-hx_PrfhUhzcQg6Op9fggXwuOXG63HG3rySBLGuDgrC9EijhxP0HuRFVBQDbwKEoSqv7SEJ9ebydknXoeHS5gZjH0iLpWu4ZwNFKkEtZRsLVByfv8aYxa3oQkwhYI4JjhARtBXdtEdlV2D3oiQK4ryn4269-NH_NDNShoRVHIF1KgigJgXeg9WDOISVM1JcGPra_nWATnfuKNmdc2wYlfNRe62_HEFdtLILdeVOmxgXHATJq3vLLEujbW7w');"></div>
+<div class="absolute inset-0 flex items-center justify-center bg-black/10 rounded-lg">
+<span class="material-symbols-outlined text-white font-bold drop-shadow-md">check</span>
+</div>
+</div>
+<div class="flex-1 min-w-0 opacity-50">
+<div class="flex justify-between items-start">
+<h4 class="font-medium text-slate-900 dark:text-white text-sm truncate pr-2 line-through">机械键盘 K8 - 红轴</h4>
+<span class="text-sm font-bold text-slate-900 dark:text-white">x1</span>
+</div>
+<div class="mt-1 flex items-center gap-2">
+<span class="text-xs text-slate-500 dark:text-slate-400">SKU: 882100</span>
+</div>
+<div class="mt-2 inline-flex items-center px-2 py-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold rounded">
+<span class="material-symbols-outlined text-[14px] mr-1">location_on</span>
+                            库位: A-02-05
+                        </div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-11 h-11 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center peer-checked:bg-green-500 peer-checked:border-green-500 transition-all shadow-sm">
+<span class="material-symbols-outlined text-white opacity-0 peer-checked:opacity-100 text-[24px]">check</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Floating Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-surface-dark border-t border-slate-100 dark:border-slate-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-40">
+<div class="flex gap-3 max-w-md mx-auto">
+<button class="flex-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-sm active:bg-slate-50 dark:active:bg-slate-600">
+<span class="material-symbols-outlined text-[20px]">print</span>
+                打印标签
+            </button>
+<button class="flex-[2] bg-primary hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition-all">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                确认备货完成
+            </button>
+</div>
+<!-- Safe Area for Mobile Home Indicator -->
+<div class="h-1"></div>
+</div>
+</body></html>

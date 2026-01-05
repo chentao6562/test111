@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agent Promotion Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e53734",
+              "background-light": "#f8f6f6",
+              "background-dark": "#211111",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            boxShadow: {
+              'glow': '0 0 15px rgba(229, 55, 52, 0.3)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .gold-text-gradient {
+            background: linear-gradient(180deg, #FFD700 0%, #FDB931 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-gold-gradient {
+            background: linear-gradient(135deg, #FDB931 0%, #f59e0b 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white pb-24 overflow-x-hidden selection:bg-primary/20">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 flex w-full flex-col bg-primary shadow-md">
+<div class="flex items-center justify-between p-4 pb-3">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full text-white hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">推广中心</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="text-white/90 text-sm font-medium hover:text-white transition-colors">规则</button>
+</div>
+</div>
+<!-- Decorative bottom curve for nav (optional festive touch) -->
+<div class="h-4 bg-primary rounded-b-[20px] absolute -bottom-3 w-full -z-10 mx-auto left-0 right-0 scale-x-105"></div>
+</div>
+<div class="w-full max-w-md mx-auto px-4 pt-6 space-y-5">
+<!-- Earnings Hero Card (Festive Red Packet Style) -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#e53734] via-[#d62828] to-[#991b1b] p-6 shadow-xl shadow-red-900/20 border border-[#FDB931]/30 group">
+<!-- Abstract festive background patterns -->
+<div class="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-[#FDB931]/10 blur-2xl group-hover:bg-[#FDB931]/20 transition-all duration-700"></div>
+<div class="absolute bottom-0 left-0 h-40 w-40 -translate-x-10 translate-y-10 rounded-full bg-[#FDB931]/5 blur-3xl"></div>
+<div class="absolute right-10 bottom-10 opacity-10">
+<span class="material-symbols-outlined text-[80px] text-white rotate-12">savings</span>
+</div>
+<div class="relative z-10 flex flex-col gap-1">
+<div class="flex items-center gap-2 text-white/90">
+<span class="material-symbols-outlined text-[#FDB931]" style="font-size: 20px;">monetization_on</span>
+<p class="text-sm font-medium tracking-wide">累计收益</p>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="text-xl font-bold text-[#FDB931]">¥</span>
+<!-- Gold gradient text class defined in head style -->
+<span class="gold-text-gradient text-[40px] font-extrabold leading-none tracking-tight">1,280.50</span>
+</div>
+<div class="mt-6 flex items-end justify-between">
+<div class="flex flex-col gap-0.5">
+<p class="text-white/70 text-xs font-medium">可提现金额</p>
+<p class="text-white text-lg font-bold tracking-tight">¥980.00</p>
+</div>
+<button class="flex h-9 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-full bg-gold-gradient px-4 text-[#8a1c1c] shadow-lg shadow-black/10 active:scale-95 transition-transform">
+<span class="text-sm font-bold truncate">去提现</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Statistics Grid -->
+<div class="grid grid-cols-3 gap-3">
+<!-- Stat 1 -->
+<div class="flex flex-col items-center justify-center rounded-xl bg-white dark:bg-[#2a1a1a] p-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-800">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium leading-normal mb-1">直推人数</p>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">128</p>
+<div class="mt-1 flex items-center gap-0.5 rounded-full bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+<span class="material-symbols-outlined" style="font-size: 10px;">trending_up</span>
+<span>12%</span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="flex flex-col items-center justify-center rounded-xl bg-white dark:bg-[#2a1a1a] p-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-800">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium leading-normal mb-1">团队人数</p>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">345</p>
+<div class="mt-1 flex items-center gap-0.5 rounded-full bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+<span class="material-symbols-outlined" style="font-size: 10px;">trending_up</span>
+<span>5%</span>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="flex flex-col items-center justify-center rounded-xl bg-white dark:bg-[#2a1a1a] p-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-800">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium leading-normal mb-1">团队业绩</p>
+<p class="text-primary text-xl font-bold leading-tight">¥58k</p>
+<div class="mt-1 flex items-center gap-0.5 rounded-full bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+<span class="material-symbols-outlined" style="font-size: 10px;">trending_up</span>
+<span>22%</span>
+</div>
+</div>
+</div>
+<!-- Promotion Code Card -->
+<div class="flex flex-col rounded-2xl bg-white dark:bg-[#2a1a1a] p-5 shadow-[0_2px_10px_rgba(0,0,0,0.05)] border-t-4 border-primary relative">
+<div class="mb-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+<div class="flex items-center gap-2">
+<div class="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">qr_code_scanner</span>
+</div>
+<h3 class="text-slate-900 dark:text-white text-base font-bold">我的推广码</h3>
+</div>
+<div class="bg-primary/5 px-2 py-1 rounded text-primary text-xs font-semibold">
+                    CNY 2024
+                </div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="rounded-lg bg-white p-2 shadow-sm border border-slate-100">
+<!-- Placeholder QR Code -->
+<div class="h-32 w-32 bg-slate-100 rounded flex items-center justify-center bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&amp;data=CNY2024PROMO')] bg-cover" data-alt="QR Code for agent referral"></div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<p class="text-slate-400 text-xs text-center">分享给好友，他们下单你得分润</p>
+<div class="mt-1 flex items-center gap-2 rounded-lg bg-slate-50 dark:bg-slate-800 px-3 py-1.5 border border-dashed border-slate-300 dark:border-slate-600">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-medium">邀请码:</span>
+<span class="text-slate-900 dark:text-white text-sm font-bold tracking-widest">ABC123</span>
+<span class="material-symbols-outlined text-slate-400 text-[14px] cursor-pointer hover:text-primary">content_copy</span>
+</div>
+</div>
+<div class="flex w-full gap-3 mt-1">
+<button class="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent h-10 px-4 text-slate-700 dark:text-slate-200 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+                        保存图片
+                    </button>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary h-10 px-4 text-white text-sm font-bold shadow-md shadow-red-500/20 hover:bg-red-700 active:bg-red-800 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">share</span>
+                        生成海报
+                    </button>
+</div>
+</div>
+</div>
+<!-- Function Menu List -->
+<div class="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#2a1a1a] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+<button class="group flex w-full items-center justify-between border-b border-slate-100 dark:border-slate-800 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex size-9 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">groups</span>
+</div>
+<span class="text-slate-900 dark:text-white text-sm font-bold">我的团队</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+<button class="group flex w-full items-center justify-between border-b border-slate-100 dark:border-slate-800 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex size-9 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-500">
+<span class="material-symbols-outlined" style="font-size: 20px;">history_edu</span>
+</div>
+<span class="text-slate-900 dark:text-white text-sm font-bold">邀请记录</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+<button class="group flex w-full items-center justify-between border-b border-slate-100 dark:border-slate-800 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex size-9 items-center justify-center rounded-full bg-[#FDB931]/20 text-yellow-600 dark:text-yellow-500">
+<span class="material-symbols-outlined" style="font-size: 20px;">account_balance_wallet</span>
+</div>
+<span class="text-slate-900 dark:text-white text-sm font-bold">分润明细</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+<button class="group flex w-full items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex size-9 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500">
+<span class="material-symbols-outlined" style="font-size: 20px;">leaderboard</span>
+</div>
+<span class="text-slate-900 dark:text-white text-sm font-bold">业绩排行</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</button>
+</div>
+<div class="h-4"></div>
+</div>
+<!-- Bottom Tab Bar -->
+<div class="fixed bottom-0 left-0 z-50 w-full border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1e1e1e] pb-safe">
+<div class="mx-auto flex h-16 max-w-md items-center justify-around px-2">
+<button class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</button>
+<button class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">grid_view</span>
+<span class="text-[10px] font-medium">分类</span>
+</button>
+<!-- Active Center Tab -->
+<div class="relative flex flex-1 flex-col items-center justify-end">
+<button class="absolute -top-6 flex size-12 items-center justify-center rounded-full bg-primary shadow-lg shadow-red-500/40 ring-4 ring-white dark:ring-[#1e1e1e] transition-transform active:scale-95">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">campaign</span>
+</button>
+<span class="mb-2 mt-7 text-[10px] font-bold text-primary">推广</span>
+</div>
+<button class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">shopping_cart</span>
+<span class="text-[10px] font-medium">购物车</span>
+</button>
+<button class="flex flex-1 flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>库存管理</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1975d2",
+                        "primary-dark": "#1565c0",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2936",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal lists */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 dark:bg-black flex justify-center min-h-screen font-display antialiased selection:bg-primary selection:text-white">
+<!-- Mobile Device Container -->
+<div class="relative w-full max-w-md bg-background-light dark:bg-background-dark min-h-screen flex flex-col shadow-2xl overflow-hidden group/design-root">
+<!-- Header Section (Blue Background) -->
+<div class="bg-primary dark:bg-background-dark/50 pt-safe-top pb-4 px-4 sticky top-0 z-30 transition-colors duration-300">
+<!-- Top Bar -->
+<div class="flex items-center justify-between mb-4 pt-4">
+<button class="text-white hover:bg-white/10 rounded-full p-2 -ml-2 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="text-white text-lg font-bold tracking-tight">库存管理</h1>
+<button class="text-white hover:bg-white/10 rounded-full p-2 -mr-2 transition-colors">
+<span class="material-symbols-outlined text-[24px]">add</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary/70 dark:text-gray-400">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 rounded-xl border-none text-gray-900 bg-white dark:bg-surface-dark dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-sm sm:text-sm" placeholder="搜索商品名称/编码" type="text"/>
+</div>
+</div>
+<!-- Warning Bar -->
+<div class="bg-red-500 text-white px-4 py-2 flex items-center gap-2 shadow-sm relative z-20">
+<span class="material-symbols-outlined text-[20px] fill-1">warning</span>
+<p class="text-sm font-medium">3件商品库存不足 (Out of Stock Warning)</p>
+<span class="material-symbols-outlined text-[20px] ml-auto opacity-80">chevron_right</span>
+</div>
+<!-- Filters Section -->
+<div class="bg-background-light dark:bg-background-dark pt-3 pb-2 sticky top-[136px] z-20 shadow-sm border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-3 px-4 overflow-x-auto hide-scrollbar pb-1">
+<!-- Category Dropdown -->
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 px-3 shadow-sm active:scale-95 transition-transform">
+<span class="text-gray-700 dark:text-gray-200 text-sm font-medium">分类</span>
+<span class="material-symbols-outlined text-gray-500 text-[20px]">arrow_drop_down</span>
+</button>
+<div class="w-[1px] h-6 bg-gray-300 dark:bg-gray-700 shrink-0 mx-1"></div>
+<!-- Status Pills -->
+<button class="flex h-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white px-4 shadow-sm transition-colors">
+<p class="text-sm font-medium">全部</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<p class="text-sm font-medium">充足</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<p class="text-sm font-medium">预警</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 px-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<p class="text-sm font-medium">缺货</p>
+</button>
+</div>
+</div>
+<!-- Inventory List -->
+<div class="flex-1 overflow-y-auto px-4 pb-24 pt-4 space-y-3">
+<!-- Item 1: Sufficient -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 active:ring-2 active:ring-primary/50 transition-all cursor-pointer">
+<div class="flex gap-3">
+<div class="bg-gray-100 dark:bg-gray-800 rounded-lg size-[80px] shrink-0 bg-cover bg-center" data-alt="Wireless Mouse black product shot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6-fdwufuWy0lcLucce7Ar68PVf5JqGcCFu_JQiwVZuvk9N_Idl8bOXE3pwFkLK6Ne8SVMnW_UvtjpAsLmDaRrTAbUS0KuFRnU2V58ujCsYxg23BO-5_MrzX1t4lWj4NaKyZpyINWuzp4FurbYHnyVylBL0qnA1MsgBWvIK0kvpLXqDa_HYhBfLaPoHZKTnfzuMk7oMN3KpbyjRTesRNWpSxupG2vLIa87sxCxgJlE3fQsm28EOyuzhE5r0EpBTOJldCNyJrHeKg');"></div>
+<div class="flex flex-col flex-1 min-w-0 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-gray-900 dark:text-white font-semibold text-base truncate">无线鼠标 M305</h3>
+<span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                                    充足
+                                </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">规格: 黑色 / 无线 (Black/Wireless)</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<p class="text-gray-400 text-xs mb-0.5">当前库存</p>
+<p class="text-primary font-bold text-lg leading-none">98 <span class="text-xs font-normal text-gray-500">件</span></p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">warehouse</span>
+<span>A-03-05</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2: Warning -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 active:ring-2 active:ring-primary/50 transition-all cursor-pointer">
+<div class="flex gap-3">
+<div class="bg-gray-100 dark:bg-gray-800 rounded-lg size-[80px] shrink-0 bg-cover bg-center" data-alt="Mechanical Keyboard product shot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA79g7mmo2Rihkiu3zhqZxh7B2ehVSdbr_57VsmwMs6o3zvMC-9xNzpXqFlZFDP3JHs5mfvsXUsTAW1BrqILOdtSuRxfasDdQQNsbw_SR7l4MVyObQaTeeJgNP3bX33EGBYZ3R-SdMcB6PII0srqIr8JWCGKKVx7-Y_FrvQFkRzUli5mAqUUTuuhPPkY6M0TS16pHDTfnv7_VPVZzMy8_RDsSqXOeOGwy82fFfrg-sOd4uvrc33KcCKEKrNoqKWSUGivzpdacykVQ');"></div>
+<div class="flex flex-col flex-1 min-w-0 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-gray-900 dark:text-white font-semibold text-base truncate">机械键盘 K95</h3>
+<span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+                                    预警
+                                </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">规格: RGB / 青轴 (Blue Switch)</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<p class="text-gray-400 text-xs mb-0.5">当前库存</p>
+<p class="text-amber-600 dark:text-amber-500 font-bold text-lg leading-none">12 <span class="text-xs font-normal text-gray-500">件</span></p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">warehouse</span>
+<span>B-01-12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3: Out of Stock -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 active:ring-2 active:ring-primary/50 transition-all cursor-pointer relative overflow-hidden">
+<!-- Out of stock visual indicator overlay if needed, keeping it subtle -->
+<div class="flex gap-3 opacity-90">
+<div class="bg-gray-100 dark:bg-gray-800 rounded-lg size-[80px] shrink-0 bg-cover bg-center grayscale" data-alt="Type C Cable product shot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuMzt9m6nPGaEwguBSy4rN6VwNjRavTwFwKd6iy1IzeuVSvI6vnZqZ8q83sR5KXZ6llIqCyN8KNCbC4cVEIu5z8s-ApG3KkGuUA8JndkOAo-TLimDioRWSQJx8SKG_0j_nicjPnukFi8TdLWTrhJUiTMW71UgTls-7lYSXUSAGvFs483CQRtgeJeG0PNhqDaLzRX9KSTEyyIYYR-rNh98JiGTUsMOCSxQ1WVYnyZQ68SsjJ8n8VX6SUrJNnwvr6olWcAMFqRO8qw');"></div>
+<div class="flex flex-col flex-1 min-w-0 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-gray-900 dark:text-white font-semibold text-base truncate">Type-C 数据线 2m</h3>
+<span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                                    缺货
+                                </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">规格: 白色 / 2米 / 编织</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<p class="text-gray-400 text-xs mb-0.5">当前库存</p>
+<p class="text-red-600 dark:text-red-500 font-bold text-lg leading-none">0 <span class="text-xs font-normal text-gray-500">件</span></p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">warehouse</span>
+<span>A-02-01</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 4: Sufficient -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-gray-100 dark:border-gray-800 active:ring-2 active:ring-primary/50 transition-all cursor-pointer">
+<div class="flex gap-3">
+<div class="bg-gray-100 dark:bg-gray-800 rounded-lg size-[80px] shrink-0 bg-cover bg-center" data-alt="Laptop stand product shot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC0hbOehu247M0_tIDiiUpuJFs9ydpp183x8MSlvtgDmFm_avXVqqxnT8vYENnYhWRB0rXn3jjDOC--ai7MwmmXiNKneJFTWfVei8-5cipfGNPNdBnISiIW3W5CEAGPkvgywcmfIALOv4AbOSATD6MHY8fHe_W-lHZIr1gOmdCb3kg5lc3b-bEQNwvRVYv_zhKr279FOCJV90Fn8FYB_E412MVaZ2VwJM5GeYsKPhJnSPiykE9eWBDrQyjHRErwpuasLDswKQGwCA');"></div>
+<div class="flex flex-col flex-1 min-w-0 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-gray-900 dark:text-white font-semibold text-base truncate">铝合金笔记本支架</h3>
+<span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                                    充足
+                                </span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-xs mt-1">规格: 银色 / 可折叠</p>
+</div>
+<div class="flex items-end justify-between mt-2">
+<div>
+<p class="text-gray-400 text-xs mb-0.5">当前库存</p>
+<p class="text-primary font-bold text-lg leading-none">240 <span class="text-xs font-normal text-gray-500">件</span></p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">warehouse</span>
+<span>C-05-11</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory Detail Modal (Simulated Bottom Sheet) -->
+<!-- In a real app, this would be hidden until clicked. Displaying it as if simulated open or waiting to be triggered. 
+             For this design output, I'll position it absolutely at the bottom but invisible by default to keep the main view clean, 
+             or I can display it. Let's make it a partially visible overlay to show the "Detail" requirement. -->
+<div class="absolute inset-0 z-50 flex items-end justify-center pointer-events-none">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/60 opacity-0 pointer-events-none transition-opacity"></div>
+<!-- Bottom Sheet Content -->
+<!-- Removing 'translate-y-full' would show this modal. Keeping it hidden for clean Initial View, 
+                 but adding the markup structure for the requested feature. 
+                 To demo it, I'll add a 'peer' or just leave it for the developer to toggle. 
+                 Actually, to ensure the user sees I designed it, I will render it *below* the fold visually? No phone screen is fixed.
+                 
+                 Let's create a visual "Open State" on top of the list for the last item, essentially mocking the click action.
+            -->
+<div class="w-full bg-white dark:bg-surface-dark rounded-t-[2rem] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col pointer-events-auto transform translate-y-full transition-transform duration-300">
+<!-- Handle -->
+<div class="w-full flex justify-center pt-3 pb-1">
+<div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+</div>
+<!-- Modal Header -->
+<div class="px-5 pb-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+<div>
+<h2 class="text-xl font-bold text-gray-900 dark:text-white">库存详情</h2>
+<p class="text-sm text-gray-500">SKU: 882910-BLK</p>
+</div>
+<button class="bg-gray-100 dark:bg-gray-700 p-2 rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white transition">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-5 overflow-y-auto space-y-6">
+<!-- Product Info -->
+<div class="flex gap-4">
+<div class="size-20 rounded-lg bg-gray-100 dark:bg-gray-800 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcuArQC081fRb7U5AUM2g9i6VbvNW3dzYqzIAwHYnSjAmIVVa6UKoAYWKXNsvLuBK9nT59yReDDNwO6S-oMTKMcGKL1t6OdreBw7X1KBcK9Yp6M-hHPkU4PH4XZ1-ZMqR5FV0uydZw2BAclyZ165eBlabgUs30NKUz0pIC_R81GKUGQVOBVkFWLsmyrUp2PuqtBzk9mQirfPxJR13-mJAdtyR4-AoMHuzT1_1XrZOlRCD8EraJNdxlvX5uqAicI8tMvqlPwbVIog');"></div>
+<div>
+<h3 class="font-semibold text-lg dark:text-white">无线鼠标 M305</h3>
+<p class="text-sm text-gray-500 mt-1">黑色 / 无线 / 2.4G + Bluetooth</p>
+<div class="flex gap-2 mt-2">
+<span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded font-medium">库存充足</span>
+<span class="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">电子配件</span>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-center">
+<p class="text-gray-500 text-xs mb-1">当前库存</p>
+<p class="text-gray-900 dark:text-white font-bold text-xl">98</p>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-center">
+<p class="text-gray-500 text-xs mb-1">本月入库</p>
+<p class="text-green-600 font-bold text-xl">+50</p>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-center">
+<p class="text-gray-500 text-xs mb-1">本月出库</p>
+<p class="text-orange-500 font-bold text-xl">-12</p>
+</div>
+</div>
+<!-- Location Distribution -->
+<div>
+<h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">库位分布 (Distribution)</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800/30 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-3">
+<div class="bg-white dark:bg-gray-700 p-2 rounded-md shadow-sm text-primary">
+<span class="material-symbols-outlined text-[20px]">shelves</span>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-900 dark:text-white">主仓 A区 (Zone A)</p>
+<p class="text-xs text-gray-500">货架 A-03-05</p>
+</div>
+</div>
+<span class="text-sm font-bold text-gray-900 dark:text-white">80 件</span>
+</div>
+<div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800/30 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-3">
+<div class="bg-white dark:bg-gray-700 p-2 rounded-md shadow-sm text-gray-500">
+<span class="material-symbols-outlined text-[20px]">shelves</span>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-900 dark:text-white">次仓 B区 (Zone B)</p>
+<p class="text-xs text-gray-500">货架 B-01-02</p>
+</div>
+</div>
+<span class="text-sm font-bold text-gray-900 dark:text-white">18 件</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-surface-dark pb-8">
+<button class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all">
+                        调整库存 (Adjust Stock)
+                     </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

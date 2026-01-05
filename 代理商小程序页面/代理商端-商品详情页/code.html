@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>代理商端-商品详情页</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              cn: {
+                  red: '#E53935',
+                  darkRed: '#D32F2F',
+                  gold: '#FFC107',
+                  goldLight: '#FFD54F',
+                  bg: '#F5F5F5',
+                  card: '#FFFFFF',
+                  text: '#333333',
+                  textSec: '#666666',
+                  textAux: '#999999'
+              }
+            },
+            fontFamily: {
+              "sans": ["PingFang SC", "Noto Sans SC", "sans-serif"]
+            },
+            borderRadius: {
+                'card': '0.5rem', 
+                'large': '1rem'
+            },
+            boxShadow: {
+                'card': '0 2px 8px rgba(0, 0, 0, 0.04)',
+                'festive': '0 4px 16px -4px rgba(229, 57, 53, 0.15)',
+                'bar': '0 -4px 20px -5px rgba(0, 0, 0, 0.05)',
+                'glow': '0 4px 14px 0 rgba(229, 57, 53, 0.39)',
+            },
+            backgroundImage: {
+                'cloud-texture': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E53935' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .text-shadow-sm {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-cn-bg bg-cloud-texture font-sans text-cn-text antialiased pb-32">
+<div class="fixed top-0 left-0 w-full z-40 transition-all duration-300">
+<div class="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent pointer-events-none h-32"></div>
+<div class="flex items-center justify-between px-4 pt-12 pb-2 relative z-10">
+<button class="flex size-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-colors border border-white/10 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<button class="flex size-9 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-colors border border-white/10 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="relative w-full aspect-square bg-gray-200 overflow-hidden group">
+<div class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar h-full w-full">
+<div class="shrink-0 snap-center w-full h-full bg-cover bg-center" data-alt="Red fireworks" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCloBX42vuWd62z82Jiu05m6AcxWcCf-j5QwIbLfvyzHNFvr_evYy8X8soZm8s5wAZl_395kahwSXSFt2pi-fxocHuLuMzZ5y_OxIRyGWYSPw-KYvII9FEQ1EJGnYYca_imOQFbsOAlfsOmddbtdray6XpySHKb71dTqkseJMtWQAZijbkPrEj7Be7m43AfqK1f9dSizx_xPJaofMUv1EHltw-hxodPqziyokEhaI4Sf97g-LTMr2-8sdCbduyKPMDQv--Z8Y_6LDW3')"></div>
+<div class="shrink-0 snap-center w-full h-full bg-cover bg-center" data-alt="Gold sparkles" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAU_qcvNNJr8876rAMgLx3vmvtpbjm8YkRkPJ4r9gVb10X7QWxSAaa_2v5zsn6OR_OtctGxHZVz70Cr2Ucut0uGEKsWTcz0Nst_upcB9HJFTF_4grmW0WmxiL5sv6TeqoYn5i73X1yDvsHkC-iM_k5UzU29oVwVqdzuqLOgluQRSOMtvbhPD2vx7NbdVSy4b6ueFuKPIfqc_jjrE7pQv1Vq764ZUpfolpS1-C2lDkvEdDDa1dULfOAeuQdmyBCLOYSMW4f8EYehKTO0')"></div>
+<div class="shrink-0 snap-center w-full h-full bg-cover bg-center" data-alt="Finale" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvUqmg_I29LRAuold1d4eEydSu8CsdMjQv9_DvE8kC0An4v0f52Os6Wu8CLtYMLm6eripyrL2WOasBOSMoWRQ5R8h0Di4-ZRHnEglAOe85Rb1UtOFeNQtuCaUN_vuB6Juw-eK-B_9lmD1heH87roBo40BeuKoyQGWm52oVSyS92ZUN9UKBg5X25Nv59j_UgkZRpAsrPYj9HcuFQUQY5AIr9uJLDf2-dQrWy_nbIOTCD-7RtIoJUBIlafAGHmw0bctr4a0imctOIXrg')"></div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-cn-red/40 to-transparent mix-blend-multiply"></div>
+<div class="absolute bottom-6 right-4">
+<div class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold border border-cn-gold/50 shadow-lg flex items-center gap-1">
+<span class="text-cn-gold">1</span><span class="text-white/60">/</span><span>3</span>
+</div>
+</div>
+</div>
+<div class="relative z-10 -mt-6 rounded-t-[1.5rem] bg-cn-bg w-full overflow-hidden">
+<div class="px-4 pt-4 pb-2 flex flex-col gap-3 relative">
+<div class="bg-white rounded-2xl p-5 shadow-festive relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-[0.05] pointer-events-none rotate-12">
+<span class="material-symbols-outlined text-[100px] text-cn-red">local_fire_department</span>
+</div>
+<div class="flex items-end justify-between flex-wrap gap-2 mb-3 relative z-10">
+<div class="flex flex-col">
+<div class="flex items-baseline text-cn-red gap-0.5 relative">
+<span class="text-lg font-bold">¥</span>
+<span class="text-[36px] font-extrabold tracking-tight leading-none">128.00</span>
+</div>
+<span class="text-cn-textAux text-xs line-through mt-1">原价: ¥158.00</span>
+</div>
+<div class="flex flex-col items-end gap-1 mb-2">
+<div class="relative bg-gradient-to-r from-cn-gold to-orange-400 text-white text-[11px] font-bold px-3 py-1 rounded-md shadow-sm transform -skew-x-12 border border-white/20">
+<div class="transform skew-x-12">限时特惠</div>
+</div>
+</div>
+</div>
+<h1 class="text-[18px] font-bold leading-snug text-cn-text tracking-tight z-10 mb-3">
+            富贵花开 - 100发组合烟花 (红金柳)
+        </h1>
+<div class="flex flex-wrap gap-2 z-10">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-cn-red/5 text-cn-red text-[11px] font-bold border border-cn-red/20">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+                热销
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-cn-gold/10 text-orange-600 text-[11px] font-bold border border-cn-gold/30">
+<span class="material-symbols-outlined text-[14px]">stars</span>
+                新品
+            </span>
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-cn-textSec text-[11px] font-medium">
+                库存98件
+            </span>
+</div>
+<p class="text-xs text-cn-textSec leading-relaxed pt-3 border-t border-gray-50 mt-3">
+            高空绽放，金色柳树转红牡丹，最后10发雷鸣齐射，震撼全场。
+        </p>
+</div>
+</div>
+<div class="px-4 py-2">
+<div class="bg-white rounded-2xl p-4 shadow-sm">
+<h3 class="text-xs font-bold text-cn-textAux mb-3 ml-1 uppercase tracking-wide">配送方式</h3>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100/50">
+<div class="size-10 rounded-full bg-cn-red/10 flex items-center justify-center shrink-0 text-cn-red border border-cn-red/10">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-bold text-cn-text">到店自取</span>
+<span class="text-xs font-bold text-cn-red">免费</span>
+</div>
+<p class="text-xs text-cn-textSec truncate">广州市发财路88号A库 (距您 2.5km)</p>
+</div>
+<div class="text-cn-textAux">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 py-2 pb-24">
+<div class="bg-white rounded-2xl p-5 shadow-sm min-h-[400px]">
+<div class="flex items-center justify-center mb-6 relative">
+<h2 class="text-lg font-bold text-cn-text z-10 px-4">商品详情</h2>
+<div class="absolute bottom-0 w-12 h-1 bg-cn-red rounded-full opacity-80"></div>
+<div class="absolute bottom-0 w-24 h-1 bg-cn-red rounded-full opacity-20"></div>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="p-3 rounded-lg bg-cn-bg border border-gray-100">
+<p class="text-[10px] text-cn-textAux mb-0.5 font-medium">燃放时长</p>
+<p class="text-sm font-bold text-cn-text">45 秒</p>
+</div>
+<div class="p-3 rounded-lg bg-cn-bg border border-gray-100">
+<p class="text-[10px] text-cn-textAux mb-0.5 font-medium">发数</p>
+<p class="text-sm font-bold text-cn-text">100 发</p>
+</div>
+<div class="p-3 rounded-lg bg-cn-bg border border-gray-100">
+<p class="text-[10px] text-cn-textAux mb-0.5 font-medium">口径</p>
+<p class="text-sm font-bold text-cn-text">1.2 寸</p>
+</div>
+<div class="p-3 rounded-lg bg-cn-bg border border-gray-100">
+<p class="text-[10px] text-cn-textAux mb-0.5 font-medium">形状</p>
+<p class="text-sm font-bold text-cn-text">扇形</p>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<h3 class="font-bold text-sm text-cn-text flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-cn-gold text-[18px]">auto_awesome</span>
+                    商品亮点
+                </h3>
+<ul class="space-y-2.5">
+<li class="flex gap-3 text-xs text-cn-textSec">
+<span class="mt-1.5 size-1.5 rounded-full bg-cn-red shrink-0 shadow-sm"></span>
+<span>高空绽放，色彩艳丽，烟雾极少。</span>
+</li>
+<li class="flex gap-3 text-xs text-cn-textSec">
+<span class="mt-1.5 size-1.5 rounded-full bg-cn-red shrink-0 shadow-sm"></span>
+<span>节奏稳定，每一发都精准卡点。</span>
+</li>
+<li class="flex gap-3 text-xs text-cn-textSec">
+<span class="mt-1.5 size-1.5 rounded-full bg-cn-red shrink-0 shadow-sm"></span>
+<span>加厚底座设计，燃放更安全稳定。</span>
+</li>
+</ul>
+</div>
+<div class="rounded-xl overflow-hidden shadow-sm mt-4 border border-gray-100">
+<div class="w-full h-48 bg-cover bg-center" data-alt="Close up" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcbaasg2XCNgAL50SlM4112lcO8S5hgiR1vZ8t2LzqV42d2kNp9rRadM2zPkXHYpvsEgl3cd5zkunUUCu-gKhkLTCbQWV3Q4T9a2iQdYLMu8dtqBZi4245OBIhNT_rh7QVKUUr_Iyt3PuiTWPxbczzYKDP8kqHjuuw_MNGCseDnAupZ8OndsMtXLSro14WfZkHFLlpujsE-ZwXY-OUAcGsbGEmJ9TsmyTdYmtE07F9UwHgqJcACRdIfsnAdmhVv5IJfDbHnA6RMSUO')"></div>
+</div>
+<p class="text-[10px] text-cn-textAux italic text-center pt-2 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[12px]">info</span>
+                仅限专业燃放，请严格遵守安全规定
+            </p>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 px-4 py-3 pb-8 z-50 shadow-bar">
+<div class="flex items-center gap-4">
+<button class="relative flex flex-col items-center justify-center text-cn-textSec hover:text-cn-red transition-colors min-w-[3.5rem] group">
+<div class="relative p-1">
+<span class="material-symbols-outlined text-[26px] group-hover:scale-105 transition-transform">receipt_long</span>
+<span class="absolute -top-0 -right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-cn-red text-[9px] font-bold text-white ring-2 ring-white">3</span>
+</div>
+<span class="text-[10px] font-medium mt-0.5">订货单</span>
+</button>
+<button class="flex-1 h-[50px] bg-gradient-to-r from-cn-red to-red-500 rounded-full flex items-center justify-center text-white font-bold text-base shadow-glow active:scale-[0.98] transition-all relative overflow-hidden group border-2 border-cn-gold/60">
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="flex items-center gap-2 relative z-10 text-shadow-sm">
+        加入订货单
+    </span>
+</button>
+</div>
+</div>
+</body></html>

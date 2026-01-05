@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warehouse Scan Verification</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1975d2",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-dark": "#1E2732",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Animation for the Laser Scanner */
+        @keyframes laser-scan {
+            0% { transform: translateY(-10px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(280px); opacity: 0; }
+        }
+        .animate-laser {
+            animation: laser-scan 2s ease-in-out infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col items-center justify-center p-4 gap-8">
+<!-- Design Layout: Split into the Main Phone UI and the Modal States for presentation -->
+<div class="flex flex-col lg:flex-row gap-12 items-start justify-center w-full max-w-6xl">
+<!-- 1. MAIN SCREEN: Scanning Interface -->
+<div class="relative w-full max-w-[390px] h-[844px] bg-black rounded-[40px] overflow-hidden shadow-2xl border-[8px] border-surface-dark shrink-0">
+<!-- Simulated Camera Feed Background -->
+<div class="absolute inset-0 w-full h-full z-0">
+<img class="w-full h-full object-cover opacity-70" data-alt="Blurred warehouse shelves background simulating camera feed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJueYf2yqZLztZC4cLMPkYNlvTqEqQYQzlk5oOnDEB7ooU5tFaNilKt4T23Xt-CPd26fxmS7P8cJLrD2ihon_9noUwCUfm1Jx4xywZryoTRUcFR4-_uV_8gwvbU2gTgYBqjnD3hf-O58GI5WyxsSg2udc6j1AseSNWH4zKezvc0Jr6Bb2UVPHKPTi02MNGb9GijHzX9Q-1lDcXVDHvkt8z2q80scID3XnO4drlCR42yOWCCktCNgbdaeeBmoEI6BKi7WsuP5JHIw"/>
+</div>
+<!-- UI Overlay Layer -->
+<div class="relative z-10 w-full h-full flex flex-col justify-between">
+<!-- Top Navigation Bar -->
+<header class="bg-primary/90 backdrop-blur-md pt-12 pb-4 px-4 flex items-center justify-between shadow-lg">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 text-white transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span>
+</button>
+<h1 class="text-white text-lg font-bold tracking-tight">扫码核销</h1>
+<div class="w-10"></div> <!-- Spacer for centering title -->
+</header>
+<!-- Scanner Area -->
+<main class="flex-1 flex flex-col items-center justify-center relative">
+<!-- Scanner Box with Dark Mask Effect -->
+<!-- Using a large box-shadow to create the mask around the clear center -->
+<div class="relative w-72 h-72 rounded-2xl" style="box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.65);">
+<!-- White Corner Decorations -->
+<div class="absolute top-0 left-0 w-8 h-8 border-t-[4px] border-l-[4px] border-white rounded-tl-lg"></div>
+<div class="absolute top-0 right-0 w-8 h-8 border-t-[4px] border-r-[4px] border-white rounded-tr-lg"></div>
+<div class="absolute bottom-0 left-0 w-8 h-8 border-b-[4px] border-l-[4px] border-white rounded-bl-lg"></div>
+<div class="absolute bottom-0 right-0 w-8 h-8 border-b-[4px] border-r-[4px] border-white rounded-br-lg"></div>
+<!-- Animated Laser Line -->
+<div class="absolute left-2 right-2 h-0.5 bg-primary shadow-[0_0_15px_3px_rgba(25,117,210,0.6)] animate-laser rounded-full"></div>
+<!-- Inner Border (Subtle) -->
+<div class="absolute inset-0 border border-white/20 rounded-2xl"></div>
+</div>
+<!-- Prompt Text -->
+<h3 class="mt-8 text-white text-lg font-medium tracking-wide drop-shadow-md">将提货码对准此处</h3>
+</main>
+<!-- Bottom Operation Area -->
+<footer class="pb-10 pt-6 px-6 bg-gradient-to-t from-black/90 to-transparent flex flex-col items-center gap-6">
+<!-- Tip -->
+<div class="bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">
+<p class="text-gray-300 text-xs font-medium flex items-center gap-2">
+<span class="text-yellow-400">💡</span> 请扫描客户提货二维码进行核销
+                        </p>
+</div>
+<!-- Actions Row -->
+<div class="flex items-center justify-center w-full gap-6">
+<!-- Flashlight Toggle (Icon Only) -->
+<button class="flex flex-col items-center gap-1 group">
+<div class="w-12 h-12 rounded-full bg-surface-dark/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white group-active:bg-primary transition-all">
+<span class="material-symbols-outlined text-[24px]">flashlight_on</span>
+</div>
+<span class="text-[10px] text-gray-400 font-medium">补光灯</span>
+</button>
+<!-- Manual Input Button (Prominent) -->
+<button class="flex-1 max-w-[240px] h-12 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+                            手动输入提货码
+                        </button>
+<!-- History/List (Icon Only) -->
+<button class="flex flex-col items-center gap-1 group">
+<div class="w-12 h-12 rounded-full bg-surface-dark/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-white group-active:bg-primary transition-all">
+<span class="material-symbols-outlined text-[24px]">history</span>
+</div>
+<span class="text-[10px] text-gray-400 font-medium">记录</span>
+</button>
+</div>
+</footer>
+</div>
+</div>
+<!-- 2. UI KIT / STATES: Modals Presentation -->
+<div class="flex flex-col gap-8 w-full max-w-sm">
+<div class="flex flex-col gap-2">
+<h2 class="text-gray-900 dark:text-white text-xl font-bold">Pop-up States</h2>
+<p class="text-gray-500 text-sm">Overlay components for verification results.</p>
+</div>
+<!-- SUCCESS MODAL DESIGN -->
+<div class="relative w-full bg-white dark:bg-surface-dark rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800 p-6 animate-fade-in">
+<div class="flex flex-col items-center text-center gap-4">
+<!-- Success Icon -->
+<div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[40px] font-bold">check</span>
+</div>
+<!-- Title -->
+<h3 class="text-2xl font-bold text-gray-900 dark:text-white">核销成功</h3>
+<!-- Order Summary -->
+<div class="w-full bg-gray-50 dark:bg-black/20 rounded-xl p-4 text-left space-y-3 mt-2 border border-gray-100 dark:border-gray-800">
+<div class="flex justify-between items-center text-sm">
+<span class="text-gray-500 dark:text-gray-400">订单编号</span>
+<span class="font-mono font-medium text-gray-900 dark:text-white">ORD-20231024-88</span>
+</div>
+<div class="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-gray-700 dark:text-gray-300">iPhone 15 Pro Max</span>
+<span class="text-gray-900 dark:text-white font-bold">x 1</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-gray-700 dark:text-gray-300">USB-C MagSafe Cable</span>
+<span class="text-gray-900 dark:text-white font-bold">x 2</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-4 h-12 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold text-sm tracking-wide shadow-md transition-colors">
+                        完成
+                    </button>
+</div>
+</div>
+<!-- FAILURE MODAL DESIGN -->
+<div class="relative w-full bg-white dark:bg-surface-dark rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800 p-6">
+<div class="flex flex-col items-center text-center gap-4">
+<!-- Failure Icon -->
+<div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400 text-[40px] font-bold">close</span>
+</div>
+<!-- Title -->
+<h3 class="text-2xl font-bold text-gray-900 dark:text-white">核销失败</h3>
+<!-- Reason -->
+<div class="w-full bg-red-50 dark:bg-red-900/10 rounded-xl p-4 text-center border border-red-100 dark:border-red-900/20">
+<p class="text-red-800 dark:text-red-300 font-medium text-sm">
+                            该二维码已失效或不存在<br/>
+<span class="text-xs opacity-75 font-normal">Error Code: 404-QR</span>
+</p>
+</div>
+<!-- Action Buttons -->
+<div class="w-full grid grid-cols-2 gap-3 mt-4">
+<button class="h-11 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg font-semibold text-sm transition-colors">
+                            取消
+                        </button>
+<button class="h-11 bg-gray-900 dark:bg-white text-white dark:text-black hover:opacity-90 rounded-lg font-bold text-sm shadow-md transition-colors">
+                            重试
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

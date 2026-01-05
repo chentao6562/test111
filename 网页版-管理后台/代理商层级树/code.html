@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>代理商层级树 - 蒙庆订货系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e63333",
+                        "primary-hover": "#cc2929",
+                        "primary-light": "#fef2f2",
+                        "background-light": "#fbf8f8",
+                        "background-dark": "#211111",
+                        "text-main": "#1b0e0e",
+                        "text-secondary": "#964f4f",
+                        "border-color": "#f3e8e8",
+                    },
+                    fontFamily: {
+                        "display": ['Manrope', 'Noto Sans SC', 'sans-serif'],
+                        "body": ['Manrope', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for the tree canvas */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4c4c4;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #bfb0b0;
+        }
+
+        /* Tree Connectors */
+        .tree-connector-v {
+            width: 2px;
+            background-color: #e5e7eb;
+            margin: 0 auto;
+        }
+        
+        .tree-connector-h {
+            height: 2px;
+            background-color: #e5e7eb;
+            margin: 0 auto;
+        }
+        
+        .active-path {
+            background-color: #e63333 !important;
+        }
+
+        /* Decorative Background Pattern */
+        .bg-pattern {
+            background-image: radial-gradient(#e63333 0.5px, transparent 0.5px), radial-gradient(#e63333 0.5px, #fbf8f8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.03;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main font-display overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Side Navigation -->
+<aside class="flex w-64 flex-col border-r border-border-color bg-white h-full z-20 shadow-sm">
+<div class="flex items-center gap-3 p-6 border-b border-border-color/50">
+<div class="bg-primary/10 flex items-center justify-center rounded-lg size-10 text-primary">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-text-main text-base font-bold leading-none mb-1">蒙庆订货</h1>
+<p class="text-text-secondary text-xs font-normal">管理后台</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-main hover:bg-primary-light transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary">home</span>
+<span class="text-sm font-medium">首页</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-main hover:bg-primary-light transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary">assignment</span>
+<span class="text-sm font-medium">订单管理</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/5 text-primary" href="#">
+<span class="material-symbols-outlined fill-current">group</span>
+<span class="text-sm font-bold">代理商管理</span>
+</a>
+<div class="pl-11 flex flex-col gap-1 mb-2">
+<a class="text-sm text-text-secondary hover:text-primary py-1" href="#">代理商列表</a>
+<a class="text-sm text-primary font-medium py-1" href="#">层级结构图</a>
+<a class="text-sm text-text-secondary hover:text-primary py-1" href="#">业绩审核</a>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-main hover:bg-primary-light transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary">account_balance_wallet</span>
+<span class="text-sm font-medium">财务中心</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-main hover:bg-primary-light transition-colors group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary">settings</span>
+<span class="text-sm font-medium">系统设置</span>
+</a>
+</div>
+<div class="p-4 border-t border-border-color">
+<div class="flex items-center gap-3 p-2 rounded-lg bg-background-light">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 border border-white shadow-sm" data-alt="User avatar of admin" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDkZvXblCyv_V3seh6pPEN6Y-8vp4WVNjCAsii1PHCvoMojaCfc-H8w4tw3kwDRFahfVpN79UW5GwNAaLFngKSbmKIvHiI_p_bBPAWjokXlnQvn2nw7g_klEme03ZwCYiXKlRt6CK1eMuj5yZsOxYwvvkwxk5_WVaONyGN1aphiZc_VvwlR7BgXU18KH5Ll1UeyO9y07bwMrV-k4NAvEE3MIuO5M9DBcJh6Ab34iIjrTmLuPTc1nAdbTYSm2Et8NOSqxGKVY7htHek");'></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-text-main text-sm font-bold truncate">管理员 (Admin)</p>
+<p class="text-text-secondary text-xs truncate">系统超级管理员</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex flex-col flex-1 h-full overflow-hidden relative">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-border-color bg-white/80 backdrop-blur-md px-8 py-3 z-10 sticky top-0">
+<div class="flex items-center gap-2">
+<button class="lg:hidden p-2 text-text-secondary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-text-main text-lg font-bold tracking-tight">代理商层级关系</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-primary-light rounded-full text-primary text-xs font-bold border border-primary/10">
+<span class="material-symbols-outlined text-[16px]">celebration</span>
+<span>新春订货季活动进行中</span>
+</div>
+<div class="h-6 w-px bg-border-color mx-2"></div>
+<button class="relative p-2 rounded-full hover:bg-background-light text-text-secondary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 size-2 bg-primary rounded-full border border-white"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-background-light text-text-secondary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex flex-col flex-1 overflow-hidden p-6 bg-background-light">
+<!-- Controls & Filters Bar -->
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+<div class="flex flex-col md:flex-row md:items-end gap-4">
+<div class="flex flex-col gap-1.5 min-w-[280px]">
+<label class="text-xs font-semibold text-text-secondary uppercase tracking-wider">选择一级代理 (Root Node)</label>
+<div class="relative">
+<select class="appearance-none w-full bg-white border border-border-color text-text-main rounded-lg py-2.5 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium shadow-sm transition-all cursor-pointer">
+<option value="1">张伟 (Zhang Wei) - 金牌总代</option>
+<option value="2">李晓华 (Li Xiaohua) - 区域总监</option>
+<option value="3">王建国 (Wang Jianguo) - 合伙人</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-secondary">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-2.5 bg-white border border-border-color rounded-lg text-sm font-medium text-text-main hover:bg-background-light transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">unfold_more</span>
+                                展开全部
+                            </button>
+<button class="flex items-center gap-1.5 px-3 py-2.5 bg-white border border-border-color rounded-lg text-sm font-medium text-text-main hover:bg-background-light transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">unfold_less</span>
+                                收起全部
+                            </button>
+</div>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-bold shadow-md shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        导出结构图
+                    </button>
+</div>
+<!-- Tree Visualization Canvas -->
+<div class="relative flex-1 bg-white rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-hidden border border-border-color">
+<!-- Canvas Background -->
+<div class="absolute inset-0 bg-pattern z-0 pointer-events-none"></div>
+<!-- Floating Zoom Controls -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-2 z-20">
+<button class="size-10 bg-white rounded-lg shadow-md border border-border-color text-text-main hover:text-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="size-10 bg-white rounded-lg shadow-md border border-border-color text-text-main hover:text-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="size-10 bg-white rounded-lg shadow-md border border-border-color text-text-main hover:text-primary flex items-center justify-center transition-colors" title="Fit to screen">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+<!-- Scrollable Tree Area -->
+<div class="h-full w-full overflow-auto custom-scrollbar p-10 flex justify-center z-10 relative cursor-grab active:cursor-grabbing">
+<!-- Tree Structure -->
+<div class="flex flex-col items-center min-w-max">
+<!-- Level 1: Root Node -->
+<div class="relative z-10">
+<!-- Node Card -->
+<div class="w-80 bg-white rounded-xl shadow-lg border-t-4 border-primary p-4 hover:-translate-y-1 transition-transform duration-200 cursor-pointer group relative">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="size-12 rounded-full bg-cover bg-center border-2 border-primary/10" data-alt="Portrait of root level agent Zhang Wei" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuADM6GWbnQmLK1n1gwDuKAEcHOEYwTWdIr37Dh8EWm1L9FhdxbfhHIG6vuMTjyQ7bqcU7c_X7RrWSeqSFTcKZDRh_0aUq729QGJLbtvMgdfxip7oQmu303e9FjXLIcffTUHZuvYM_GCHJxkPIsTE6f2HztRDicqqnV8TGc6TOtfuO1WUin6k_8qdg9RGOl-ahqQHXOMioo8OHgJubXjbEldNPmvhzzyfiX_RLlYbVpaM6ye3qTC2y-30r6KbNtvOtbbm9_w4pqGAr0");'></div>
+<div>
+<h3 class="font-bold text-text-main text-lg leading-tight group-hover:text-primary transition-colors">张伟</h3>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-800 border border-yellow-200 mt-1">
+<span class="material-symbols-outlined text-[12px] mr-1">workspace_premium</span>
+                                                    金牌总代
+                                                </span>
+</div>
+</div>
+<button class="text-text-secondary hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-2 py-3 border-t border-dashed border-border-color mb-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-text-secondary uppercase">下级人数</span>
+<span class="text-sm font-bold text-text-main">128</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-text-secondary uppercase">本月订货</span>
+<span class="text-sm font-bold text-text-main">5,400</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[10px] text-text-secondary uppercase">贡献分润</span>
+<span class="text-sm font-bold text-primary">¥12,400</span>
+</div>
+</div>
+<!-- Expand/Collapse Button attached to bottom -->
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 size-6 rounded-full bg-primary text-white flex items-center justify-center border-2 border-white shadow-sm z-20 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</div>
+</div>
+</div>
+<!-- Connector: Root to Level 2 Bar -->
+<div class="h-12 w-px bg-border-color active-path"></div>
+<!-- Level 2 Wrapper -->
+<div class="flex items-start gap-12 pt-0 relative">
+<!-- Horizontal Connector Bar -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100%-340px)] h-px bg-border-color -z-10 active-path"></div>
+<!-- Node 2-1 -->
+<div class="flex flex-col items-center">
+<div class="h-8 w-px bg-border-color active-path"></div>
+<div class="w-64 bg-white rounded-lg shadow-md border border-border-color p-3 hover:shadow-lg transition-shadow cursor-pointer relative group">
+<div class="flex items-center gap-3 mb-2">
+<div class="size-10 rounded-full bg-cover bg-center bg-gray-100" data-alt="Portrait of level 2 agent Li Na" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOa4RVyK39G3Q1bSSb5xKlfxPRwxysjBDVsaoIzc2k-JI2BQZ_VaCnhvS1Se6xeWjJA15ereMANnB4NljUIF_c4pY_RmglimSQLPYeHPbhBhbCab_wyOBO9kuJCztOXsjYHIGOFy-9Mkt2wbB7YEEPkUsOd_X8GuDpc5llgYNjHxadNWSH0Z5osaI4GJwkPE-zYR0I8Q2jvkEL0v4Y6WtczY0X8Yaic6dj3IRyUJkjcTWftGwbh9ex7MHxjFpBG2GrfgyDZ29CtL4");'></div>
+<div>
+<h4 class="font-bold text-text-main text-sm group-hover:text-primary transition-colors">李娜</h4>
+<span class="text-xs text-text-secondary">一级代理</span>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-border-color/50 pt-2 mt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-text-secondary">订货: 1,200</span>
+</div>
+<span class="text-xs font-bold text-primary">¥3,200</span>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 size-5 rounded-full bg-white text-text-secondary border border-border-color flex items-center justify-center shadow-sm z-20 hover:text-primary cursor-pointer">
+<span class="material-symbols-outlined text-[14px]">add</span>
+</div>
+</div>
+<!-- Visual placeholder for collapsed children -->
+<div class="h-4 w-px bg-transparent"></div>
+</div>
+<!-- Node 2-2 (Expanded) -->
+<div class="flex flex-col items-center">
+<div class="h-8 w-px bg-border-color active-path"></div>
+<div class="w-64 bg-white rounded-lg shadow-md border-l-4 border-l-primary p-3 hover:shadow-lg transition-shadow cursor-pointer relative group bg-primary-light/10">
+<div class="flex items-center gap-3 mb-2">
+<div class="size-10 rounded-full bg-cover bg-center bg-gray-100" data-alt="Portrait of level 2 agent Chen Bo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0E-ipW4ku8RIA2vkBygFGjXb9y-Vp31m-z6uyBPxzaRa7sYi65QhFMiB0fE4j1hx34HLEql41WnmTyAOXsvShL9nC9CynjrhZkhiR3IS244cNAMJ18oHaQbsBTi7vpesqB6DFx83R-ASVv1Jb2IUsDBknBcoI3N-dnthd0DrqGQuhX7pzLVs0qBldz-4A-wC7zTAUKpZb1M7CwnN8mnwb_mZqFWxzN-SKtc56hg_afGQ53o5ka3ZUfKPpv5xf7lMcPtPYuhOCDNE");'></div>
+<div>
+<h4 class="font-bold text-text-main text-sm group-hover:text-primary transition-colors">陈波</h4>
+<span class="text-xs text-text-secondary">一级代理</span>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-border-color/50 pt-2 mt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-text-secondary">订货: 2,150</span>
+</div>
+<span class="text-xs font-bold text-primary">¥5,800</span>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 size-5 rounded-full bg-white text-primary border border-primary/30 flex items-center justify-center shadow-sm z-20 cursor-pointer">
+<span class="material-symbols-outlined text-[14px]">remove</span>
+</div>
+</div>
+<!-- Level 3 Connection -->
+<div class="h-10 w-px bg-border-color"></div>
+<!-- Level 3 Children -->
+<div class="flex items-start gap-6 pt-0 relative">
+<!-- Horizontal Connector Bar L3 -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100%-240px)] h-px bg-border-color -z-10"></div>
+<!-- Node 3-1 -->
+<div class="flex flex-col items-center">
+<div class="h-6 w-px bg-border-color"></div>
+<div class="w-56 bg-white rounded-lg shadow-sm border border-border-color p-2 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<div class="size-8 rounded-full bg-cover bg-center bg-gray-100" data-alt="Portrait of level 3 agent Liu Yang" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCf1TCvTyjIUeFAjg8Bg_zlnDIcij_Ngj1Zlwbv5tNkH8oBbZ23IZTAnilj3teS23Da-HkOTvZeH-WTT9ie5AKb_c6NstL3DiiIBxld8KCOcilwih8HeVpPRRsJ3TIEiEVOqpQAazYHkJ8O9OmQu39kQJxhnUudamNS4Tyy1P__LKzp9QDY2M4nSJJDdeHHverVNFqV3s1F2GxyGp1WIeTE0HJAKOfu-um4piu4pQyXU491tXMN19iG-J1dnyj_qigXK1XGJY870UQ");'></div>
+<div>
+<h4 class="font-bold text-text-main text-xs">刘洋</h4>
+<span class="text-[10px] text-text-secondary">二级代理</span>
+</div>
+</div>
+<div class="flex justify-between items-end bg-background-light rounded px-2 py-1">
+<span class="text-[10px] text-text-secondary">贡献: ¥800</span>
+<span class="material-symbols-outlined text-[14px] text-text-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Node 3-2 -->
+<div class="flex flex-col items-center">
+<div class="h-6 w-px bg-border-color"></div>
+<div class="w-56 bg-white rounded-lg shadow-sm border border-border-color p-2 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<div class="size-8 rounded-full bg-cover bg-center bg-gray-100" data-alt="Portrait of level 3 agent Zhao Min" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDk_6ywRlHsS9ceIoVZcfZOldY0iWXA7Hkvklhfu-RFOTLHnwoqmXoIoYnvLckNkWV3B8sMJkrAHRMZKkShl2EzMoAh0QM2qy0um23DHb9xPYYYjlPX4cqAT0_eSfLxZgmFZZcMYf-nV2bCy73fNswhjV1txvZbEj6xMd3_gtcNFj8CCh5W0sljH3h4LhlGPRgorV0urdqkC0LouzytzGzaQmzlM2cUmuINcoKemCYbKQtYwVbJwUdwurca8_bjLEoe4Ti64UEpEdk");'></div>
+<div>
+<h4 class="font-bold text-text-main text-xs">赵敏</h4>
+<span class="text-[10px] text-text-secondary">二级代理</span>
+</div>
+</div>
+<div class="flex justify-between items-end bg-background-light rounded px-2 py-1">
+<span class="text-[10px] text-text-secondary">贡献: ¥1,200</span>
+<span class="material-symbols-outlined text-[14px] text-text-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Node 2-3 -->
+<div class="flex flex-col items-center">
+<div class="h-8 w-px bg-border-color active-path"></div>
+<div class="w-64 bg-white rounded-lg shadow-md border border-border-color p-3 hover:shadow-lg transition-shadow cursor-pointer relative group">
+<div class="flex items-center gap-3 mb-2">
+<div class="size-10 rounded-full bg-cover bg-center bg-gray-100" data-alt="Portrait of level 2 agent Sun Lei" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_K4DFJr-j7LAWRR4YsFFRo7bPFmF7ljjVFMsH2cib2LxFJ2oTONnF816UfVPEZ506EtLCTY0mKTjSHS7BuRbTxh_RRmwScvfWCUBh6oHosiCEFnmbxOCrzyQgun0mTS9_kxgtTAW8P0O-nO6O2S40Jm9kEJXt5BUt88gAKgABi2lqa3Oco74YwB5CrZ1aCvlRq75_NdPL8VNNnbMJ5g-MNOlIvZNDXBpxIK1IlyqfuAEyiKsi8HyYvNbBwu3dSG3gmd8z2MwQ6DE");'></div>
+<div>
+<h4 class="font-bold text-text-main text-sm group-hover:text-primary transition-colors">孙雷</h4>
+<span class="text-xs text-text-secondary">一级代理</span>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-border-color/50 pt-2 mt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-text-secondary">订货: 800</span>
+</div>
+<span class="text-xs font-bold text-primary">¥1,900</span>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 size-5 rounded-full bg-white text-text-secondary border border-border-color flex items-center justify-center shadow-sm z-20 hover:text-primary cursor-pointer">
+<span class="material-symbols-outlined text-[14px]">add</span>
+</div>
+</div>
+<div class="h-4 w-px bg-transparent"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

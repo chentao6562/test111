@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fireworks Wholesale Cart</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734", // Chinese Red
+                        "primary-dark": "#b91c1c",
+                        "accent-gold": "#FFD700", // Festive Gold
+                        "accent-gold-dark": "#D4AF37",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211111",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2d1b1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+                        "body": ["Noto Sans SC", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'festive-gradient': 'linear-gradient(135deg, #e53734 0%, #c62828 100%)',
+                        'gold-gradient': 'linear-gradient(135deg, #FFD700 0%, #FFA000 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>/* Custom scrollbar for cleaner look */
+.no-scrollbar::-webkit-scrollbar {
+    display: none
+    }
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none
+    }
+/* Custom checkbox style */
+.checkbox-round {
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: white;
+    border-radius: 50%;
+    vertical-align: middle;
+    border: 2px solid #ddd;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    position: relative
+    }
+.checkbox-round:checked {
+    background-color: #e53734;
+    border-color: #e53734
+    }
+.checkbox-round:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCg5dOSFrO69ynoy3Lb72Nnueymr3Y_1MEDRy38IevGx9v1aAHskT3bwbZtZFmbW1uMFuIlulVMW4iS9DFcql4rKJT0Swfq_FSWDavc84LZAHWOvuv7c9aB6BwtxCSiDtu5WAxbP2sktjhqwTOFf-5365My-V3ZHzLngBJ_JNObQYN9voyhSbOXBcPycdCNDWlZkEE_drTpm-7hgOO5Ol-E_f7dx12DALRaIDSo3m9ZkHGCZ5_F-jPnZC2F-DE3o0f6ZurH8rQZLDY4);
+    background-size: contain;
+    background-repeat: no-repeat
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white h-screen flex flex-col overflow-hidden">
+<!-- 1. Festive Header -->
+<header class="bg-festive-gradient text-white pt-safe-top shadow-md relative z-20 shrink-0">
+<!-- Status Bar Placeholder (simulated padding) -->
+<div class="h-0 w-full"></div>
+<div class="flex items-center justify-between px-4 py-3 h-[56px]">
+<!-- Back Button (Visual only) -->
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-wide">订货单</h1>
+<button class="text-sm font-medium hover:text-accent-gold transition-colors px-2 py-1 rounded">
+                管理
+            </button>
+</div>
+</header>
+<!-- 2. Sub-header: Select All & Tools -->
+<div class="bg-white dark:bg-card-dark px-4 py-3 shadow-sm border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0 z-10">
+<label class="flex items-center gap-3 cursor-pointer select-none group">
+<input checked="" class="checkbox-round transition-transform group-active:scale-95" type="checkbox"/>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">全选</span>
+</label>
+<!-- Optional toggle or info -->
+<div class="text-xs text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-base">verified_user</span>
+<span>正品保障</span>
+</div>
+</div>
+<!-- 3. Scrollable Product List -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-32 relative">
+<!-- Background decorative element -->
+<div class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-5 overflow-hidden z-0">
+<div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-primary blur-3xl"></div>
+<div class="absolute top-1/2 -left-20 w-80 h-80 rounded-full bg-accent-gold blur-3xl"></div>
+</div>
+<div class="p-4 flex flex-col gap-4 relative z-10">
+<!-- Item 1 -->
+<div class="group bg-white dark:bg-card-dark p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-3 items-center">
+<input checked="" class="checkbox-round shrink-0" type="checkbox"/>
+<div class="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-gray-100 dark:border-gray-700 bg-gray-50">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="Colorful fireworks exploding in night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmbNAEs2MgG_dq-j5anWowUgHLZrOuqT5jcGI8XepM8ROX-AOolUrU7iWnfmY_HVf3ocIIqcOgvWdgaMq8b5jY_-etmgzxGyAbP8oSWGnj6LX2iInIQ2UzLcAmAO3Ix1XMs3WRrF2x5v9p-hEvi9iC1dh1yDDWI7P7H4HFKKKCDyIKiTDAd60j6fg-FPC15qzUPXhkd2q4Je3ikVW1mxzIyb69mXjhdR9FPDZ08-X7c4Vo-MKzimr_LPlF94SPUulvEfI-0CWCUy6l"/>
+<div class="absolute bottom-0 left-0 w-full bg-black/40 backdrop-blur-[2px] py-[2px] text-center">
+<span class="text-[10px] text-white font-medium">热销</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-between h-20 py-0.5">
+<div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">恭喜发财烟花礼盒</h3>
+<p class="text-xs text-slate-500 mt-1">36发礼盒装 | 绚丽多彩</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-baseline gap-0.5 text-primary">
+<span class="text-xs font-bold">¥</span>
+<span class="text-lg font-extrabold font-display">128</span>
+</div>
+<!-- Stepper -->
+<div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-full p-0.5 border border-gray-100 dark:border-gray-700">
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 shadow-sm text-slate-600 dark:text-slate-300 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">remove</span>
+</button>
+<input class="w-8 text-center bg-transparent border-none p-0 text-sm font-bold text-slate-800 dark:text-white focus:ring-0" readonly="" type="number" value="2"/>
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white shadow-sm shadow-primary/30 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group bg-white dark:bg-card-dark p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-3 items-center">
+<input checked="" class="checkbox-round shrink-0" type="checkbox"/>
+<div class="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-gray-100 dark:border-gray-700 bg-gray-50">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="Sparkler fireworks with golden sparks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJsmoRwUEKqxEhU0x8lUTh_xEAMl0WnknB_Hc5iRfftVj9d9PzJ_t6u3Tld81Nwi7Vk8uHScoN_yEnP-jkRIoxN3YtNfTne5xfSHXRIVWHGn70vu2PGHSG73qg2FQAk7-jgXhYh6nN_hqXwHJd3_ANvs-LvPb1mIeVj-7Z-tNRWBBtbPddY7hpwD59qUwvscH-yI-0mxFN67b3Y69Th8pRD2iwhZ6GUqr21QbwpewzluPL-Q0D5BuW9SNOdnYeER29ZRQJNIQqCZA2"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-20 py-0.5">
+<div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">大吉大利 88发</h3>
+<p class="text-xs text-slate-500 mt-1">88发箱装 | 步步高升</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-baseline gap-0.5 text-primary">
+<span class="text-xs font-bold">¥</span>
+<span class="text-lg font-extrabold font-display">216</span>
+</div>
+<div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-full p-0.5 border border-gray-100 dark:border-gray-700">
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 shadow-sm text-slate-600 dark:text-slate-300 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">remove</span>
+</button>
+<input class="w-8 text-center bg-transparent border-none p-0 text-sm font-bold text-slate-800 dark:text-white focus:ring-0" readonly="" type="number" value="1"/>
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white shadow-sm shadow-primary/30 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group bg-white dark:bg-card-dark p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-3 items-center opacity-60">
+<input class="checkbox-round shrink-0" type="checkbox"/>
+<div class="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-gray-100 dark:border-gray-700 bg-gray-50">
+<img alt="Product Image" class="w-full h-full object-cover grayscale" data-alt="Abstract red and gold light trails" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmoLeu66YYtSopgXf1Dn8tTh507W5Rd6ns4GT7T462gQdQgCgo2QEfziuAGAdgda8PUeip_bf_p8QtijGYYzCRf3d0oIGf5PCuwHIkQNU3B0INTocnMZc4VnTc2dZAIMmjnMNuqE3zRmNAYWEZeoNxhhFo04tBsgpSgyxCCf7VwXSYwuXPqwUITI8Kw-W-8__kZ9PbGMxfEgDGQ5HRVleJEAx5DthT5Ni_5_O7J3e0IkH3veV_JHsu6D2ywAnFI1lBX8ZOj_ly28JJ"/>
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+<span class="text-xs font-bold text-white bg-black/50 px-2 py-0.5 rounded-full">补货中</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-between h-20 py-0.5">
+<div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">五福临门组合</h3>
+<p class="text-xs text-slate-500 mt-1">家庭欢乐包 | 包含5种</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-baseline gap-0.5 text-slate-400">
+<span class="text-xs font-bold">¥</span>
+<span class="text-lg font-extrabold font-display">88</span>
+</div>
+<!-- Disabled Stepper -->
+<div class="flex items-center bg-gray-50 dark:bg-gray-800 rounded-full p-0.5 border border-gray-100 dark:border-gray-700 opacity-50 pointer-events-none">
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 shadow-sm text-slate-600">
+<span class="material-symbols-outlined text-sm font-bold">remove</span>
+</button>
+<input class="w-8 text-center bg-transparent border-none p-0 text-sm font-bold text-slate-800 dark:text-white focus:ring-0" readonly="" type="number" value="0"/>
+<button class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 text-slate-400 shadow-none">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Demonstration of Empty State (Visual Divider) -->
+<div class="mt-8 pt-8 border-t border-dashed border-gray-300 dark:border-gray-700">
+<p class="text-center text-xs text-gray-400 mb-4 uppercase tracking-widest">Design Preview: Empty State</p>
+<div class="bg-white dark:bg-card-dark rounded-xl p-8 flex flex-col items-center text-center shadow-sm">
+<div class="w-32 h-32 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4 relative overflow-hidden">
+<span class="material-symbols-outlined text-6xl text-primary/40 animate-pulse">celebration</span>
+<div class="absolute w-2 h-2 bg-accent-gold rounded-full top-6 right-8"></div>
+<div class="absolute w-1.5 h-1.5 bg-primary rounded-full bottom-8 left-6"></div>
+<div class="absolute w-1 h-1 bg-accent-gold rounded-full top-10 left-10"></div>
+</div>
+<h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">订货单还是空的</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-[200px]">快去挑选喜庆烟花吧，把好运和祝福带回家</p>
+<button class="bg-primary hover:bg-red-600 text-white text-sm font-bold py-2.5 px-8 rounded-full shadow-lg shadow-primary/30 transition-all active:scale-95">
+                        去逛逛
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- 4. Fixed Settlement Bar -->
+<div class="bg-white dark:bg-card-dark border-t border-gray-100 dark:border-gray-800 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] px-4 py-3 flex items-center justify-between shrink-0 z-30 relative">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">合计:</span>
+<span class="text-base font-bold text-primary">¥</span>
+<span class="text-2xl font-extrabold text-primary font-display leading-none">344</span>
+</div>
+<span class="text-xs text-slate-400 mt-0.5">已选 3 件商品</span>
+</div>
+<button class="bg-festive-gradient hover:brightness-110 text-white font-bold text-base px-8 h-10 rounded-full shadow-lg shadow-red-500/30 flex items-center gap-1 active:scale-95 transition-all">
+<span>去结算</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- 5. TabBar -->
+<nav class="bg-white dark:bg-card-dark border-t border-gray-100 dark:border-gray-800 pb-safe-bottom pt-2 px-2 flex justify-around items-center shrink-0 z-40">
+<button class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-primary transition-colors gap-1 w-16">
+<span class="material-symbols-outlined text-[26px]">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-primary transition-colors gap-1 w-16">
+<span class="material-symbols-outlined text-[26px]">category</span>
+<span class="text-[10px] font-medium">分类</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 text-primary gap-1 w-16 relative">
+<div class="relative">
+<span class="material-symbols-outlined text-[26px] fill-current">shopping_cart</span>
+<span class="absolute -top-1 -right-1 bg-accent-gold text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-card-dark">3</span>
+</div>
+<span class="text-[10px] font-medium">订货单</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-primary transition-colors gap-1 w-16">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</button>
+</nav>
+<!-- Safe Area Padding for iPhone Home Indicator -->
+<div class="h-safe-bottom bg-white dark:bg-card-dark w-full shrink-0"></div>
+<script>
+        // Simple logic to toggle checkbox visually (no framework needed)
+        document.querySelectorAll('.checkbox-round').forEach(box => {
+            box.addEventListener('change', function() {
+                // In a real app, this would update state
+                console.log('Toggled item selection');
+            });
+        });
+    </script>
+</body></html>

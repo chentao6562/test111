@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>入库管理 - Warehouse Inbound</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1975d2",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-dark": "#1e2a36",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ['Inter', 'Noto Sans SC', 'sans-serif'],
+                        "body": ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-hidden relative min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="bg-primary w-full shadow-lg z-30 relative shrink-0">
+<!-- Status Bar Area Placeholder -->
+<div class="h-10 w-full bg-primary/80"></div>
+<div class="flex items-center justify-between px-4 pb-4 pt-2">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/10 active:bg-white/20 transition text-white">
+<span class="material-symbols-outlined text-[28px]">arrow_back</span>
+</button>
+<h1 class="text-white text-lg font-bold tracking-wide flex-1 text-center mr-10">入库管理</h1>
+<div class="w-10"></div> <!-- Spacer for visual balance -->
+</div>
+<!-- Tabs -->
+<div class="flex px-4 items-end justify-between gap-4">
+<button class="flex flex-1 flex-col items-center pb-3 border-b-[3px] border-white text-white transition-colors">
+<span class="text-base font-bold">待入库 (5)</span>
+</button>
+<button class="flex flex-1 flex-col items-center pb-3 border-b-[3px] border-transparent text-blue-200 hover:text-white transition-colors">
+<span class="text-base font-medium">已入库</span>
+</button>
+</div>
+</header>
+<!-- Main Content: Inbound List -->
+<main class="h-[calc(100vh-140px)] overflow-y-auto pb-24 px-4 pt-4 space-y-4">
+<!-- Success Toast Simulation (Positioned as if it just appeared) -->
+<div class="animate-pulse bg-emerald-500/10 border border-emerald-500/20 backdrop-blur-md rounded-xl p-3 flex items-center gap-3 shadow-lg mb-6 mx-2">
+<div class="bg-emerald-500 rounded-full p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">check</span>
+</div>
+<div class="flex-1">
+<p class="text-emerald-500 text-sm font-medium">上一单入库完成</p>
+<p class="text-emerald-400/80 text-xs">RK-20231024-001 | 数量: 500</p>
+</div>
+<button class="text-emerald-500 hover:text-white"><span class="material-symbols-outlined text-lg">close</span></button>
+</div>
+<!-- Card 1 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-white/5 relative group active:scale-[0.99] transition-transform duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-slate-800 dark:text-white leading-tight">RK-20231024-002</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">创建于 10:15</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold">待处理</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 dark:text-slate-400">供应商</span>
+<span class="font-medium text-slate-700 dark:text-slate-200">Samsung Corp.</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 dark:text-slate-400">商品数量</span>
+<span class="font-bold text-slate-800 dark:text-white">1,200</span>
+</div>
+</div>
+<div class="border-t border-slate-100 dark:border-white/10 pt-3 flex justify-end">
+<button class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold shadow-md shadow-blue-500/20 active:translate-y-0.5 transition-all w-full justify-center sm:w-auto">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                    开始入库
+                </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-white/5 relative active:scale-[0.99] transition-transform duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-slate-800 dark:text-white leading-tight">RK-20231024-003</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">创建于 11:30</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-semibold">待处理</span>
+</div>
+<div class="space-y-2 mb-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 dark:text-slate-400">供应商</span>
+<span class="font-medium text-slate-700 dark:text-slate-200">Logitech Inc.</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 dark:text-slate-400">商品数量</span>
+<span class="font-bold text-slate-800 dark:text-white">450</span>
+</div>
+</div>
+<div class="border-t border-slate-100 dark:border-white/10 pt-3 flex justify-end">
+<button class="flex items-center gap-2 bg-surface-dark/5 dark:bg-white/5 text-slate-600 dark:text-slate-300 px-5 py-2 rounded-lg text-sm font-semibold border border-transparent dark:border-white/10 w-full justify-center sm:w-auto">
+                   开始入库
+                </button>
+</div>
+</div>
+<!-- Spacer for scrolling -->
+<div class="h-6"></div>
+</main>
+<!-- Backdrop for Bottom Sheet -->
+<div class="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm transition-opacity opacity-100"></div>
+<!-- Bottom Sheet: Inbound Operation -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#1e2a36] z-50 rounded-t-2xl shadow-2xl transform transition-transform duration-300 ease-out translate-y-0 max-h-[85vh] overflow-y-auto flex flex-col">
+<!-- Handle -->
+<div class="w-full flex justify-center pt-3 pb-1 cursor-grab">
+<div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-6 pb-4 border-b border-slate-100 dark:border-white/10 flex justify-between items-center sticky top-0 bg-white dark:bg-[#1e2a36] z-10">
+<div>
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">入库操作</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">单号: RK-20231024-002</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 transition text-slate-600 dark:text-white">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</button>
+</div>
+<!-- Sheet Body -->
+<div class="p-6 space-y-6">
+<!-- Product Info Card -->
+<div class="flex gap-4 p-3 rounded-lg bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-white/5">
+<div class="w-16 h-16 rounded-md bg-white dark:bg-white/5 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 dark:border-white/5">
+<img alt="Product thumbnail showing a smartphone device" class="w-full h-full object-cover" data-alt="Smartphone device thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCslH4HbcHcyVca0sjH2TjEmM70r57t-qdvekrm4SATQUu7qm64JYgQxAWdVAV2_3veCOUP8rErJyhd_I8vHUMjSGi-mLPPMszD6jOzvXkYa70MQ0D9hvERFD6J3OUibUc-zthODDyf2v29bHpGQ1_Ik0JG6aNSCIjLxjeWq-vlfrkTbm6V-vcAVSH5jwfKb-F3jMsfCHCN5XRuDWn4w2yu4T4MgxEn9mFC07xPWUV_nNSADJijVLS5JHlUPnbFjhpkDQ4lA3s7kQ"/>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">iPhone 15 Pro Max 256GB</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">SKU: A2890-BLK-256</p>
+<p class="text-xs text-primary mt-1 font-medium">待入库: 1200</p>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="space-y-5">
+<!-- Batch Number -->
+<div class="space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">入库批次 (自动)</label>
+<div class="flex items-center px-4 py-3 rounded-lg bg-slate-100 dark:bg-[#121a21] border border-transparent dark:border-white/5 text-slate-500 dark:text-slate-400 font-mono text-sm">
+<span class="material-symbols-outlined text-base mr-2 opacity-70">tag</span>
+                        BATCH-20231024-X92
+                    </div>
+</div>
+<!-- Quantity Stepper -->
+<div class="space-y-1.5">
+<div class="flex justify-between">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">入库数量</label>
+<span class="text-xs text-primary cursor-pointer hover:underline">全部入库</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="size-12 rounded-lg bg-slate-100 dark:bg-[#253646] hover:bg-slate-200 dark:hover:bg-[#354d64] flex items-center justify-center text-slate-600 dark:text-white transition active:scale-95">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="flex-1 h-12 relative">
+<input class="w-full h-full rounded-lg bg-slate-50 dark:bg-[#121a21] border border-slate-200 dark:border-slate-700 text-center text-lg font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none" type="number" value="50"/>
+</div>
+<button class="size-12 rounded-lg bg-slate-100 dark:bg-[#253646] hover:bg-slate-200 dark:hover:bg-[#354d64] flex items-center justify-center text-slate-600 dark:text-white transition active:scale-95">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Warehouse Location -->
+<div class="space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">推荐库位</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">location_on</span>
+</div>
+<select class="block w-full pl-10 pr-10 py-3 text-base border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg bg-white dark:bg-[#121a21] text-slate-900 dark:text-white appearance-none">
+<option>A-01-05 (推荐)</option>
+<option>A-01-06</option>
+<option>B-02-12</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Confirm Button -->
+<div class="pt-2">
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+<span>确认入库</span>
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+<!-- Safe Area Bottom for Mobile -->
+<div class="h-4"></div>
+</div>
+</div>
+</body></html>

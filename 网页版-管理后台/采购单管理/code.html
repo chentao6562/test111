@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>蒙庆订货系统 - 采购单管理</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans+SC:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e63333", // Chinese Red
+                        "primary-dark": "#b91c1c",
+                        "primary-light": "#fef2f2",
+                        "background-light": "#fdfbfb", // Warm white
+                        "background-dark": "#211111",
+                        "text-main": "#1b0e0e",
+                        "text-secondary": "#6b5c5c",
+                        "border-color": "#f3e8e8",
+                        "accent-gold": "#d4af37", // Festive Gold
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "Noto Sans SC", "sans-serif"],
+                        "body": ["Manrope", "Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', 'Noto Sans SC', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for cleanliness */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- SideNavBar -->
+<aside class="w-64 flex-shrink-0 flex flex-col bg-white border-r border-border-color h-full z-10 shadow-sm relative overflow-hidden">
+<!-- Decorative corner accent -->
+<div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-primary/5 to-transparent pointer-events-none"></div>
+<div class="flex flex-col h-full p-4">
+<div class="flex items-center gap-3 px-2 mb-8 mt-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="Traditional Chinese geometric pattern logo in red" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdLZQ6hxJOcl_xLKY6VsG7i71bEFDRxDHjw7cZzFISevNG5ERvfhprspfgRUqFfftRFDoLDwxi30HuuYX0x-yUvqxcLlQV2VuWC154G4NPAnsLMnAnxF2ph_M_0RpcUq5MNAQiZVadSn0hnuJZ9nnKWQkzLMDas18-8d_IH1I2HABbT6EjiHJwVO23C5panEX-TOfCL1m-CQgFDOOIiDpHct8iBNihB_47Q1vJzdahoveprz_Pcfl5F6FChLTDBRVL5SxME0dMziE");'></div>
+<div>
+<h1 class="text-text-main text-base font-bold leading-tight">蒙庆订货系统</h1>
+<p class="text-xs text-primary font-medium opacity-80">代理商管理后台</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 flex-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">home</span>
+<p class="text-sm font-medium leading-normal">首页</p>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md shadow-primary/20" href="#">
+<span class="material-symbols-outlined text-xl filled">assignment</span>
+<p class="text-sm font-bold leading-normal">采购单管理</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">inventory_2</span>
+<p class="text-sm font-medium leading-normal">商品管理</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">deployed_code</span>
+<p class="text-sm font-medium leading-normal">库存管理</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">pie_chart</span>
+<p class="text-sm font-medium leading-normal">财务报表</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-primary-light hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">settings</span>
+<p class="text-sm font-medium leading-normal">系统设置</p>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-border-color">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-background-light border border-border-color">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAV2YT4HPJCOJ3pZgIkD-xfK0C9jc9f3dc2Oum66GTV9qI4PkZnsDwWWk76QHmBulxXqo3e7DvsnY93wT4bFIO-teVRzfz5MAumvAF5AeDKFE61r1vbdMwhrAgpAaWiPND2gMHiLJSwpVYaBT0-K6W4NNFhgS5aItsfJ_vmhrJIyEyVmpDpnSwgoLSCrn-Ema44Xvy36-OfUK265DrIbtRL9B0TBG_ORtiWSeQ0tR1E1rFakcBZsmaWW-HBKoAKk4zE9o_wCZRyUB8");'></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-text-main text-sm font-bold truncate">张经理</p>
+<p class="text-text-secondary text-xs truncate">区域总代理</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="flex-1 flex flex-col h-full min-w-0 bg-background-light relative">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-border-color px-8 py-4 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+<div class="flex items-center gap-4">
+<h2 class="text-text-main text-xl font-bold leading-tight tracking-tight">采购业务概览</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-4 text-sm font-medium text-text-secondary">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> 系统运行正常</span>
+<span>2024年02月08日 星期四</span>
+</div>
+<div class="h-6 w-px bg-border-color hidden md:block"></div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg size-10 bg-background-light text-text-secondary hover:text-primary hover:bg-primary-light transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
+</button>
+<button class="flex items-center justify-center rounded-lg size-10 bg-background-light text-text-secondary hover:text-primary hover:bg-primary-light transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Scrollable Page Content -->
+<div class="flex-1 overflow-y-auto p-8">
+<div class="max-w-[1400px] mx-auto flex flex-col gap-6">
+<!-- Page Header & Main Action -->
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div>
+<h3 class="text-3xl font-black text-text-main tracking-tight mb-1">采购单管理</h3>
+<p class="text-text-secondary text-sm">高效管理订货流程，实时追踪库存状态</p>
+</div>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span class="font-bold text-sm tracking-wide">创建采购单</span>
+</button>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="bg-white rounded-xl p-5 border border-border-color shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-text-secondary">
+<span class="material-symbols-outlined text-orange-500">pending_actions</span>
+<span class="text-sm font-medium">待审核订单</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-text-main">12</p>
+<span class="text-xs text-orange-500 font-medium">+2 新增</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-xl p-5 border border-border-color shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-text-secondary">
+<span class="material-symbols-outlined text-blue-500">verified</span>
+<span class="text-sm font-medium">已审核通过</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-text-main">45</p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-xl p-5 border border-border-color shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 bg-green-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-text-secondary">
+<span class="material-symbols-outlined text-green-600">inventory</span>
+<span class="text-sm font-medium">已入库完成</span>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-black text-text-main">30</p>
+</div>
+</div>
+</div>
+<!-- Card 4 (Primary Highlight) -->
+<div class="bg-white rounded-xl p-5 border border-primary/20 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow ring-1 ring-primary/5">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full -mr-6 -mt-6 transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-text-secondary">
+<span class="material-symbols-outlined text-primary">payments</span>
+<span class="text-sm font-medium text-primary">本月采购总额</span>
+</div>
+<div class="flex items-baseline gap-1 text-primary">
+<span class="text-lg font-bold">¥</span>
+<p class="text-3xl font-black tracking-tight">1,240,000</p>
+<span class="text-lg font-bold">.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filter Section -->
+<div class="bg-white rounded-xl border border-border-color p-5 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold text-text-secondary uppercase tracking-wider">采购单号</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-[20px]">search</span>
+<input class="w-full pl-10 h-10 rounded-lg border-border-color bg-background-light text-sm focus:border-primary focus:ring-primary/20 transition-all placeholder:text-gray-400" placeholder="输入单号..." type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold text-text-secondary uppercase tracking-wider">供应商</label>
+<select class="w-full h-10 rounded-lg border-border-color bg-background-light text-sm focus:border-primary focus:ring-primary/20 transition-all text-text-main">
+<option value="">全部供应商</option>
+<option value="1">蒙庆食品厂</option>
+<option value="2">宏运包装有限公司</option>
+<option value="3">北方农产基地</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold text-text-secondary uppercase tracking-wider">订单状态</label>
+<select class="w-full h-10 rounded-lg border-border-color bg-background-light text-sm focus:border-primary focus:ring-primary/20 transition-all text-text-main">
+<option value="">全部状态</option>
+<option value="pending">待审核</option>
+<option value="approved">已审核</option>
+<option value="stock_in">已入库</option>
+<option value="rejected">已驳回</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold text-text-secondary uppercase tracking-wider">创建时间</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-[20px]">calendar_today</span>
+<input class="w-full pl-10 h-10 rounded-lg border-border-color bg-background-light text-sm focus:border-primary focus:ring-primary/20 transition-all placeholder:text-gray-400" placeholder="选择日期范围" type="text"/>
+</div>
+</div>
+</div>
+<div class="flex justify-end gap-3 pt-2 border-t border-dashed border-gray-100 mt-2">
+<button class="flex items-center justify-center gap-2 h-9 px-4 rounded-lg text-text-secondary hover:text-text-main hover:bg-gray-100 transition-colors text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+                                重置
+                            </button>
+<button class="flex items-center justify-center gap-2 h-9 px-4 rounded-lg border border-border-color text-text-secondary hover:text-primary hover:border-primary/30 hover:bg-primary-light transition-colors text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                导出数据
+                            </button>
+<button class="flex items-center justify-center gap-2 h-9 px-6 rounded-lg bg-text-main text-white hover:bg-black transition-colors text-sm font-bold shadow-md">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                                搜索
+                            </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50/50 border-b border-border-color">
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider w-12">
+<input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/>
+</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider">采购单号</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider">供应商</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider text-center">商品数</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider text-right">采购金额 (元)</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider">状态</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider">创建时间</th>
+<th class="py-4 px-6 text-xs font-bold text-text-secondary uppercase tracking-wider text-right">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-color">
+<!-- Row 1: Pending -->
+<tr class="group hover:bg-primary-light/10 transition-colors">
+<td class="py-4 px-6"><input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/></td>
+<td class="py-4 px-6 font-medium text-text-main text-sm">PO-20240208-001</td>
+<td class="py-4 px-6 text-sm text-text-secondary">蒙庆食品厂</td>
+<td class="py-4 px-6 text-sm text-text-main text-center font-medium">120</td>
+<td class="py-4 px-6 text-sm font-bold text-text-main text-right">45,600.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                                                待审核
+                                            </span>
+</td>
+<td class="py-4 px-6 text-sm text-text-secondary">2024-02-08 10:30</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary hover:text-primary-dark font-medium text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+                                                    审核
+                                                </button>
+<div class="w-px h-3 bg-gray-300"></div>
+<button class="text-text-secondary hover:text-text-main font-medium text-sm">详情</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Approved -->
+<tr class="group hover:bg-primary-light/10 transition-colors">
+<td class="py-4 px-6"><input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/></td>
+<td class="py-4 px-6 font-medium text-text-main text-sm">PO-20240207-024</td>
+<td class="py-4 px-6 text-sm text-text-secondary">宏运包装有限公司</td>
+<td class="py-4 px-6 text-sm text-text-main text-center font-medium">5,000</td>
+<td class="py-4 px-6 text-sm font-bold text-text-main text-right">12,500.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 border border-blue-200">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                                已审核
+                                            </span>
+</td>
+<td class="py-4 px-6 text-sm text-text-secondary">2024-02-07 15:42</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">input</span>
+                                                    入库
+                                                </button>
+<div class="w-px h-3 bg-gray-300"></div>
+<button class="text-text-secondary hover:text-text-main font-medium text-sm">详情</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: In Stock -->
+<tr class="group hover:bg-primary-light/10 transition-colors">
+<td class="py-4 px-6"><input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/></td>
+<td class="py-4 px-6 font-medium text-text-main text-sm">PO-20240205-103</td>
+<td class="py-4 px-6 text-sm text-text-secondary">北方农产基地</td>
+<td class="py-4 px-6 text-sm text-text-main text-center font-medium">800</td>
+<td class="py-4 px-6 text-sm font-bold text-text-main text-right">68,200.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                已入库
+                                            </span>
+</td>
+<td class="py-4 px-6 text-sm text-text-secondary">2024-02-05 09:15</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-text-secondary hover:text-text-main font-medium text-sm">详情</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Pending -->
+<tr class="group hover:bg-primary-light/10 transition-colors">
+<td class="py-4 px-6"><input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/></td>
+<td class="py-4 px-6 font-medium text-text-main text-sm">PO-20240208-002</td>
+<td class="py-4 px-6 text-sm text-text-secondary">蒙庆食品厂</td>
+<td class="py-4 px-6 text-sm text-text-main text-center font-medium">45</td>
+<td class="py-4 px-6 text-sm font-bold text-text-main text-right">8,900.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                                                待审核
+                                            </span>
+</td>
+<td class="py-4 px-6 text-sm text-text-secondary">2024-02-08 11:20</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary hover:text-primary-dark font-medium text-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+                                                    审核
+                                                </button>
+<div class="w-px h-3 bg-gray-300"></div>
+<button class="text-text-secondary hover:text-text-main font-medium text-sm">详情</button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Rejected -->
+<tr class="group hover:bg-primary-light/10 transition-colors">
+<td class="py-4 px-6"><input class="rounded border-gray-300 text-primary focus:ring-primary/20" type="checkbox"/></td>
+<td class="py-4 px-6 font-medium text-text-main text-sm">PO-20240204-099</td>
+<td class="py-4 px-6 text-sm text-text-secondary">新源物流耗材</td>
+<td class="py-4 px-6 text-sm text-text-main text-center font-medium">200</td>
+<td class="py-4 px-6 text-sm font-bold text-text-main text-right">3,400.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
+<span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                                已驳回
+                                            </span>
+</td>
+<td class="py-4 px-6 text-sm text-text-secondary">2024-02-04 14:10</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-text-secondary hover:text-text-main font-medium text-sm">详情</button>
+<div class="w-px h-3 bg-gray-300"></div>
+<button class="text-red-500 hover:text-red-700 font-medium text-sm">删除</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between px-6 py-4 bg-white border-t border-border-color">
+<p class="text-sm text-text-secondary">
+                                显示 <span class="font-bold text-text-main">1</span> 到 <span class="font-bold text-text-main">5</span> 条，共 <span class="font-bold text-text-main">128</span> 条记录
+                            </p>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:bg-gray-50 disabled:opacity-50">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white font-bold text-sm shadow-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors text-sm">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-text-secondary">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors text-sm">12</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-border-color text-text-secondary hover:bg-gray-50 disabled:opacity-50">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

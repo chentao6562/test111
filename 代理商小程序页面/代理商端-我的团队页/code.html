@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>代理商端-我的团队页</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734", // Festive Red
+                        "primary-dark": "#c42b28",
+                        "accent": "#fccf54", // Gold
+                        "accent-light": "#fdf3d3",
+                        "background-light": "#fff9f9", // Very light warm background
+                        "background-dark": "#211111",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2d1b1b",
+                        "text-main": "#2d1b1b",
+                        "text-secondary": "#8a6d6d",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans SC", "sans-serif"],
+                        "body": ["Noto Sans SC", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                    backgroundImage: {
+                        'festive-gradient': 'linear-gradient(135deg, #e53734 0%, #b91c1c 100%)',
+                        'gold-gradient': 'linear-gradient(135deg, #fccf54 0%, #f3a835 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for details not covered by Tailwind utilities */
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans SC', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Subtle cloud pattern for header background */
+        .cloud-pattern {
+            background-color: transparent;
+            background-image: radial-gradient(at 18% 99%, hsla(356,84%,58%,0.2) 0px, transparent 50%),
+                              radial-gradient(at 93% 8%, hsla(45,95%,66%,0.2) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-festive-gradient dark:from-red-900 dark:to-red-950 shadow-lg text-white">
+<!-- Status Bar Spacer (Simulated for iOS) -->
+<div class="h-10 w-full"></div>
+<div class="relative flex items-center justify-between px-4 pb-4 pt-2">
+<!-- Back Button -->
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined !text-[28px]">arrow_back</span>
+</button>
+<!-- Title -->
+<h1 class="text-lg font-bold tracking-wide">我的团队</h1>
+<!-- Menu/More (Optional placeholder for symmetry) -->
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/10 transition-colors opacity-0 pointer-events-none">
+<span class="material-symbols-outlined !text-[28px]">more_vert</span>
+</button>
+<!-- Decorative Gold Accents (Subtle) -->
+<div class="absolute right-0 bottom-0 opacity-20 pointer-events-none transform translate-y-1/2 translate-x-1/4">
+<svg fill="none" height="120" viewbox="0 0 100 100" width="120" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="50" r="40" stroke="#fccf54" stroke-width="2"></circle>
+<circle cx="50" cy="50" r="30" stroke="#fccf54" stroke-width="1"></circle>
+</svg>
+</div>
+</div>
+<!-- Header Stats Summary (Integrated into header for festive look) -->
+<div class="px-4 pb-6 pt-2">
+<div class="flex items-center justify-between text-white/90">
+<div>
+<p class="text-xs opacity-80 mb-0.5">本月总业绩 (元)</p>
+<p class="text-3xl font-bold tracking-tight">128,000.00</p>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg p-2 flex items-center gap-1 border border-white/10">
+<span class="material-symbols-outlined text-accent !text-lg">trending_up</span>
+<span class="text-xs font-medium text-accent">+12.5%</span>
+</div>
+</div>
+</div>
+<!-- Bottom Curve for organic feel -->
+<div class="absolute -bottom-4 left-0 w-full h-8 bg-background-light dark:bg-background-dark rounded-t-[24px]"></div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 pt-2 pb-24 z-10">
+<!-- Stats Cards Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<!-- Today's New -->
+<div class="bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/30 relative overflow-hidden group">
+<div class="absolute right-[-10px] top-[-10px] w-16 h-16 bg-red-50 dark:bg-red-900/10 rounded-full z-0 group-hover:scale-110 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-red-100 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-lg">person_add</span>
+</div>
+<span class="text-sm text-text-secondary font-medium">今日新增</span>
+</div>
+<p class="text-2xl font-bold text-text-main dark:text-white">+2</p>
+</div>
+</div>
+<!-- Month's New -->
+<div class="bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/30 relative overflow-hidden group">
+<div class="absolute right-[-10px] top-[-10px] w-16 h-16 bg-orange-50 dark:bg-orange-900/10 rounded-full z-0 group-hover:scale-110 transition-transform"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+<span class="material-symbols-outlined !text-lg">groups</span>
+</div>
+<span class="text-sm text-text-secondary font-medium">本月新增</span>
+</div>
+<p class="text-2xl font-bold text-text-main dark:text-white">+15</p>
+</div>
+</div>
+</div>
+<!-- Tab Switcher -->
+<div class="sticky top-[108px] z-40 bg-background-light dark:bg-background-dark pt-2 pb-2 mb-2">
+<div class="flex border-b border-gray-200 dark:border-gray-800 relative">
+<button class="flex-1 pb-3 text-center relative group">
+<span class="text-primary font-bold text-base">直推成员 (12)</span>
+<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-[3px] bg-primary rounded-t-full"></div>
+</button>
+<button class="flex-1 pb-3 text-center relative group">
+<span class="text-text-secondary dark:text-gray-400 font-medium text-base group-hover:text-primary/70 transition-colors">间推成员 (23)</span>
+<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-[3px] bg-primary rounded-t-full transition-all group-hover:w-4"></div>
+</button>
+</div>
+</div>
+<!-- Filter/Sort Chips -->
+<div class="flex gap-3 py-2 overflow-x-auto hide-scrollbar mb-4">
+<button class="flex items-center gap-1 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium whitespace-nowrap">
+<span>按业绩排序</span>
+<span class="material-symbols-outlined !text-sm">arrow_downward</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-1.5 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 text-text-secondary text-sm font-medium whitespace-nowrap">
+<span>按时间排序</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-1.5 rounded-full bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-700 text-text-secondary text-sm font-medium whitespace-nowrap">
+<span>筛选等级</span>
+<span class="material-symbols-outlined !text-sm">filter_list</span>
+</button>
+</div>
+<!-- Member List -->
+<div class="flex flex-col gap-4">
+<!-- Member Card 1 (High Performance) -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4 relative overflow-hidden">
+<!-- Gold Accent Corner -->
+<div class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-accent/20 to-transparent rounded-bl-3xl"></div>
+<!-- Avatar -->
+<div class="relative shrink-0">
+<div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-accent p-0.5" data-alt="Portrait of a team member with a confident smile">
+<img alt="Team member avatar" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByjOlF5bwEh7rKTdIHPZI-46aZtAWFzSHlu4a4kFZ513xnj0il-SrUrvnrLIrBMM2LXQyRMmCwDwcUNQjMZgQA7U-FwWRrskAO3UM6qgSSxKeckNJKDm5YimbYHgcDTRS30TEASgABVl22rYYEq3nVdJxdXicCzXQeG8sOovrOe4kSKNcABv0uFtknbh9F9_rMuQjKLaddWT7CEAioTkIzdqM3Qn-AXkTQd5NJy9Ap8By9QbgMP1EfwcPP4Vl_4ItxJKUEwW83yQQB"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-gold-gradient text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white">
+                        NO.1
+                    </div>
+</div>
+<!-- Info -->
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-bold text-text-main dark:text-white truncate pr-2">王小明</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-medium border border-primary/20">一级代理</span>
+<span class="text-xs text-text-secondary dark:text-gray-500">加入于 2023-12-01</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-secondary mb-0.5">累计业绩</p>
+<p class="text-primary font-bold text-lg">¥50,000</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Member Card 2 -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4">
+<!-- Avatar -->
+<div class="relative shrink-0">
+<div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-transparent" data-alt="Portrait of a female team member">
+<img alt="Team member avatar" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoYo0nSucqVFwZA8z9c-mhKOLBktvSpatjAy_gOy1eAaPMLul_EYxFPBS1uVofBYbfuTTDQFhnPhljIqfrjfeE3vmpOMWTEd7zUHIcCdaAyTnb2CHzzXIhdaHAzesWQlTEb-2WNRYl7zfLgMROtsXBZiVcpJ3OLb5vuP2GjH86hPn5RIYIyRPZDk9MwkPNlokBhFUS1VQtnla1LXDC5W0zoM2zN8MuSaZoKfOwNs0cRcLgOhozSwCi1RnM5RQTuzf7g1hV8oZPy4AW"/>
+</div>
+</div>
+<!-- Info -->
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-bold text-text-main dark:text-white truncate pr-2">李静</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-gray-200 dark:border-gray-700">二级代理</span>
+<span class="text-xs text-text-secondary dark:text-gray-500">加入于 2024-01-15</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-secondary mb-0.5">累计业绩</p>
+<p class="text-text-main dark:text-gray-200 font-bold text-lg">¥12,400</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Member Card 3 -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4">
+<!-- Avatar -->
+<div class="relative shrink-0">
+<div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-transparent" data-alt="Portrait of a male team member">
+<img alt="Team member avatar" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs8pr0eGQjT-8dj3iDhUrDVxIQ5PVscgSoy3qaasvAOCTTcPEjXlBs85W4IpScf-ZrGcYkVnQSN72s9JM6E8umu8Tu_x5MJth-i3pIJa6PMdNDkynfFUlRv-7E_bS_PFSmWp65dFkRIDUnAIbcAxtU1ImdVNk2fMc3c4mhUFgC0FWvFBQsKyl49t-f5yLKlAjEyw6XGaaEIy-uKpcRGlwZ0a8om4jJzaoDPA06m0FV5e462IFpkP0MR6qBj3J3y-37_XvwrvTh_gnw"/>
+</div>
+</div>
+<!-- Info -->
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-bold text-text-main dark:text-white truncate pr-2">张伟</h3>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-gray-200 dark:border-gray-700">二级代理</span>
+<span class="text-xs text-text-secondary dark:text-gray-500">加入于 2024-01-20</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-secondary mb-0.5">累计业绩</p>
+<p class="text-text-main dark:text-gray-200 font-bold text-lg">¥8,200</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Loading / End of List State -->
+<div class="flex items-center justify-center py-6 text-gray-400 text-sm gap-2">
+<span class="w-1 h-1 rounded-full bg-gray-300"></span>
+<span>没有更多数据了</span>
+<span class="w-1 h-1 rounded-full bg-gray-300"></span>
+</div>
+<!-- Empty State Placeholder (Commented out but designed for use case) -->
+<!-- 
+            <div class="flex flex-col items-center justify-center py-12">
+                <div class="w-32 h-32 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-primary/30 !text-6xl">person_off</span>
+                </div>
+                <p class="text-text-secondary font-medium mb-6">还没有团队成员</p>
+                <button class="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-red-200 active:scale-95 transition-transform flex items-center gap-2">
+                    <span class="material-symbols-outlined !text-xl">share</span>
+                    去邀请好友
+                </button>
+            </div> 
+            -->
+</div>
+</main>
+<!-- Floating Action Button (Fixed Bottom) -->
+<div class="fixed bottom-6 left-0 w-full px-4 z-50 pointer-events-none">
+<div class="max-w-md mx-auto pointer-events-auto">
+<button class="w-full bg-festive-gradient text-white h-12 rounded-full font-bold shadow-xl shadow-red-500/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-white/20">
+<span class="material-symbols-outlined">person_add</span>
+                邀请好友加入
+            </button>
+</div>
+</div>
+</body></html>

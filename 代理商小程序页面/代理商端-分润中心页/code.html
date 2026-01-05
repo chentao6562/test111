@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agent Profit Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734",
+                        "primary-dark": "#b91c1c",
+                        "gold": "#eab308", // gold-500
+                        "gold-light": "#fef08a", // yellow-200
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211111",
+                        "success": "#10b981", // emerald-500
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar hide for clean mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .bg-pattern {
+            background-image: radial-gradient(circle at 100% 0%, rgba(255, 215, 0, 0.15) 0%, transparent 25%), 
+                              radial-gradient(circle at 0% 100%, rgba(255, 215, 0, 0.1) 0%, transparent 25%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 antialiased overflow-x-hidden selection:bg-primary/20">
+<div class="relative flex flex-col min-h-screen w-full max-w-md mx-auto bg-background-light shadow-2xl overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="relative z-10 bg-gradient-to-r from-[#e53734] to-[#c52b28] text-white pt-safe-top pb-2 px-4 shadow-sm">
+<!-- Safe area spacer for iOS -->
+<div class="h-12 w-full"></div>
+<div class="flex items-center justify-between pb-3">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-white text-[24px]">arrow_back_ios_new</span>
+</button>
+<h2 class="text-white text-lg font-bold leading-tight tracking-wide flex-1 text-center pr-10">分润中心</h2>
+<div class="w-10"></div> <!-- Spacer to balance back button -->
+</div>
+</header>
+<!-- Main Content Scroll Area -->
+<div class="flex-1 overflow-y-auto no-scrollbar pb-24">
+<!-- Balance Card -->
+<div class="px-4 pt-4 pb-2">
+<div class="relative w-full rounded-xl overflow-hidden shadow-lg bg-gradient-to-br from-[#e53734] via-[#d6302d] to-[#b91c1c]">
+<!-- Decorative Background Elements -->
+<div class="absolute top-0 right-0 w-48 h-48 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-gold/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-10 right-10 w-20 h-20 bg-primary/40 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative p-6 z-10">
+<div class="flex justify-between items-start mb-2">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1 opacity-90">
+<span class="material-symbols-outlined text-gold-light text-[18px]">account_balance_wallet</span>
+<p class="text-white/90 text-sm font-medium">可提现余额</p>
+</div>
+<h1 class="text-gold-light text-4xl font-bold tracking-tight mt-1 font-display">¥980.00</h1>
+</div>
+<!-- Withdraw Button -->
+<button class="flex items-center gap-1 bg-white border border-gold/50 shadow-md rounded-lg px-4 py-2 mt-1 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#e53734] text-[20px]">payments</span>
+<span class="text-[#e53734] text-sm font-bold">立即提现</span>
+</button>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-white/20 my-4"></div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-white/70 text-xs mb-1">累计收益</p>
+<p class="text-white text-base font-semibold">¥23,400.00</p>
+</div>
+<div class="border-l border-white/20 pl-4">
+<p class="text-white/70 text-xs mb-1">已提现金额</p>
+<p class="text-white text-base font-semibold">¥22,420.00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="sticky top-0 z-10 bg-background-light pt-2">
+<div class="flex border-b border-gray-200 px-4">
+<button class="flex flex-1 flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-3 pt-4 transition-colors">
+<span class="text-sm font-bold tracking-wide">分润明细</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center border-b-[3px] border-transparent text-gray-500 hover:text-gray-700 pb-3 pt-4 transition-colors">
+<span class="text-sm font-medium tracking-wide">提现记录</span>
+</button>
+</div>
+</div>
+<!-- Profit List -->
+<div class="px-4 py-4 space-y-3">
+<!-- Item 1 -->
+<div class="flex flex-col bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<div class="flex items-center justify-center rounded-full bg-red-50 shrink-0 size-10">
+<span class="material-symbols-outlined text-primary text-[20px]">shopping_bag</span>
+</div>
+<div>
+<h3 class="text-gray-900 text-base font-bold leading-tight">订单分润</h3>
+<p class="text-gray-500 text-xs mt-1">订单号: 20230912001</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-success text-base font-bold font-display">+¥12.80</p>
+<span class="inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-gray-100 text-gray-500">已结算</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-gray-50 pt-2 mt-1">
+<p class="text-gray-400 text-xs">来源: 张三 (下级)</p>
+<p class="text-gray-400 text-xs">2023-01-20 14:30</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<div class="flex items-center justify-center rounded-full bg-orange-50 shrink-0 size-10">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">group</span>
+</div>
+<div>
+<h3 class="text-gray-900 text-base font-bold leading-tight">团队分润</h3>
+<p class="text-gray-500 text-xs mt-1">订单号: 20230912005</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-success text-base font-bold font-display">+¥5.50</p>
+<span class="inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-gray-100 text-gray-500">已结算</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-gray-50 pt-2 mt-1">
+<p class="text-gray-400 text-xs">来源: 李四 (二级)</p>
+<p class="text-gray-400 text-xs">2023-01-20 12:15</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<div class="flex items-center justify-center rounded-full bg-red-50 shrink-0 size-10">
+<span class="material-symbols-outlined text-primary text-[20px]">shopping_bag</span>
+</div>
+<div>
+<h3 class="text-gray-900 text-base font-bold leading-tight">订单分润</h3>
+<p class="text-gray-500 text-xs mt-1">订单号: 20230912088</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-success text-base font-bold font-display">+¥32.00</p>
+<span class="inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-gray-100 text-gray-500">已结算</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-gray-50 pt-2 mt-1">
+<p class="text-gray-400 text-xs">来源: 王五 (直属)</p>
+<p class="text-gray-400 text-xs">2023-01-19 09:20</p>
+</div>
+</div>
+<!-- Empty State Placeholder (Visual filler) -->
+<div class="flex justify-center py-6">
+<p class="text-gray-300 text-xs">没有更多数据了</p>
+</div>
+</div>
+</div>
+<!-- Withdrawal Modal (Overlay) -->
+<!-- In a real app, this would toggle visibility. Displaying it here to show design. -->
+<div class="absolute inset-0 z-50 flex items-end justify-center pointer-events-none">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] pointer-events-auto"></div>
+<!-- Modal Content -->
+<div class="bg-white w-full rounded-t-[24px] p-6 pb-8 shadow-2xl transform transition-transform duration-300 pointer-events-auto animate-in slide-in-from-bottom">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-gray-900">申请提现</h3>
+<button class="text-gray-400 hover:text-gray-600">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Input Amount -->
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-600 mb-2">提现金额</label>
+<div class="relative flex items-center border-b-2 border-gray-200 focus-within:border-primary transition-colors py-2">
+<span class="text-2xl font-bold text-gray-900 mr-2">¥</span>
+<input class="w-full text-3xl font-bold text-gray-900 placeholder-gray-300 border-none focus:ring-0 p-0 bg-transparent font-display" placeholder="0.00" type="number" value="500"/>
+<button class="text-primary text-sm font-bold whitespace-nowrap ml-2">全部</button>
+</div>
+<div class="flex justify-between mt-2">
+<p class="text-gray-400 text-xs">可提现余额 ¥980.00</p>
+<p class="text-primary/80 text-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            当前免手续费
+                        </p>
+</div>
+</div>
+<!-- Withdrawal Method -->
+<div class="mb-8">
+<label class="block text-sm font-medium text-gray-600 mb-3">提现方式</label>
+<div class="space-y-3">
+<!-- WeChat Pay -->
+<label class="flex items-center justify-between p-3 rounded-xl border border-primary bg-red-50 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-[#07c160] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+</div>
+<span class="text-sm font-bold text-gray-900">微信零钱</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+</label>
+<!-- Alipay (Inactive) -->
+<label class="flex items-center justify-between p-3 rounded-xl border border-gray-200 bg-white cursor-pointer opacity-80">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-[#1677ff] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+<!-- Use a generic wallet icon representing Alipay -->
+</div>
+<span class="text-sm font-medium text-gray-700">支付宝</span>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+</label>
+</div>
+</div>
+<!-- Confirm Button -->
+<button class="w-full bg-primary hover:bg-red-700 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-red-500/30 transition-all active:scale-[0.98]">
+                    确认提现
+                </button>
+</div>
+</div>
+</div>
+</body></html>

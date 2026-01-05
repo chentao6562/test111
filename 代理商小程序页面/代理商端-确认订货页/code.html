@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Confirmation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734", // Chinese Red
+                        "primary-dark": "#c02522",
+                        "gold": "#D4AF37", // Festive Gold
+                        "background-light": "#f5f5f5",
+                        "background-dark": "#211111",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "PingFang SC", "Noto Sans SC", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display selection:bg-primary/20">
+<!-- Top Navigation Bar -->
+<!-- Using a gradient background for festive feel -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#e53734] to-[#c42825] text-white shadow-md">
+<div class="flex items-center justify-between p-4 pt-12 pb-4">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 active:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">arrow_back</span>
+</button>
+<h2 class="text-white text-lg font-bold leading-tight tracking-wide flex-1 text-center pr-10">确认订货</h2>
+</div>
+</header>
+<!-- Main Content -->
+<main class="relative flex flex-col w-full h-full pt-28 pb-32 px-4 gap-4 max-w-md mx-auto">
+<!-- Contact Info Card -->
+<section class="bg-white dark:bg-[#2a2a2a] rounded-xl shadow-sm overflow-hidden">
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+<span class="text-lg">👤</span>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">联系人信息</h3>
+</div>
+<div class="divide-y divide-gray-100 dark:divide-gray-700">
+<label class="flex items-center justify-between p-4 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="text-slate-600 dark:text-slate-400 font-medium w-24">联系人</span>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-right text-slate-900 dark:text-white font-medium placeholder:text-slate-300 p-0" placeholder="请输入姓名" type="text" value="张老板"/>
+<span class="material-symbols-outlined text-gray-400 ml-2 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</label>
+<label class="flex items-center justify-between p-4 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="text-slate-600 dark:text-slate-400 font-medium w-24">联系电话</span>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-right text-slate-900 dark:text-white font-medium placeholder:text-slate-300 p-0" placeholder="请输入手机号" type="tel" value="138 0000 8888"/>
+<span class="material-symbols-outlined text-gray-400 ml-2 group-hover:text-primary transition-colors" style="font-size: 20px;">chevron_right</span>
+</label>
+</div>
+</section>
+<!-- Delivery Method Card -->
+<section class="bg-white dark:bg-[#2a2a2a] rounded-xl shadow-sm overflow-hidden">
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+<span class="text-lg">🚗</span>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">取货方式</h3>
+</div>
+<div class="p-4 flex gap-3">
+<!-- Option 1: Store Pickup (Selected) -->
+<div class="flex-1 relative cursor-pointer">
+<input checked="" class="peer sr-only" id="type_pickup" name="delivery_type" type="radio"/>
+<label class="flex flex-col h-full border-2 border-primary bg-red-50/50 dark:bg-red-900/10 rounded-xl p-3 relative transition-all peer-checked:border-primary peer-checked:bg-red-50/50 dark:peer-checked:bg-red-900/20" for="type_pickup">
+<div class="flex justify-between items-start mb-2">
+<span class="font-bold text-slate-900 dark:text-white text-sm">到店自取</span>
+<span class="material-symbols-outlined filled text-primary" style="font-size: 20px;">radio_button_checked</span>
+</div>
+<div class="mt-auto">
+<span class="text-xs text-primary font-medium bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded">免费</span>
+</div>
+</label>
+</div>
+<!-- Option 2: Lock Stock (Unselected) -->
+<div class="flex-1 relative cursor-pointer">
+<input class="peer sr-only" id="type_lock" name="delivery_type" type="radio"/>
+<label class="flex flex-col h-full border border-gray-200 dark:border-gray-600 rounded-xl p-3 relative transition-all hover:border-gray-300 peer-checked:border-primary peer-checked:bg-red-50/50" for="type_lock">
+<div class="flex justify-between items-start mb-2">
+<span class="font-bold text-slate-900 dark:text-white text-sm">提前锁货</span>
+<span class="material-symbols-outlined text-gray-300 peer-checked:text-primary peer-checked:filled" style="font-size: 20px;">radio_button_unchecked</span>
+</div>
+<div class="mt-auto">
+<p class="text-xs text-slate-500">¥80 <span class="scale-90 inline-block text-[10px] text-slate-400">(满¥500免)</span></p>
+</div>
+</label>
+</div>
+</div>
+<!-- Address Info Display -->
+<div class="mx-4 mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-start gap-3 border border-gray-100 dark:border-gray-700">
+<div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;">storefront</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">蒙庆烟花门店</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">湖南省长沙市浏阳市集里街道 888 号 (烟花批发市场东门)</p>
+</div>
+</div>
+</section>
+<!-- Product List Card -->
+<section class="bg-white dark:bg-[#2a2a2a] rounded-xl shadow-sm overflow-hidden">
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-lg">📦</span>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">商品清单</h3>
+</div>
+<span class="text-xs font-medium text-slate-500">共3件</span>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<!-- Item 1 -->
+<div class="flex gap-3">
+<div class="w-20 h-20 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative border border-gray-100 dark:border-gray-700">
+<img class="w-full h-full object-cover" data-alt="Red firework explosion in night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7W_W0wOX2KCr06B0nr9FoDmyqlqQ2oBWTjXq4lyMNfXWSkK9IT9d0iT1aG9G_dcDSlWaIJRmWp3KNz5bDm92Pof5PbOagQmtNQXwpIx3gY3I4MuqEsXkkpzUVBBgkf_HX739mbmhZqReLe7y9nQ-4zt9mOJVXGRQjU-MMCIYi48MVV6aXuoC65avYvx-6nzXHr3iFuxk0x9v1i12H4KlBc33AONeTkBRsZWWqN2yLSSjneEVR1suIvHra76nJJCszALvl6-ztJ9kE"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">88发 "恭喜发财" 组合烟花</h4>
+<p class="text-xs text-slate-400 mt-1">规格: 10kg/箱</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-sm font-semibold text-primary">¥128.00</span>
+<span class="text-xs font-medium text-slate-500">× 1</span>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex gap-3">
+<div class="w-20 h-20 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative border border-gray-100 dark:border-gray-700">
+<img class="w-full h-full object-cover" data-alt="Sparklers burning with golden sparks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDpA2EtKhkFJRSE7TlPCTGqpsD77ru189RpNDYwlX51xJ05sr_kUJKGrXDrhQNxC_T0bqXPkwVLNINo9qusgV5E6MrSoCHCGn81fhgSFLfdPVcaJnXb4w_POnDVY9wHULH3qek5WyOGivO-s4ncywgDUOABgUg7W9OB4gb825BSiAIHRI2TmqPonr49JlJ9d-rFkMqYdykaN9FERl2NBLkuKjvoP1H2EOnkgkcTozTYuMc3ixcSV331r7E3NjhsRM-799x7CqCNXMM"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">手持电光花 (儿童安全款)</h4>
+<p class="text-xs text-slate-400 mt-1">规格: 10盒/组</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-sm font-semibold text-primary">¥18.00</span>
+<span class="text-xs font-medium text-slate-500">× 10</span>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex gap-3">
+<div class="w-20 h-20 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative border border-gray-100 dark:border-gray-700">
+<img class="w-full h-full object-cover" data-alt="Golden fountain fireworks on ground" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHqUkX7qRkx8xx0XMsWVJO34Lpf-XV3LCUOplbOAGffPesuBQCbl2ivanNlR_lHBUkzNKzAfOlNwUSkEzeMHT-zD3VF-UiO0Xn_b5hWhsv7NqGWrmHqSw9o-sxvf4W9RPqx_qrxIpGdlYo3RwO4UMhIhhTtzZ1n3pBeEDqVwyBuYvuVwTV34-5_VX9_IvrwHc8IDEew8vKL3LDM0mCWuqACovt9pL2NeGhgNk398RsOPcMCK6HTvIFVXZ9Rub56tnKrquQLrsxNT_"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">金玉满堂 地面喷花</h4>
+<p class="text-xs text-slate-400 mt-1">规格: 2个/盒</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-sm font-semibold text-primary">¥36.00</span>
+<span class="text-xs font-medium text-slate-500">× 1</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Remarks Card -->
+<section class="bg-white dark:bg-[#2a2a2a] rounded-xl shadow-sm overflow-hidden">
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+<span class="text-lg">📝</span>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">备注</h3>
+</div>
+<div class="p-4">
+<textarea class="w-full rounded-lg bg-gray-50 dark:bg-gray-800 border-0 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-1 focus:ring-primary p-3 min-h-[80px] resize-none" placeholder="选填：给商家留言（如：请帮忙检查包装...）"></textarea>
+</div>
+</section>
+<!-- Price Breakdown Card -->
+<section class="bg-white dark:bg-[#2a2a2a] rounded-xl shadow-sm overflow-hidden mb-4">
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+<span class="text-lg">💰</span>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">金额明细</h3>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-600 dark:text-slate-400">商品金额</span>
+<span class="font-medium text-slate-900 dark:text-white">¥344.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-1">
+<span class="text-slate-600 dark:text-slate-400">VIP锁货费</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-[#fcf5e0] text-gold font-bold border border-[#f5e6c1]">金牌会员</span>
+</div>
+<span class="font-medium text-slate-900 dark:text-white">¥0.00</span>
+</div>
+<div class="h-px bg-dashed border-t border-dashed border-gray-200 dark:border-gray-700 my-2"></div>
+<div class="flex justify-between items-end">
+<span class="text-base font-bold text-slate-900 dark:text-white pb-0.5">合计</span>
+<span class="text-xl font-bold text-primary font-display">¥344.00</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Footer -->
+<footer class="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#2a2a2a] border-t border-gray-100 dark:border-gray-700 p-4 safe-area-pb z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="max-w-md mx-auto flex items-center gap-4">
+<div class="flex-1 flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="text-xs text-slate-500">总计:</span>
+<span class="text-2xl font-bold text-primary">¥344</span>
+</div>
+<span class="text-[10px] text-slate-400">共 3 件商品</span>
+</div>
+<button class="bg-gradient-to-r from-[#e53734] to-[#c42825] text-white font-bold text-base px-8 py-3.5 rounded-full shadow-lg shadow-red-200 dark:shadow-red-900/20 active:scale-95 transition-transform flex items-center gap-2">
+<span>提交订货单</span>
+</button>
+</div>
+</footer>
+<!-- CSS hack for bottom safe area on newer iPhones -->
+<style>
+        .safe-area-pb {
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+    </style>
+</body></html>

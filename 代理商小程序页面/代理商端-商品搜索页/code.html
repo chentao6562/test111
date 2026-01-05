@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agent Product Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734",
+                        "primary-dark": "#c42e2b",
+                        "secondary-gold": "#d4af37",
+                        "background-light": "#fbf8f8",
+                        "background-dark": "#211111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d1b1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px"},
+                    boxShadow: {
+                        'festive': '0 4px 12px rgba(229, 55, 52, 0.15)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Custom gold gradient text */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #f3e5ab 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Festive background pattern */
+        .bg-pattern {
+            background-image: radial-gradient(#e53734 0.5px, transparent 0.5px), radial-gradient(#e53734 0.5px, #fbf8f8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.03;
+        }
+        /* Tab bar safe area */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 overflow-x-hidden relative h-screen flex flex-col">
+<!-- Subtle festive background pattern -->
+<div class="absolute inset-0 bg-pattern pointer-events-none z-0"></div>
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+<!-- Search Bar Section -->
+<div class="px-4 py-2 pt-12 pb-3 flex items-center gap-3">
+<button class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<div class="flex-1 relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary/60 dark:text-primary/80">search</span>
+</div>
+<input autofocus="" class="block w-full pl-10 pr-10 py-2.5 border-none rounded-full leading-5 bg-gray-100 dark:bg-surface-dark text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm shadow-inner" placeholder="搜索烟花、爆竹..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+<span class="material-symbols-outlined text-gray-400 text-lg hover:text-gray-600">cancel</span>
+</div>
+</div>
+<button class="text-primary font-bold text-base px-2 active:scale-95 transition-transform">
+                搜索
+            </button>
+</div>
+<!-- Filter/Sort Bar (Initially hidden, shown when results exist, but visible here for demonstration) -->
+<div class="hidden flex items-center justify-between px-4 py-2 text-sm text-gray-600 dark:text-gray-400 bg-background-light dark:bg-background-dark">
+<div class="flex gap-6">
+<button class="font-bold text-primary flex items-center gap-0.5">综合 <span class="material-symbols-outlined text-base">arrow_drop_down</span></button>
+<button class="hover:text-primary transition-colors">销量</button>
+<button class="hover:text-primary transition-colors flex items-center gap-0.5">价格 <span class="material-symbols-outlined text-base rotate-90 text-xs">unfold_more</span></button>
+</div>
+<button class="flex items-center text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto no-scrollbar relative z-10 pb-24">
+<!-- INITIAL STATE: History & Hot Search -->
+<div class="p-4 space-y-8">
+<!-- Search History -->
+<section>
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-base font-bold text-gray-900 dark:text-white">搜索历史</h3>
+<button class="text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        88发礼花
+                    </button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        大地红
+                    </button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        加特林
+                    </button>
+</div>
+</section>
+<!-- Hot Search -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl">local_fire_department</span>
+<h3 class="text-base font-bold text-gray-900 dark:text-white">热门搜索</h3>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="relative bg-primary/5 dark:bg-primary/20 border border-primary/20 px-4 py-1.5 rounded-full text-sm text-primary font-medium hover:bg-primary/10 transition-all active:scale-95">
+                        新年礼盒
+                        <span class="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white dark:border-background-dark">热</span>
+</button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        礼花弹
+                    </button>
+<button class="relative bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        满堂红
+                        <span class="absolute -top-1.5 -right-1.5 bg-secondary-gold text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">荐</span>
+</button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        仙女棒
+                    </button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        孔雀开屏
+                    </button>
+<button class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-700 px-4 py-1.5 rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95 transition-all shadow-sm">
+                        摔炮
+                    </button>
+</div>
+</section>
+</div>
+<!-- SEARCH RESULTS STATE (Example) -->
+<!-- Divider for visualization of different states -->
+<div class="my-6 border-t-2 border-dashed border-gray-200 dark:border-gray-700 relative">
+<span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background-light dark:bg-background-dark px-2 text-xs text-gray-400">Search State Preview Below</span>
+</div>
+<!-- Filter Bar Mockup (Visible in result state) -->
+<div class="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+<div class="flex gap-6 text-sm">
+<button class="font-bold text-primary flex items-center">综合</button>
+<button class="text-gray-500 hover:text-primary">销量</button>
+<button class="text-gray-500 hover:text-primary flex items-center">价格 <span class="material-symbols-outlined text-base">unfold_more</span></button>
+</div>
+<button class="text-gray-500 hover:text-gray-800 dark:hover:text-white">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+</div>
+<!-- Product List -->
+<div class="p-4 grid grid-cols-1 gap-4">
+<!-- Product Card 1 -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 flex gap-4 shadow-sm border border-transparent hover:border-primary/20 hover:shadow-festive transition-all">
+<div class="relative w-28 h-28 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+<img alt="Colorful fireworks explosion in night sky" class="w-full h-full object-cover" data-alt="Red and gold fireworks burst" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDwHbRgqn66ZBiOf_eEO9vDYYJa6hHtNKLwT2dLlYtn6IVcEGXbvrFdtDIG00feTbOWJAfnXK5XmveOEzJT3-5k-Dyiaf3fmt1HW9TopzdZFkjWS0uEE0duGRnvZNqdbZ1bhEcnTHaUakOL6-aioxpkJp--T3PLcW5z2lEez5Ip6sowmDDgq6Ad8qOf65IvYJkPuVSk0pjwrb2ooMiwHJbCeJGGDf0twJ8-SuSf0HHsjb1K4v0k27cnceMtGMsNqSBF8GGgpTk6wwL"/>
+<div class="absolute top-0 left-0 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">
+                        爆款
+                    </div>
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold line-clamp-2 leading-tight mb-1">2024龙年大吉 88发组合烟花 新年限定款</h4>
+<div class="flex flex-wrap gap-2 mb-1">
+<span class="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-100">箱装</span>
+<span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">库存充足</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<span class="text-xs text-primary font-bold">¥</span>
+<span class="text-xl text-primary font-extrabold">128.00</span>
+<span class="text-xs text-gray-400 line-through ml-1">¥158</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 flex gap-4 shadow-sm border border-transparent hover:border-primary/20 hover:shadow-festive transition-all">
+<div class="relative w-28 h-28 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+<img alt="Box of red firecrackers" class="w-full h-full object-cover" data-alt="Traditional red firecrackers pile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn6tUbRZHDmpH7hUCbQsBa0io_HrgIMwCdjTgrcYqyogDlbWsCIp9ZV2hMwH1dQY_4lDFmVEUEVM_-UW2eZNXzxj2Nq0AP0fJioIGrn4ig_uJ9gdRqda--ZfiL1gXxKLe8v8S7Jau121r5bkhQOFQidMQwSKmtHDLk3_fDp0bzlEncldtH2F0vmFT53Idy64YubwPYOvwOJU3ncLPNWn4OMcxzL4b8W0SaIBRr2BaG0ZTR2BD5E5XKNUf4RZ3lkZqYIKRXrPr-_IKP"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold line-clamp-2 leading-tight mb-1">满地红 1000响大地红 喜庆鞭炮 婚庆开业</h4>
+<div class="flex flex-wrap gap-2 mb-1">
+<span class="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded border border-red-100">特惠</span>
+<span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">仅剩50箱</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<span class="text-xs text-primary font-bold">¥</span>
+<span class="text-xl text-primary font-extrabold">45.50</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 (Grid View Simulation in List) -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 flex gap-4 shadow-sm border border-transparent hover:border-primary/20 hover:shadow-festive transition-all">
+<div class="relative w-28 h-28 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+<!-- Abstract gradient for packaging -->
+<div class="w-full h-full bg-gradient-to-br from-red-500 to-yellow-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/50 text-4xl">inventory_2</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div>
+<h4 class="text-gray-900 dark:text-white font-bold line-clamp-2 leading-tight mb-1">加特林手持烟花 儿童安全型 网红爆款</h4>
+<div class="flex flex-wrap gap-2 mb-1">
+<span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">缺货</span>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div class="opacity-50">
+<span class="text-xs text-gray-900 dark:text-white font-bold">¥</span>
+<span class="text-xl text-gray-900 dark:text-white font-extrabold">28.00</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed">
+<span class="material-symbols-outlined text-lg">notifications</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- EMPTY STATE (Example) -->
+<div class="my-6 border-t-2 border-dashed border-gray-200 dark:border-gray-700 relative">
+<span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background-light dark:bg-background-dark px-2 text-xs text-gray-400">Empty State Preview Below</span>
+</div>
+<div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+<div class="w-32 h-32 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6 relative">
+<span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">search_off</span>
+<div class="absolute bottom-0 right-0 bg-primary/10 p-2 rounded-full border-2 border-white dark:border-background-dark">
+<span class="material-symbols-outlined text-primary text-xl">celebration</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">未找到相关商品</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs">抱歉，没有找到与关键词相关的烟花。请尝试使用其他关键词或浏览推荐商品。</p>
+<button class="mt-6 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+                清除筛选
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe">
+<div class="flex justify-around items-center h-16">
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary transition-colors gap-1">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-medium">首页</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-primary gap-1">
+<span class="material-symbols-outlined text-2xl fill-current">search</span>
+<span class="text-[10px] font-bold">搜索</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary transition-colors gap-1">
+<div class="relative">
+<span class="material-symbols-outlined text-2xl">shopping_cart</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[9px] flex items-center justify-center rounded-full border border-white dark:border-surface-dark">2</span>
+</div>
+<span class="text-[10px] font-medium">购物车</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-primary transition-colors gap-1">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</button>
+</div>
+</nav>
+</body></html>

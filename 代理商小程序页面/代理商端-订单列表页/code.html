@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>代理商端-订单列表页</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e53734", // Chinese Red
+                        "primary-dark": "#b92b29",
+                        "accent-gold": "#d4af37", // Metallic Gold
+                        "background-light": "#fbf8f8",
+                        "background-dark": "#1a0f0f",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'festive-pattern': "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-800 dark:text-slate-100">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl overflow-hidden bg-[#fbf8f8] dark:bg-[#1a0f0f]">
+<header class="relative z-20 bg-gradient-to-r from-primary to-[#ff6b6b] text-white shadow-md">
+<div class="absolute inset-0 bg-festive-pattern opacity-30 pointer-events-none"></div>
+<div class="relative flex items-center justify-between px-4 py-3 pt-12">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-wide">我的订单</h1>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">search</span>
+</button>
+</div>
+</header>
+<div class="sticky top-0 z-10 bg-white dark:bg-[#251818] shadow-sm border-b border-gray-100 dark:border-white/5">
+<div class="flex overflow-x-auto scrollbar-hide px-2 gap-2">
+<button class="relative flex flex-col items-center justify-center min-w-[72px] px-2 py-3 group">
+<span class="text-primary font-bold text-sm relative">
+                        全部
+                        <span class="absolute -top-2 -right-3 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none border border-white dark:border-[#251818]">12</span>
+</span>
+<div class="absolute bottom-0 h-0.5 w-6 bg-primary rounded-t-full"></div>
+</button>
+<button class="relative flex flex-col items-center justify-center min-w-[72px] px-2 py-3 group">
+<span class="text-gray-500 dark:text-gray-400 font-medium text-sm group-hover:text-primary transition-colors relative">
+                        待支付
+                        <span class="absolute -top-2 -right-3 bg-primary/10 text-primary font-bold text-[10px] px-1.5 py-0.5 rounded-full leading-none">3</span>
+</span>
+<div class="absolute bottom-0 h-0.5 w-6 bg-transparent group-hover:bg-primary/30 rounded-t-full transition-colors"></div>
+</button>
+<button class="relative flex flex-col items-center justify-center min-w-[72px] px-2 py-3 group">
+<span class="text-gray-500 dark:text-gray-400 font-medium text-sm group-hover:text-primary transition-colors">待备货</span>
+<div class="absolute bottom-0 h-0.5 w-6 bg-transparent group-hover:bg-primary/30 rounded-t-full transition-colors"></div>
+</button>
+<button class="relative flex flex-col items-center justify-center min-w-[72px] px-2 py-3 group">
+<span class="text-gray-500 dark:text-gray-400 font-medium text-sm group-hover:text-primary transition-colors relative">
+                        待提货
+                        <span class="absolute -top-2 -right-3 bg-primary/10 text-primary font-bold text-[10px] px-1.5 py-0.5 rounded-full leading-none">1</span>
+</span>
+<div class="absolute bottom-0 h-0.5 w-6 bg-transparent group-hover:bg-primary/30 rounded-t-full transition-colors"></div>
+</button>
+<button class="relative flex flex-col items-center justify-center min-w-[72px] px-2 py-3 group">
+<span class="text-gray-500 dark:text-gray-400 font-medium text-sm group-hover:text-primary transition-colors">已完成</span>
+<div class="absolute bottom-0 h-0.5 w-6 bg-transparent group-hover:bg-primary/30 rounded-t-full transition-colors"></div>
+</button>
+</div>
+</div>
+<main class="flex-1 overflow-y-auto p-4 space-y-4 pb-20">
+<div class="bg-white dark:bg-[#2a1d1d] rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+<div class="px-4 py-3 flex items-center justify-between border-b border-dashed border-gray-100 dark:border-white/10">
+<span class="text-sm text-gray-500 dark:text-gray-400 font-medium">订单号 20240209-0023</span>
+<span class="px-2 py-1 rounded bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold">待支付</span>
+</div>
+<div class="p-4 flex gap-3">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Red firework packaging box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAke8NxsIcnYPogtsh6D5r_MgKYGL1JZw9NBJDhVwg87vN27QpSu4WbiMcs2Q5bTIxqL3V-EwO2U7TMwxxLodCwSVr0BBN46CIrZjkAWi2SnkyqulZK2Kx5MaKyCyVf9hBkpTLhnAz4A1eqW1I0CvXLm1R9D-HREy1q4wic45tl4je2s9EIRSst6Rz5pcDbw6HxyI_Z-hNXABhgF2yiGiPXyzZeYvTOw3B56E5YETAAJU5eP54iL0Xal7loMegAl0_Nek2b6wpdvoIP"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold truncate pr-2">满地红 5000型 (100cm)</h3>
+<span class="text-xs text-gray-500 shrink-0">¥ 120.00</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">规格: 100cm / 箱</p>
+<div class="flex justify-between items-end">
+<span class="text-xs text-primary bg-primary/5 px-1.5 py-0.5 rounded">春节热销</span>
+<span class="text-sm text-slate-900 dark:text-slate-200 font-medium">x 10</span>
+</div>
+</div>
+</div>
+<div class="px-4 pb-4 flex gap-3">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Golden sparkles fireworks effect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB28cG997XliVQ0HjBCh3QD-Fi8-FwVjJ2v4WJ4JyEbhU_k8hDPRuL4O5gDNFOUvdb80ESi70Lvz6ZcJzWIN36vW9lz7Gt9q8ARM1MhTiuJUdE5nc7eprrCuVpwPvdJZ7hsh-8MYbkTrynLS4_3_6dYSLGM5L2xiCnxvobr-AoMrStoRpgyPqQFh59H8GzqD_WpIg3abzYYRrvnErSKYfRtvazQknakEFrhC6i2_0tMDw_dNT1RKga7FXNM2gJyUgA7VWYTcisJthTU"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold truncate pr-2">金玉满堂 组合烟花</h3>
+<span class="text-xs text-gray-500 shrink-0">¥ 280.00</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">规格: 80发 / 箱</p>
+<div class="flex justify-between items-end">
+<span class="text-xs text-primary bg-primary/5 px-1.5 py-0.5 rounded">新品</span>
+<span class="text-sm text-slate-900 dark:text-slate-200 font-medium">x 5</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50/50 dark:bg-white/5 flex items-center justify-between">
+<span class="text-xs text-gray-400">2024-01-09 14:30</span>
+<div class="text-sm">
+                        共15件 合计 <span class="text-primary font-bold text-base">¥ 2,600</span>
+</div>
+</div>
+<div class="p-3 flex justify-end gap-3 border-t border-gray-100 dark:border-white/5">
+<button class="px-4 py-1.5 rounded-full border border-gray-300 dark:border-white/20 text-sm text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5">取消</button>
+<button class="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-[#ff6b6b] text-white text-sm font-bold shadow-md shadow-primary/20 hover:brightness-110">去支付</button>
+</div>
+</div>
+<div class="bg-white dark:bg-[#2a1d1d] rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+<div class="px-4 py-3 flex items-center justify-between border-b border-dashed border-gray-100 dark:border-white/10">
+<span class="text-sm text-gray-500 dark:text-gray-400 font-medium">订单号 20240108-8821</span>
+<span class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold">待备货</span>
+</div>
+<div class="p-4 flex gap-3">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Sparkler firework stick" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo-Hrqo5NRi31RHrCPWonp4S2x0_11IV_kZx6wDKYawS_KsPPzOAs9UaQW8lrCvbXSOj8VIkEl-iWhdjkgE3DmXZz8bAqXLePxLnMdq0cILzM6hniohYKGO8clMowdWa3JzAeXZVibxQzH-0uj2x9qhIZpDmVnhCF2QEkk6C1u5f-7hNwh56tFXd9cr3eoHtDv24wkUuwFyvy3SWwgkwo2Df4sTfte9LajZxoDxtH1EQrW7z0WEXhLia6PLbHvPaYC2zi0rqRQzPZJ"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold truncate pr-2">儿童仙女棒 (安全型)</h3>
+<span class="text-xs text-gray-500 shrink-0">¥ 45.00</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">规格: 100支 / 盒</p>
+<div class="flex justify-between items-end">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded">常规</span>
+<span class="text-sm text-slate-900 dark:text-slate-200 font-medium">x 50</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50/50 dark:bg-white/5 flex items-center justify-between">
+<span class="text-xs text-gray-400">2024-01-08 09:15</span>
+<div class="text-sm">
+                        共50件 合计 <span class="text-primary font-bold text-base">¥ 2,250</span>
+</div>
+</div>
+<div class="p-3 flex justify-end gap-3 border-t border-gray-100 dark:border-white/5">
+<button class="px-4 py-1.5 rounded-full border border-gray-300 dark:border-white/20 text-sm text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5">查看详情</button>
+<button class="px-4 py-1.5 rounded-full border border-accent-gold text-accent-gold text-sm font-bold hover:bg-accent-gold/5 shadow-sm shadow-accent-gold/10">锁货</button>
+<button class="px-4 py-1.5 rounded-full border border-primary text-primary text-sm font-bold hover:bg-primary/5">提醒备货</button>
+</div>
+</div>
+<div class="bg-white dark:bg-[#2a1d1d] rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+<div class="px-4 py-3 flex items-center justify-between border-b border-dashed border-gray-100 dark:border-white/10">
+<span class="text-sm text-gray-500 dark:text-gray-400 font-medium">订单号 20240105-1102</span>
+<span class="px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold">待提货</span>
+</div>
+<div class="p-4 flex gap-3">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Colorful firework bursts in night sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnz165qybVTS6Pz5XHDZigCER9Sob0aHUIUBDYTFN-GUG84Y7r2a11pAKxrG3xwsriM-qPygrNQbTrdzrbm5RQMTm32ifYSNDzg9pzR-801TchuZlVogKFfolGr_flz1ctDFVgVk8_wsoj4FeUWkRJd4Ix9PaFx7dsFdmWGt6uj84tjoz9579n35J4Oa6jVm6et5nTnDwBpYT7ibya1zEC6PC2TG-hLYtSQo9NEoCAcKx5655Jcfgfny7Jhw_iRIf9vR9KXgtZx-0W"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold truncate pr-2">盛世中华 大型组合</h3>
+<span class="text-xs text-gray-500 shrink-0">¥ 880.00</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">规格: 120发 / 箱</p>
+<div class="flex justify-between items-end">
+<span class="text-xs text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded border border-accent-gold/20">高端系列</span>
+<span class="text-sm text-slate-900 dark:text-slate-200 font-medium">x 2</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50/50 dark:bg-white/5 flex items-center justify-between">
+<span class="text-xs text-gray-400">2024-01-05 18:20</span>
+<div class="text-sm">
+                        共2件 合计 <span class="text-primary font-bold text-base">¥ 1,760</span>
+</div>
+</div>
+<div class="p-3 flex justify-end gap-3 border-t border-gray-100 dark:border-white/5">
+<button class="px-4 py-1.5 rounded-full border border-gray-300 dark:border-white/20 text-sm text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5">查看详情</button>
+<button class="px-4 py-1.5 rounded-full bg-emerald-600 text-white text-sm font-bold shadow-md shadow-emerald-600/20 hover:bg-emerald-700">确认提货</button>
+</div>
+</div>
+<div class="bg-white dark:bg-[#2a1d1d] rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden opacity-80">
+<div class="px-4 py-3 flex items-center justify-between border-b border-dashed border-gray-100 dark:border-white/10">
+<span class="text-sm text-gray-500 dark:text-gray-400 font-medium">订单号 20231228-0099</span>
+<span class="px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-xs font-bold">已完成</span>
+</div>
+<div class="p-4 flex gap-3">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-gray-100 overflow-hidden relative grayscale">
+<img class="w-full h-full object-cover" data-alt="Abstract festive red background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDOnCJuqKuJD8DnuR3MvXildUKfbtwxC0sYyXcpZazKfMt_2Yvu_-aktxaoD7zwWEPqPmtUb0r6Xh0V3QuRQutekvjLNVttnPCTjcbqnIKMgU7E_dL3ln8m0Si3xv7mkqfPjFeegXmfHe6waAxcKKQB2hGDbMVf3GoMAyv-ImchJANbsl0xXrXDYN7nhrLtltqFvRnrzTmIvsOWxLTWjCp-Cfmji0Emk-6X98k5Mq3i2RD22PSFglAwAYv9_Jpeb2O1GcirA-wnx9F"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold truncate pr-2">开门红 鞭炮 (2000响)</h3>
+<span class="text-xs text-gray-500 shrink-0">¥ 35.00</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">规格: 50盘 / 箱</p>
+<div class="flex justify-between items-end">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded">常规</span>
+<span class="text-sm text-slate-900 dark:text-slate-200 font-medium">x 20</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-3 bg-gray-50/50 dark:bg-white/5 flex items-center justify-between">
+<span class="text-xs text-gray-400">2023-12-28 10:00</span>
+<div class="text-sm">
+                        共20件 合计 <span class="text-slate-700 dark:text-slate-300 font-bold text-base">¥ 700</span>
+</div>
+</div>
+<div class="p-3 flex justify-end gap-3 border-t border-gray-100 dark:border-white/5">
+<button class="px-4 py-1.5 rounded-full border border-gray-300 dark:border-white/20 text-sm text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5">再来一单</button>
+<button class="px-4 py-1.5 rounded-full border border-gray-300 dark:border-white/20 text-sm text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-white/5">删除订单</button>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
