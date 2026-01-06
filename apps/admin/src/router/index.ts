@@ -62,6 +62,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '分润管理', icon: 'Money' }
       },
       {
+        path: 'commission-rule',
+        name: 'CommissionRule',
+        component: () => import('@/views/commission-rule/index.vue'),
+        meta: { title: '分润规则', icon: 'Rule' }
+      },
+      {
         path: 'withdrawal',
         name: 'Withdrawal',
         component: () => import('@/views/withdrawal/index.vue'),

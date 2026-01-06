@@ -66,6 +66,19 @@
           </div>
         </router-link>
 
+        <router-link to="/commission-rule" custom v-slot="{ isActive, navigate }">
+          <div
+            @click="navigate"
+            :class="[
+              'flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer group transition-colors',
+              isActive ? 'bg-primary/10 border-l-4 border-primary' : 'hover:bg-primary-light/50'
+            ]"
+          >
+            <span :class="['material-symbols-outlined', isActive ? 'text-primary' : 'text-text-main dark:text-white group-hover:text-primary']" style="font-size: 24px;">rule</span>
+            <p :class="['text-sm', isActive ? 'text-primary font-bold' : 'text-text-main dark:text-white font-medium']">分润规则</p>
+          </div>
+        </router-link>
+
         <router-link to="/agent" custom v-slot="{ isActive, navigate }">
           <div
             @click="navigate"
@@ -186,6 +199,7 @@ const currentIcon = computed(() => {
     '/agent': 'group',
     '/inventory': 'inventory_2',
     '/commission': 'currency_yen',
+    '/commission-rule': 'rule',
     '/withdrawal': 'payments',
     '/system': 'settings',
   }
