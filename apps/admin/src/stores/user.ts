@@ -17,8 +17,10 @@ export const useUserStore = defineStore('user', () => {
       userInfo.value = res.data.admin
       localStorage.setItem('admin_token', res.data.token)
       localStorage.setItem('admin_info', JSON.stringify(res.data.admin))
+      return res
+    } else {
+      throw new Error(res.message || '登录失败')
     }
-    return res
   }
 
   // 获取用户信息

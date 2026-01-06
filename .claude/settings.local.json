@@ -23,7 +23,13 @@
       "Bash(scp:*)",
       "Bash(wc -l \"c:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\apps\\\\server\\\\src\"/**/*.ts)",
       "Bash(ls:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(dir:*)",
+      "Bash(npm create:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npx vite:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git fetch:*)"
     ]
   }
 }
