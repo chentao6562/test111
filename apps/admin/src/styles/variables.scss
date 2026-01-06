@@ -1,0 +1,206 @@
+// 蒙庆烟花管理系统主题变量 - 基于设计稿
+// 主色调: 中国红 #e63333
+
+// 主题色
+$primary-color: #e63333;
+$primary-dark: #cc2929;
+$primary-light: #ffe5e5;
+
+// 背景色
+$background-light: #f8f6f6;
+$background-dark: #211111;
+$card-light: #ffffff;
+$card-dark: #2d1b1b;
+
+// 文字色
+$text-main: #1b0e0e;
+$text-secondary: #964f4f;
+$text-muted: #bcaaa8;
+
+// 边框色
+$border-color: #e6d0d0;
+$border-light: #f3e8e8;
+
+// 金色装饰
+$gold: #D4AF37;
+$warm-white: #fffbf0;
+
+// Element Plus 变量覆盖
+:root {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-3: #ef6666;
+  --el-color-primary-light-5: #f89898;
+  --el-color-primary-light-7: #fbc4c4;
+  --el-color-primary-light-8: #fcd3d3;
+  --el-color-primary-light-9: #fde2e2;
+  --el-color-primary-dark-2: #{$primary-dark};
+
+  --el-bg-color: #{$background-light};
+  --el-bg-color-page: #{$background-light};
+  --el-text-color-primary: #{$text-main};
+  --el-text-color-regular: #{$text-main};
+  --el-text-color-secondary: #{$text-secondary};
+  --el-text-color-placeholder: #{$text-muted};
+  --el-border-color: #{$border-color};
+  --el-border-color-light: #{$border-light};
+
+  --el-fill-color-light: #{$background-light};
+  --el-fill-color-blank: #ffffff;
+}
+
+// 全局样式
+body {
+  font-family: 'Manrope', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: $background-light;
+  color: $text-main;
+}
+
+// 自定义滚动条
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-color;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4baba;
+}
+
+// 节日背景图案
+.festive-bg {
+  background-image: radial-gradient($primary-color 0.5px, transparent 0.5px),
+                    radial-gradient($primary-color 0.5px, transparent 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  opacity: 0.03;
+}
+
+// 登录页特殊背景
+.login-festive-bg {
+  background-color: #4a0404;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 20%),
+    radial-gradient(circle at 80% 30%, rgba(224, 40, 16, 0.2) 0%, transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 30%);
+}
+
+// 金色装饰条
+.gold-border-top {
+  height: 6px;
+  background: linear-gradient(to right, #b8860b, #ffd700, #b8860b);
+}
+
+// 卡片悬停效果
+.card-hover {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(230, 51, 51, 0.15);
+  }
+}
+
+// 状态标签样式
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &.status-pending {
+    background-color: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fcd34d;
+
+    &::before {
+      background-color: #f59e0b;
+    }
+  }
+
+  &.status-success {
+    background-color: #d1fae5;
+    color: #059669;
+    border: 1px solid #6ee7b7;
+
+    &::before {
+      background-color: #10b981;
+    }
+  }
+
+  &.status-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+
+    &::before {
+      background-color: #ef4444;
+    }
+  }
+
+  &.status-info {
+    background-color: #dbeafe;
+    color: #2563eb;
+    border: 1px solid #93c5fd;
+
+    &::before {
+      background-color: #3b82f6;
+    }
+  }
+}
+
+// 价格文字
+.price-text {
+  color: $primary-color;
+  font-weight: 700;
+  font-family: 'Manrope', monospace;
+}
+
+// 统计卡片图标背景
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #fff;
+
+  &.stat-primary {
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  }
+
+  &.stat-orange {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  }
+
+  &.stat-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &.stat-green {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  }
+
+  &.stat-purple {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  }
+}

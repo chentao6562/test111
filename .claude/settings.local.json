@@ -21,7 +21,9 @@
       "Bash(del \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\.git\\\\index.lock\")",
       "Bash(ls -la \"c:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\apps\"\" 2>&1 || ls -la \"/c/Users/Administrator/Desktop/烟花4/apps/ \")",
       "Bash(scp:*)",
-      "Bash(wc -l \"c:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\apps\\\\server\\\\src\"/**/*.ts)"
+      "Bash(wc -l \"c:\\\\Users\\\\Administrator\\\\Desktop\\\\烟花4\\\\apps\\\\server\\\\src\"/**/*.ts)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
