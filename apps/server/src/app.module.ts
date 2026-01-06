@@ -17,6 +17,7 @@ import { WithdrawalModule } from './modules/withdrawal/withdrawal.module';
 import { SystemModule } from './modules/system/system.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { WarehouseModule } from './modules/warehouse/warehouse.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     SystemModule,
     UploadModule,
     DashboardModule,
+    WarehouseModule,
   ],
 })
 export class AppModule {}

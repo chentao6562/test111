@@ -1,0 +1,90 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "工作台",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "员工登录",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/scan/index",
+      "style": {
+        "navigationBarTitleText": "扫码核销",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/scan/result",
+      "style": {
+        "navigationBarTitleText": "核销结果",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/stock/index",
+      "style": {
+        "navigationBarTitleText": "库存管理",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/stock/detail",
+      "style": {
+        "navigationBarTitleText": "库存详情",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/inbound/index",
+      "style": {
+        "navigationBarTitleText": "入库管理",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/inbound/create",
+      "style": {
+        "navigationBarTitleText": "新建入库",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/prepare/index",
+      "style": {
+        "navigationBarTitleText": "备货任务",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/mine/index",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "navigationBarBackgroundColor": "#1e88e5",
+        "navigationBarTextStyle": "white"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "蒙庆库管",
+    "navigationBarBackgroundColor": "#1e88e5",
+    "backgroundColor": "#f5f5f5"
+  }
+}

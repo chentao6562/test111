@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/index",
+    "pages/scan/index",
+    "pages/scan/result",
+    "pages/stock/index",
+    "pages/stock/detail",
+    "pages/inbound/index",
+    "pages/inbound/create",
+    "pages/prepare/index",
+    "pages/mine/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "蒙庆库管",
+    "navigationBarBackgroundColor": "#1e88e5",
+    "backgroundColor": "#f5f5f5"
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于扫描提货码"
+    }
+  },
+  "usingComponents": {}
+}

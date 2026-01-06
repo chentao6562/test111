@@ -1,0 +1,20 @@
+{
+  "name": "蒙庆烟花库管端",
+  "appid": "__UNI__WAREHOUSE",
+  "description": "蒙庆烟花库管端小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx92c663433e9a58cb",
+    "setting": {
+      "urlCheck": false
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.camera": {
+        "desc": "用于扫描提货码"
+      }
+    }
+  }
+}
