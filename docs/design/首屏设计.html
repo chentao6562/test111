@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>蒙庆烟花批发首页 V2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ef062d",
+                        "gold": "#E1B12C",
+                        "background-light": "#f8f5f6",
+                        "background-dark": "#230f13",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .festive-pattern {
+            background-image: radial-gradient(#ef062d 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            opacity: 0.03;
+        }
+        .gold-shimmer {
+            background: linear-gradient(45deg, #E1B12C 0%, #F9E29B 50%, #E1B12C 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1c0d0f] dark:text-white selection:bg-primary/30">
+<!-- 1. Sticky Header -->
+<header class="sticky top-0 z-50 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-primary/10 px-4 py-2">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-1 shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl font-bold">flare</span>
+<h1 class="text-primary text-lg font-extrabold tracking-tight">蒙庆烟花</h1>
+</div>
+<div class="flex-1">
+<label class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-primary/60 text-xl">search</span>
+<input class="w-full bg-primary/5 dark:bg-white/5 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-primary/40" placeholder="搜索春节爆款/品牌" type="text"/>
+</label>
+</div>
+<button class="relative p-2 text-primary">
+<span class="material-symbols-outlined text-2xl">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-gold text-[10px] text-white font-bold px-1.5 rounded-full border-2 border-white">8</span>
+</button>
+</div>
+</header>
+<main class="relative">
+<div class="festive-pattern absolute inset-0 pointer-events-none"></div>
+<!-- 2. Visual Hero Carousel -->
+<section class="relative overflow-hidden px-4 pt-4">
+<div class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-3 pb-4">
+<div class="snap-center shrink-0 w-full aspect-[21/9] rounded-xl bg-primary relative overflow-hidden group">
+<div class="absolute inset-0 bg-center bg-cover" data-alt="Grand golden fireworks display at night" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZ77VQTJ0gIg-9lnxqrUGkLOh_lWanTGJ3BFww7O94eoGr5i9RWnAKac3j8NeCb0nI5e4mUYtweeyRKnK5noLOxo7ObQa03CaZnBSV9s75dZWUsvqSRJZFwz0gJymWvcFAkFZsfm7pjTvlwgePTgvCYh9QtcQj5FqyGAqEheEiKeSVbR7tdAKtlMVxLsjWk-SfiLjLTb2gRyXBJfll8ujaMksYzvKjb2VQTpbNt8udqVpjKQELtq5rOy0Nb90pU4iL2GcR3E_M05lG");'></div>
+<div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center p-6">
+<span class="bg-gold text-[#1c0d0f] text-[10px] font-bold px-2 py-0.5 rounded-full w-fit mb-2">FACTORY DIRECT</span>
+<h3 class="text-white text-2xl font-black leading-none">2024 春节特供</h3>
+<p class="text-white/80 text-sm mt-1">整箱订购立减40%</p>
+</div>
+</div>
+<!-- Carousel dots indicator -->
+</div>
+<div class="flex justify-center gap-1.5 mt-[-10px]">
+<div class="w-4 h-1 rounded-full bg-primary"></div>
+<div class="w-1.5 h-1 rounded-full bg-primary/20"></div>
+<div class="w-1.5 h-1 rounded-full bg-primary/20"></div>
+</div>
+</section>
+<!-- 3. Urgent Info Countdown -->
+<section class="mt-4 px-4">
+<div class="bg-primary rounded-xl p-3 flex items-center justify-between text-white overflow-hidden relative">
+<div class="flex items-center gap-2 z-10">
+<span class="material-symbols-outlined animate-pulse text-gold">timer</span>
+<span class="text-xs font-bold uppercase tracking-wider">春节备货倒计时</span>
+</div>
+<div class="flex gap-2 z-10">
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 flex flex-col items-center min-w-[32px]">
+<span class="text-sm font-black">02</span>
+<span class="text-[8px] opacity-80">天</span>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 flex flex-col items-center min-w-[32px]">
+<span class="text-sm font-black">14</span>
+<span class="text-[8px] opacity-80">时</span>
+</div>
+<div class="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 flex flex-col items-center min-w-[32px]">
+<span class="text-sm font-black">35</span>
+<span class="text-[8px] opacity-80">分</span>
+</div>
+</div>
+<div class="absolute -right-4 top-0 opacity-10">
+<span class="material-symbols-outlined text-6xl">celebration</span>
+</div>
+</div>
+</section>
+<!-- 4. Categorization -->
+<section class="grid grid-cols-5 gap-2 px-4 py-6">
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-full bg-gradient-to-tr from-[#FFEDF0] to-[#FFE0E4] flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-3xl">rocket_launch</span>
+</div>
+<span class="text-[11px] font-bold">大型盆花</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-full bg-gradient-to-tr from-[#FFF7E6] to-[#FFE8B3] flex items-center justify-center text-gold shadow-sm">
+<span class="material-symbols-outlined text-3xl">ac_unit</span>
+</div>
+<span class="text-[11px] font-bold">冷烟花</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-full bg-gradient-to-tr from-[#E6F4FF] to-[#BAE0FF] flex items-center justify-center text-blue-600 shadow-sm">
+<span class="material-symbols-outlined text-3xl">child_care</span>
+</div>
+<span class="text-[11px] font-bold">儿童类</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-full bg-gradient-to-tr from-[#F6FFED] to-[#D9F7BE] flex items-center justify-center text-green-600 shadow-sm">
+<span class="material-symbols-outlined text-3xl">auto_awesome</span>
+</div>
+<span class="text-[11px] font-bold">手持类</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-full bg-gradient-to-tr from-[#F9F0FF] to-[#EFDBFF] flex items-center justify-center text-purple-600 shadow-sm">
+<span class="material-symbols-outlined text-3xl">apps</span>
+</div>
+<span class="text-[11px] font-bold">全部分类</span>
+</div>
+</section>
+<!-- 5. Featured Section: Today's Hits -->
+<section class="bg-primary/5 dark:bg-white/5 py-6">
+<div class="px-4 flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<h2 class="text-lg font-black text-[#1c0d0f] dark:text-white">今日爆款</h2>
+<span class="bg-gold/20 text-gold text-[10px] px-2 py-0.5 rounded font-bold">B2B TOP 3</span>
+</div>
+<a class="text-primary text-xs font-bold flex items-center" href="#">查看更多 <span class="material-symbols-outlined text-sm">chevron_right</span></a>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-4 px-4">
+<!-- Card 1 -->
+<div class="shrink-0 w-64 bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-lg shadow-primary/5 border border-primary/5">
+<div class="h-36 bg-center bg-cover relative" data-alt="Multiple fireworks box set packaging" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZdYFE1RKcW3EArI1qA29cHTzISyLSUdKe6bEwnBbCjpAA2aL4a7Ffa8zCo--JI3hj2b1x6pEvpyk-7eR-BgtbHuKEeSpAqsORX_PhmWRW-HMg0fNUiLgmY2POYKp2sZkxsa0bimN56KoZi_HDH6ViIos5qqOuYlvgzGB7kVxpOoxWn6qMHVNzJ6o2TNYSL9ORi4N5eG4uYYS4bD2gqs3GOmY2-7hWeGC3fTTw6eZNzMGyVEHqa4h8wtWm2Tks6n8QvSPIrYNTGP5H");'>
+<div class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded">销量王</div>
+</div>
+<div class="p-3">
+<h4 class="font-bold text-sm truncate">经典红火 100发组合盆花</h4>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-primary text-lg font-black">¥428</span>
+<span class="text-[10px] text-primary/60 font-medium">/箱 (4盒)</span>
+</div>
+<div class="mt-1 flex items-center justify-between">
+<span class="text-[10px] text-gray-400">零售建议价 ¥188/盒</span>
+<span class="text-[10px] text-gold font-bold">利润 43%</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="shrink-0 w-64 bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-lg shadow-primary/5 border border-primary/5">
+<div class="h-36 bg-center bg-cover relative" data-alt="Handheld sparklers in bundle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArnpqj_PRWewt4RQJbn3c_FLg8tU5eLuynD8C_LMR9UEWafTOMykQc02z8v9vNFFxeoubtr-EBm1A1WfRdpdRvQ1BKtsBFgCoS-6-uGX7wdrOkoDXVSxstPsGZDxZWDO4VA130yhss0lJWxNbTBprm0Qpm3ANE-5VNlDHFI8eQ0KrhBZHzmawQUt7oz6xaXwRukwwRnQuZDNek4o4MihtWLdVBFa0hg9PtJEfXgoAtOMa7hPegzrSuoylKuWmN4XdIjgVICL0cSR5L");'>
+<div class="absolute top-2 left-2 bg-gold text-white text-[10px] font-bold px-2 py-1 rounded">高利润</div>
+</div>
+<div class="p-3">
+<h4 class="font-bold text-sm truncate">加长版仙女棒 (50cm)</h4>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-primary text-lg font-black">¥1,200</span>
+<span class="text-[10px] text-primary/60 font-medium">/件 (100包)</span>
+</div>
+<div class="mt-1 flex items-center justify-between">
+<span class="text-[10px] text-gray-400">零售建议价 ¥25/包</span>
+<span class="text-[10px] text-gold font-bold">利润 52%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. Main List: Double Column Product Grid -->
+<section class="px-4 py-6">
+<h2 class="text-lg font-black mb-4 flex items-center gap-2">
+<span class="w-1 h-5 bg-primary rounded-full"></span>
+                全线批发清单
+            </h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Product Card 1 -->
+<div class="flex flex-col gap-2 group">
+<div class="aspect-square bg-white dark:bg-background-dark rounded-xl overflow-hidden relative border border-primary/5">
+<div class="absolute inset-0 bg-center bg-cover group-hover:scale-105 transition-transform" data-alt="Gold fountain fireworks effect" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvgjC6hXboQ6gva0uN9FH7sYVmwmJtWFu3co8mZdkOB-bw9oXaxer6LeJijt7RUT_H6EPAEWp8tfPRZhWnKxJYYnDl7dWXL3HIjpD10nBkLB9mKe67j8laWHznvC6iqYlSmn144XZe2VDpYTR9DxXqdwJRlYekhBZSiGuLbX3ZPzT0e1L1ONt-5R5n2wF6l3kObN5c6U2mHNAl2G5Bzyau1CUTxZdGKIjDKtRZGLyZj1xtfnajUgFBvPrfdVt-5-Xn_aNGPH8giJ2E");'></div>
+<div class="absolute bottom-0 inset-x-0 h-1 bg-gray-100">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+<div class="absolute top-1 right-1 bg-white/90 dark:bg-black/80 px-1.5 py-0.5 rounded-md text-[9px] font-bold">已抢85%</div>
+</div>
+<div>
+<h3 class="text-xs font-bold line-clamp-2 leading-tight">金色喷泉 室内可用冷烟花 安全环保</h3>
+<div class="mt-2">
+<div class="flex items-center gap-1">
+<span class="text-primary text-sm font-black">¥12.5</span>
+<span class="text-[8px] text-primary font-bold px-1 bg-primary/10 rounded">起批量: 200</span>
+</div>
+<div class="flex items-center justify-between mt-0.5">
+<span class="text-[9px] text-gray-400 line-through">零售 ¥38.0</span>
+<span class="text-[9px] text-gray-400 italic">月销 1.2w+</span>
+</div>
+</div>
+<button class="w-full mt-2 bg-primary text-white text-[10px] font-bold py-1.5 rounded-lg active:scale-95 transition-all">加入采购清单</button>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="flex flex-col gap-2 group">
+<div class="aspect-square bg-white dark:bg-background-dark rounded-xl overflow-hidden relative border border-primary/5">
+<div class="absolute inset-0 bg-center bg-cover group-hover:scale-105 transition-transform" data-alt="Traditional round red firecrackers" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDprMnFy_YvSH4w-E_cljOZUEzAbOh50O_k9TMg0ADmVs-87wRqvKz2Pi62O-ZDf846hJtbQ2_kkiPe1ix6EfG62HOXmQYbgMpXvZeGfX6BoLT8JWhOP-0W6Bqj-XUm2H1w5xAcp9eQdzcwwpzKfyAqShyRjMihrCkSxaUqzcppGOHYrLczJX0wvkxksmxY4uEAy75KS-V1w57Cwf62wNDCwUrmaveBvSGQ136R_K6gvupVokg3_ugRVm0T52MpVJFCwgKnj0770JO-");'></div>
+<div class="absolute top-1 left-1 gold-shimmer text-white text-[9px] font-black px-1.5 py-0.5 rounded italic">VIP专享</div>
+<div class="absolute bottom-0 inset-x-0 h-1 bg-gray-100">
+<div class="h-full bg-primary w-[40%]"></div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold line-clamp-2 leading-tight">万字红大满地红 传统手工鞭炮 1000型</h3>
+<div class="mt-2">
+<div class="flex items-center gap-1">
+<span class="text-primary text-sm font-black">¥88.0</span>
+<span class="text-[8px] text-primary font-bold px-1 bg-primary/10 rounded">起批量: 50</span>
+</div>
+<div class="flex items-center justify-between mt-0.5">
+<span class="text-[9px] text-gray-400 line-through">零售 ¥158.0</span>
+<span class="text-[9px] text-gray-400 italic">库存 500+</span>
+</div>
+</div>
+<button class="w-full mt-2 bg-primary text-white text-[10px] font-bold py-1.5 rounded-lg active:scale-95 transition-all">加入采购清单</button>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="flex flex-col gap-2 group">
+<div class="aspect-square bg-white dark:bg-background-dark rounded-xl overflow-hidden relative border border-primary/5">
+<div class="absolute inset-0 bg-center bg-cover group-hover:scale-105 transition-transform" data-alt="Small colorful kids fireworks" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBwbRBfV-Enugsf89XY18wqm53G47EljwTL8iGMhGjHDZVMQ68kFxbn5--MvGydwJPesnD1238jnx0wUr1NPbFdnhrHvpLX3TVRnEDQs3HhCDAOHAPfzLnZz-RGAo13EhGkcgbD0qFn2qoaMA-9Fk2z_0ISvfraYJKy88fksMsp5YEyF6Pe1dI8PM_FcfsLBoVUBiQ5CmapWkS9BoDjOT1IhaVnBhzdXgePxeewuDtpEv_HVVRdZe9-zL1Soj8UxA5X8G-TEZK64bk9");'></div>
+<div class="absolute top-1 left-1 bg-green-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded">儿童安全</div>
+</div>
+<div>
+<h3 class="text-xs font-bold line-clamp-2 leading-tight">七彩小蜜蜂 趣味儿童烟花 混色装</h3>
+<div class="mt-2">
+<div class="flex items-center gap-1">
+<span class="text-primary text-sm font-black">¥4.5</span>
+<span class="text-[8px] text-primary font-bold px-1 bg-primary/10 rounded">起批量: 500</span>
+</div>
+<div class="flex items-center justify-between mt-0.5">
+<span class="text-[9px] text-gray-400 line-through">零售 ¥15.0</span>
+<span class="text-[9px] text-gray-400 italic">利润王</span>
+</div>
+</div>
+<button class="w-full mt-2 bg-primary text-white text-[10px] font-bold py-1.5 rounded-lg active:scale-95 transition-all">加入采购清单</button>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="flex flex-col gap-2 group">
+<div class="aspect-square bg-white dark:bg-background-dark rounded-xl overflow-hidden relative border border-primary/5">
+<div class="absolute inset-0 bg-center bg-cover group-hover:scale-105 transition-transform" data-alt="Large pyrotechnic shell effect in sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUtSozQQSQiy45nwl9qrZRpubhez8j1ygZmp8ZoYoJcAaON-a8Z8rQN4MozYFXcMgLieJ4T6xp4s96AE_BXG6P-rBFNEM4AUBdNRHWCgNU00iMRSsZLSSHS_9e8BbN61pNm582IXrqwMB0J_mwmPjxt8yDDRlg8q3lGHqxGAnRDTSBkjVUOJaXoqypecl0JNwv3vgDNsbW0hmuDxX2KSBvQlXkcgYnA4oMlZJWq8PW4LlxUrvE4KxhZ2lEVwLzf_jbsZbkSikn7L2c");'></div>
+<div class="absolute top-1 right-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded animate-bounce">热销</div>
+</div>
+<div>
+<h3 class="text-xs font-bold line-clamp-2 leading-tight">开门红专业礼花炮 3英寸/5英寸系列</h3>
+<div class="mt-2">
+<div class="flex items-center gap-1">
+<span class="text-primary text-sm font-black">¥680.0</span>
+<span class="text-[8px] text-primary font-bold px-1 bg-primary/10 rounded">起批量: 10</span>
+</div>
+<div class="flex items-center justify-between mt-0.5">
+<span class="text-[9px] text-gray-400 line-through">零售 ¥1200.0</span>
+<span class="text-[9px] text-gray-400 italic">厂家直供</span>
+</div>
+</div>
+<button class="w-full mt-2 bg-primary text-white text-[10px] font-bold py-1.5 rounded-lg active:scale-95 transition-all">加入采购清单</button>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center">
+<p class="text-[10px] text-gray-400">--- 到底啦，更多货源请咨询在线客服 ---</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 inset-x-0 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-primary/10 px-6 py-2 pb-safe-area-inset flex justify-between items-center z-50">
+<div class="flex flex-col items-center gap-0.5 text-primary">
+<span class="material-symbols-outlined text-2xl font-variation-fill">home</span>
+<span class="text-[10px] font-bold">首页</span>
+</div>
+<div class="flex flex-col items-center gap-0.5 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-2xl">category</span>
+<span class="text-[10px] font-medium">分类</span>
+</div>
+<div class="flex flex-col items-center gap-0.5 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+<span class="text-[10px] font-medium">订单</span>
+</div>
+<div class="flex flex-col items-center gap-0.5 text-gray-400 dark:text-gray-500">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium">我的</span>
+</div>
+</nav>
+<!-- Spacer for fixed nav -->
+<div class="h-20"></div>
+</body></html>

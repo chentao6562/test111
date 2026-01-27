@@ -1,0 +1,2584 @@
+// Prisma Schema for 蒙庆烟花代理商订货系统
+// 数据库: MySQL 8.0 (阿里云RDS)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ 仓库相关 ============
+
+// 仓库/提货点
+model Warehouse {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100) // 仓库名称
+  code String @unique @db.VarChar(20) // 仓库编码 WH001
+
+  // 地址信息
+  province String  @db.VarChar(50) // 省份
+  city     String  @db.VarChar(50) // 城市
+  district String? @db.VarChar(50) // 区县
+  address  String  @db.VarChar(255) // 详细地址
+
+  // 经纬度（用于地图展示和距离计算）
+  latitude  Decimal? @db.Decimal(10, 6) // 纬度
+  longitude Decimal? @db.Decimal(10, 6) // 经度
+
+  // 联系信息
+  contactName  String? @db.VarChar(50) // 联系人
+  contactPhone String  @db.VarChar(20) // 联系电话
+
+  // 营业信息
+  businessHours String? @db.VarChar(100) // 营业时间，如"08:00-18:00"
+
+  // 配置
+  isDefault Boolean @default(false) // 是否默认仓库
+
+  // 状态: ACTIVE(正常), INACTIVE(停用)
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  sort Int @default(0) // 排序（越小越靠前）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  staff        SystemUser[] // 归属此仓库的员工
+  orders       Order[] // 此仓库的订单
+  reservations Reservation[] // 【2026-01-16】预约单
+  groupBuys    GroupBuy[]    // 【2026-01-21】拼团活动
+  bargains     Bargain[]     // 【2026-01-22】砍价活动
+
+  @@map("warehouses")
+}
+
+// ============ 用户相关 ============
+
+// 代理商/推销员（Agent）
+// 【2026-01-16 推广体系升级】type含义变更：LEVEL1=一级推销员, LEVEL2=二级推销员, WHOLESALE=批发商(兼容)
+model Agent {
+  id       Int     @id @default(autoincrement())
+  phone    String  @unique @db.VarChar(20)
+  password String? @db.VarChar(255)
+  name     String  @db.VarChar(50)
+  avatar   String? @db.VarChar(500)
+
+  // 代理商类型: LEVEL1(一级推销员), LEVEL2(二级推销员), LEVEL3(三级-兼容), WHOLESALE(批发商)
+  type String @default("WHOLESALE") @db.VarChar(20)
+
+  // 状态: PENDING(待审核), ACTIVE(正常), DISABLED(禁用)
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  // 上级代理商
+  parentId Int?
+  parent   Agent?  @relation("AgentHierarchy", fields: [parentId], references: [id])
+  children Agent[] @relation("AgentHierarchy")
+
+  // 邀请码（唯一）
+  inviteCode String @unique @db.VarChar(10)
+
+  // 财务信息
+  balance         Decimal @default(0) @db.Decimal(10, 2) // 可提现余额
+  totalCommission Decimal @default(0) @db.Decimal(10, 2) // 累计分润（兼容旧字段）
+
+  // 【2026-01-27】分润方式统一为PRICE_DIFF(进货差价/零售价-代理价)，移除RATE比例模式
+  commissionMethod String @default("PRICE_DIFF") @db.VarChar(20)
+
+  // 【2026-01-16 推广体系升级】新增字段
+  isMaster          Boolean   @default(false) // 是否总代理
+  totalSales        Decimal   @default(0) @db.Decimal(12, 2) // 个人累计销售额
+  totalOrderCount   Int       @default(0) // 累计订单数
+  teamSales         Decimal   @default(0) @db.Decimal(12, 2) // 团队累计销售额（一级专用）
+  validInviteCount  Int       @default(0) // 有效邀请人数（已激活的下级数）
+  currentRewardTier Int       @default(0) // 当前已达团队奖励阶梯
+  isActivated       Boolean   @default(false) // 是否已激活（累计成交≥激活门槛）
+  activatedAt       DateTime? // 激活时间
+
+  // 【2026-01-17 团队奖励月度统计】新增字段
+  monthlyTeamSales  Decimal   @default(0) @db.Decimal(12, 2) // 当月团队销售额
+  lastRewardMonth   String?   @db.VarChar(7) // 上次发放团队奖励的月份(YYYY-MM)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  orders              Order[]
+  commissions         Commission[]
+  withdrawals         Withdrawal[]
+  rechargeRequests    RechargeRequest[]
+  fundFlows           FundFlow[]
+  lockStockRequests   LockStockRequest[]
+  cartItems           CartItem[]
+  agentPrices         AgentPrice[] // 推销员定价
+  rewardRecords       RewardRecord[] // 奖励记录
+  upgradeApplications UpgradeApplication[] // 升级申请
+  // 【2026-01-18 春节营销】
+  coupons             Coupon[]       // 代金券
+  agentActivity       AgentActivity? // 活动追踪
+  shareRecords        ShareRecord[]  // 发圈记录
+  weeklyStats         WeeklyStats[]  // 周统计
+  // 【2026-01-22 审计追踪】
+  transactionTraces   TransactionTrace[]  // 交易追踪记录
+  balanceSnapshots    BalanceSnapshot[]   // 余额快照
+
+  @@map("agents")
+}
+
+// 系统用户（管理员、库管、货管）
+model SystemUser {
+  id       Int     @id @default(autoincrement())
+  username String  @unique @db.VarChar(50)
+  password String  @db.VarChar(255)
+  name     String  @db.VarChar(50)
+  phone    String? @db.VarChar(20)
+
+  // 角色: ADMIN(管理员), WAREHOUSE(库管), LOGISTICS(货管)
+  role String @db.VarChar(20)
+
+  // 状态: ACTIVE(正常), DISABLED(禁用)
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  // 【2026-01-13 多仓库支持】所属仓库（库管必填，货管可选）
+  warehouseId Int?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  // 登录失败计数（用于锁定）
+  loginFailCount Int       @default(0)
+  lockedUntil    DateTime?
+
+  // 【2026-01-09 业务优化】货管/骑手扩展信息（role=LOGISTICS时使用）
+  realName     String? @db.VarChar(50) // 真实姓名
+  idCardNo     String? @db.VarChar(18) // 身份证号
+  vehicleType  String? @db.VarChar(20) // 车辆类型
+  vehiclePlate String? @db.VarChar(20) // 车牌号
+  serviceArea  String? @db.VarChar(100) // 服务区域
+  isAvailable  Boolean @default(true) // 是否在线接单
+
+  // 【2026-01-10】员工财务信息
+  balance     Decimal @default(0) @db.Decimal(10, 2) // 可提现余额
+  totalIncome Decimal @default(0) @db.Decimal(10, 2) // 累计收入
+
+  // 收款信息
+  bankName    String? @db.VarChar(50) // 银行名称
+  bankAccount String? @db.VarChar(50) // 银行账号
+  accountName String? @db.VarChar(50) // 账户姓名（开户人）
+  alipay      String? @db.VarChar(50) // 支付宝账号
+  wechat      String? @db.VarChar(50) // 微信号
+
+  // 关联的移库任务
+  transferTasks TransferTask[]
+
+  // 关联的配货订单（库管角色使用）
+  warehouseOrders Order[] @relation("WarehouseOrders")
+
+  // 【已废弃 2026-01-16】移库打包关联已删除
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([warehouseId])
+  @@map("system_users")
+}
+
+// 短信验证码
+model SmsCode {
+  id    Int    @id @default(autoincrement())
+  phone String @db.VarChar(20)
+  code  String @db.VarChar(10)
+
+  // 类型: LOGIN(登录), REGISTER(注册), RESET_PASSWORD(重置密码)
+  type String @db.VarChar(20)
+
+  expiredAt DateTime
+  used      Boolean  @default(false)
+  attempts  Int      @default(0) // 【2026-01-17】验证尝试次数，超过5次自动失效
+  createdAt DateTime @default(now())
+
+  @@index([phone, type])
+  @@map("sms_codes")
+}
+
+// ============ 商品相关 ============
+
+// 商品分类
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(50)
+  icon      String?  @db.VarChar(500)
+  sort      Int      @default(0)
+  status    String   @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+
+  @@map("categories")
+}
+
+// 商品
+model Product {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(100)
+  description String? @db.Text
+
+  // 商品编码/条形码（用于扫码识别）
+  barcode String? @unique @db.VarChar(50) // 条形码
+  sku     String? @db.VarChar(50) // SKU编码
+
+  // 图片（JSON数组）
+  images String @db.Text
+
+  // 价格（三级价格体系 - 兼容旧模式）
+  retailPrice    Decimal  @db.Decimal(10, 2) // 零售价
+  agentPrice     Decimal  @db.Decimal(10, 2) // 代理价
+  wholesalePrice Decimal  @db.Decimal(10, 2) // 批发价
+  costPrice      Decimal? @db.Decimal(10, 2) // 成本价（总代理进货价）
+
+  // 【2026-01-16 推广体系升级】新增价格字段
+  supplyPrice       Decimal? @db.Decimal(10, 2) // 供货价（给一级推销员的拿货价）
+  suggestedPrice    Decimal? @db.Decimal(10, 2) // 建议零售价
+  minRetailPrice    Decimal? @db.Decimal(10, 2) // 最低零售价（强制约束）
+  masterRetailPrice Decimal? @db.Decimal(10, 2) // 总代理零售价（默认页面价格）
+
+  // 库存
+  stock     Int @default(0) // 可用库存
+  lockStock Int @default(0) // 锁定库存
+  minStock  Int @default(0) // 最低库存预警
+
+  // 单位
+  unit String @default("个") @db.VarChar(20)  // 销售单位（最小单位）
+
+  // 【2026-01-17 新增】进货单位换算
+  purchaseUnit     String @default("件") @db.VarChar(20)  // 进货单位（箱/件）
+  unitConversion   Int    @default(1)                      // 换算比例：1进货单位=N销售单位
+
+  // 分类
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // 规格（JSON）
+  specs String? @db.Text
+
+  // 销量
+  salesCount Int @default(0)
+
+  // 【2026-01-18 AI营销文案】
+  slogan           String?   @db.VarChar(100) // AI生成的一句话卖点
+  sellingPoints    String?   @db.Text // AI生成的结构化卖点（JSON数组）
+  usageScenes      String?   @db.VarChar(500) // AI生成的适用场景（JSON数组）
+  aiCopyUpdatedAt  DateTime? // AI内容最后更新时间
+
+  // 【2026-01-23 商品视频】
+  videoUrl       String?  @db.VarChar(500)   // 视频URL
+  videoThumbnail String?  @db.VarChar(500)   // 视频封面图URL
+  videoDuration  Int?                         // 视频时长（秒）
+
+  // 【2026-01-26 特价商品】不参与任何营销活动（砍价/秒杀/锁价/拼团/赠品/代金券）
+  isSpecialPrice Boolean @default(false) @map("is_special_price")
+
+  // 状态: ACTIVE(上架), INACTIVE(下架)
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  // 【已废弃 2026-01-16】移库字段已删除，改为预约模式
+
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems        OrderItem[]
+  stockLogs         StockLog[]
+  lockStockRequests LockStockRequest[]
+  cartItems         CartItem[]
+  h5Recommends      H5RecommendProduct[]
+  recommends        RecommendProduct[]
+  agentPrices       AgentPrice[] // 推销员定价
+  flashSaleItems    FlashSaleItem[] // 秒杀活动商品
+  bargainConfigItems BargainConfigItem[] // 【2026-01-22】砍价商品配置
+  bargains          Bargain[] // 【2026-01-22】砍价活动
+  packageItems      PackageItem[] // 【2026-01-25】套餐商品
+
+  @@index([categoryId])
+  @@index([barcode])
+  @@map("products")
+}
+
+// ============ 购物车相关 ============
+
+// 购物车（订货单）
+model CartItem {
+  id Int @id @default(autoincrement())
+
+  // 代理商
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 商品
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  // 数量
+  quantity Int @default(1)
+
+  // 选中状态（结算时用）
+  selected Boolean @default(true)
+
+  // 【新增】砍价关联
+  bargainId     Int?      @map("bargain_id")  // 关联的砍价记录ID
+  isBargainItem Boolean   @default(false) @map("is_bargain_item")  // 是否砍价商品
+  bargainPrice  Decimal?  @map("bargain_price") @db.Decimal(10, 2)  // 砍价后的价格
+
+  // 【2026-01-25 套餐系统】
+  isPackageItem Boolean   @default(false) @map("is_package_item")  // 是否套餐商品
+  packageId     Int?      @map("package_id")  // 套餐ID
+  packagePrice  Decimal?  @map("package_price") @db.Decimal(10, 2)  // 套餐价格
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agentId, productId, bargainId, packageId]) // 同一代理商同一商品（区分砍价/套餐/普通）
+  @@index([agentId])
+  @@index([bargainId])
+  @@index([packageId])
+  @@map("cart_items")
+}
+
+// ============ 订单相关 ============
+
+// 订单
+model Order {
+  id      Int    @id @default(autoincrement())
+  orderNo String @unique @db.VarChar(30)
+
+  // 代理商
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 金额
+  totalAmount Decimal @db.Decimal(10, 2) // 订单总额
+  paidAmount  Decimal @default(0) @db.Decimal(10, 2) // 已付金额
+  lockFee     Decimal @default(0) @db.Decimal(10, 2) // 锁货费
+
+  // 状态
+  // pending_confirm(待确认), pending_payment(待付款), pending_accept(待接单), preparing(备货中)
+  // pending_lock_fee(待付锁货费), pending_transfer(待移库), transferring(移库中)
+  // pending_pickup(待提货), completed(已完成), cancelled(已取消)
+  status String @default("pending_confirm") @db.VarChar(30)
+
+  // 订单确认相关（新增）
+  needConfirm   Boolean   @default(true) // 是否需要确认（一级代理商和批发商不需要）
+  confirmerId   Int? // 确认人ID（一级代理商）
+  confirmedAt   DateTime? // 确认时间
+  confirmRemark String?   @db.VarChar(255) // 确认备注
+
+  // 联系信息
+  contactName  String @db.VarChar(50)
+  contactPhone String @db.VarChar(20)
+
+  // 提货信息
+  pickupCode         String?   @db.VarChar(10) // 提货码（客户提货用）
+  transferCode       String?   @db.VarChar(10) // 货管移库码（锁货模式：库管→货管交接用）
+  pickupTime         DateTime? // 预约提货时间
+  expectedPickupDate String?   @db.VarChar(20) // 预计提货日期 (YYYY-MM-DD)
+  pickedAt           DateTime? // 实际提货时间
+
+  // 支付状态（新增）
+  depositAmount Decimal? @db.Decimal(10, 2) // 定金金额
+  depositPaid   Boolean  @default(false) // 是否已付定金
+  fullPaid      Boolean  @default(false) // 是否已付全款
+
+  // 核销时间追踪（新增）
+  warehouseVerifiedAt DateTime? // 库管核销时间（自提完成/锁货交接货管）
+  warehouseStaffId    Int? // 配货库管ID
+  warehouseStaff      SystemUser? @relation("WarehouseOrders", fields: [warehouseStaffId], references: [id])
+  logisticsVerifiedAt DateTime? // 货管核销时间（锁货模式交付客户）
+
+  // 【已废弃 2026-01-16】移库模式相关字段已删除，改为预约模式
+  // needTransfer, transferFee, transferFeeConfirmed 等字段已移除
+  // deliveryName, deliveryPhone, deliveryAddress, deliveryRemark 已移除
+  // bundleId 已移除
+
+  // 备注
+  remark      String? @db.Text
+  adminRemark String? @db.Text
+
+  // 【2026-01-13 多仓库支持】提货仓库
+  warehouseId Int? // 提货仓库ID（自提订单为选择的仓库，移库订单为默认仓库）
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  // 【2026-01-16 推广体系升级】订单来源与利润分配
+  orderSource   Int  @default(0) // 订单来源: 0=总代理/默认页面 1=一级推销员 2=二级推销员
+  sourceAgentId Int? // 来源推销员ID（下单时的推销员）
+
+  // 价格快照（用于利润计算）
+  snapshotCostPrice   Decimal? @db.Decimal(10, 2) // 快照：成本价
+  snapshotSupplyPrice Decimal? @db.Decimal(10, 2) // 快照：供货价
+  snapshotLevel1Price Decimal? @db.Decimal(10, 2) // 快照：一级给二级的价
+  snapshotRetailPrice Decimal? @db.Decimal(10, 2) // 快照：成交零售价
+
+  // 利润分配
+  masterProfit  Decimal @default(0) @db.Decimal(10, 2) // 总代理利润
+  level1Profit  Decimal @default(0) @db.Decimal(10, 2) // 一级推销员利润
+  level2Profit  Decimal @default(0) @db.Decimal(10, 2) // 二级推销员利润
+  level1AgentId Int? // 一级推销员ID
+  level2AgentId Int? // 二级推销员ID
+
+  // 收款确认（增强）
+  paymentConfirmed   Boolean   @default(false) // 收款已确认
+  paymentConfirmedAt DateTime? // 收款确认时间
+  paymentMethod      String?   @db.VarChar(20) // 收款方式: cash/scan/transfer
+
+  // 利润结算（T+2）
+  profitSettled   Boolean   @default(false) // 利润已结算
+  profitSettledAt DateTime? // 利润结算时间
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items           OrderItem[]
+  commissions     Commission[]
+  transferTask    TransferTask?
+  exceptionOrders ExceptionOrder[]
+  confirmLogs     OrderConfirmLog[]
+
+  @@index([agentId])
+  @@index([status])
+  @@index([needConfirm])
+  @@index([warehouseId])
+  @@index([orderSource])
+  @@index([sourceAgentId])
+  @@map("orders")
+}
+
+// 订单确认日志
+model OrderConfirmLog {
+  id Int @id @default(autoincrement())
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  // 操作人
+  operatorId   Int // 操作人ID
+  operatorType String  @db.VarChar(20) // AGENT(代理商) / ADMIN(管理员)
+  operatorName String? @db.VarChar(50) // 操作人名称
+
+  // 操作类型: CONFIRM(确认) / TIMEOUT(超时) / CS_CONFIRM(客服确认)
+  action String @db.VarChar(20)
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@map("order_confirm_logs")
+}
+
+// 订单商品
+model OrderItem {
+  id      Int   @id @default(autoincrement())
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  productName  String  @db.VarChar(100)
+  productImage String? @db.VarChar(500)
+  price        Decimal @db.Decimal(10, 2)
+  quantity     Int
+  specs        String? @db.Text
+
+  // 【2026-01-16 推广体系升级】商品级价格快照
+  snapshotCostPrice   Decimal? @db.Decimal(10, 2) // 成本价快照
+  snapshotSupplyPrice Decimal? @db.Decimal(10, 2) // 供货价快照
+  snapshotLevel1Price Decimal? @db.Decimal(10, 2) // 一级给二级价格快照
+  snapshotRetailPrice Decimal? @db.Decimal(10, 2) // 零售价快照
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// ============ 分润相关 ============
+
+// 分润规则
+model CommissionRule {
+  id Int @id @default(autoincrement())
+
+  // 订单金额阈值
+  minAmount Decimal @db.Decimal(10, 2)
+
+  // 分润比例（百分比）
+  level1Rate Decimal @db.Decimal(5, 2) // 一级代理分润
+  level2Rate Decimal @db.Decimal(5, 2) // 二级代理分润
+
+  status    String   @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("commission_rules")
+}
+
+// 分润记录
+model Commission {
+  id Int @id @default(autoincrement())
+
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  // 分润金额
+  amount Decimal @db.Decimal(10, 2)
+  rate   Decimal @db.Decimal(5, 2) // 分润比例
+
+  // 分润类型: DIRECT(直接分润), INDIRECT(间接分润)
+  type String @db.VarChar(20)
+
+  // 状态: PENDING(待结算), SETTLED(已结算), CANCELLED(已取消)
+  status String @default("PENDING") @db.VarChar(20)
+
+  settledAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([agentId])
+  @@index([orderId])
+  @@map("commissions")
+}
+
+// 提现记录
+model Withdrawal {
+  id Int @id @default(autoincrement())
+
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  amount Decimal @db.Decimal(10, 2)
+
+  // 状态: PENDING(待审核), APPROVED(已通过), REJECTED(已拒绝), COMPLETED(已完成)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 审核信息
+  reviewedBy   Int?
+  reviewedAt   DateTime?
+  rejectReason String?   @db.VarChar(255)
+
+  // 【Task 2.1】打款完成信息
+  completedAt    DateTime?
+  completedBy    Int?
+  completeRemark String?   @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agentId])
+  @@map("withdrawals")
+}
+
+// ============ 库存相关 ============
+
+// 库存日志
+model StockLog {
+  id Int @id @default(autoincrement())
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  // 变动类型: IN(入库), OUT(出库), ADJUST(调整)
+  type String @db.VarChar(20)
+
+  // 变动数量（正数入库，负数出库）
+  quantity Int
+
+  // 变动前后库存
+  beforeStock Int
+  afterStock  Int
+
+  // 关联订单
+  orderId Int?
+
+  // 操作人
+  operatorId   Int?
+  operatorName String? @db.VarChar(50)
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("stock_logs")
+}
+
+// ============ 移库相关 ============
+
+// 移库任务
+model TransferTask {
+  id Int @id @default(autoincrement())
+
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+
+  // 货管
+  logisticsId Int?
+  logistics   SystemUser? @relation(fields: [logisticsId], references: [id])
+
+  // 状态: PENDING(待接单), ACCEPTED(已接单), COMPLETED(已完成), CANCELLED(已取消)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 费用
+  fee Decimal @db.Decimal(10, 2)
+
+  // 时间
+  acceptedAt  DateTime?
+  completedAt DateTime?
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transfer_tasks")
+}
+
+// ============ 财务相关 ============
+
+// 加款申请
+model RechargeRequest {
+  id Int @id @default(autoincrement())
+
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 申请金额
+  amount Decimal @db.Decimal(10, 2)
+
+  // 支付凭证（图片URL）
+  voucher String? @db.VarChar(500)
+
+  // 状态: PENDING(待审核), APPROVED(已通过), REJECTED(已拒绝)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 审核信息
+  reviewedBy   Int?
+  reviewedAt   DateTime?
+  rejectReason String?   @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([status])
+  @@map("recharge_requests")
+}
+
+// 资金流水
+model FundFlow {
+  id Int @id @default(autoincrement())
+
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 类型: RECHARGE(充值), WITHDRAW(提现), ORDER_PAY(订单支付), COMMISSION(分润)
+  type String @db.VarChar(20)
+
+  // 金额（正数为收入，负数为支出）
+  amount Decimal @db.Decimal(10, 2)
+
+  // 变动前后余额
+  beforeBalance Decimal @db.Decimal(10, 2)
+  afterBalance  Decimal @db.Decimal(10, 2)
+
+  // 关联ID（订单ID、充值申请ID、提现ID等）
+  relatedId   Int?
+  relatedType String? @db.VarChar(20)
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  @@index([agentId])
+  @@index([type])
+  @@map("fund_flows")
+}
+
+// ============ 轮播图 ============
+
+// 首页Banner轮播图
+model Banner {
+  id       Int     @id @default(autoincrement())
+  title    String  @db.VarChar(100) // 标题
+  subtitle String? @db.VarChar(200) // 副标题
+  imageUrl String  @db.VarChar(500) // 图片地址
+
+  // 链接类型: NONE(无), PRODUCT(商品), CATEGORY(分类), URL(外部链接)
+  linkType  String  @default("NONE") @db.VarChar(20)
+  linkValue String? @db.VarChar(255) // 链接值
+
+  sortOrder Int @default(0) // 排序（越大越靠前）
+
+  // 状态: ACTIVE(启用), INACTIVE(禁用)
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("banners")
+}
+
+// 代理商端推荐商品配置
+model RecommendProduct {
+  id        Int     @id @default(autoincrement())
+  productId Int // 商品ID
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // 推荐类型: HOT(热销), NEW(新品), FEATURED(精选)
+  type String @default("HOT") @db.VarChar(20)
+
+  // 可选的自定义展示信息
+  title    String? @db.VarChar(100) // 推荐标题（如不填则用商品名）
+  subtitle String? @db.VarChar(200) // 推荐副标题
+  badge    String? @db.VarChar(20) // 角标文字（如"热卖"、"新品"、"限时"）
+
+  sortOrder Int    @default(0) // 排序（越大越靠前）
+  status    String @default("ACTIVE") @db.VarChar(20)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, type]) // 同一商品在同一类型下只能出现一次
+  @@index([type, status, sortOrder])
+  @@map("recommend_products")
+}
+
+// ============ 门店零售 ============
+
+// 零售订单
+model RetailOrder {
+  id      Int    @id @default(autoincrement())
+  orderNo String @unique @db.VarChar(30) // 零售单号: R + YYYYMMDD + 6位序号
+
+  // 商品列表（JSON）
+  items String @db.Text // [{productId, name, image, price, quantity, subtotal}]
+
+  // 金额
+  totalAmount Decimal @db.Decimal(10, 2) // 总金额
+
+  // 收款方式: CASH(现金), SCAN(扫码), TRANSFER(转账)
+  paymentType String @db.VarChar(20)
+
+  // 状态: pending(待付款), paid(已付款), cancelled(已取消)
+  status String @default("pending") @db.VarChar(20)
+
+  // 付款信息
+  paidAt DateTime? // 付款时间
+
+  // 操作人（库管）
+  operatorId   Int
+  operatorName String? @db.VarChar(50)
+
+  // 确认人（后台转账时为客服）
+  confirmerId   Int?
+  confirmerName String? @db.VarChar(50)
+
+  // 顾客信息（可选）
+  customerName  String? @db.VarChar(50)
+  customerPhone String? @db.VarChar(20)
+
+  // 打印次数
+  printCount Int @default(0)
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  retailItems RetailOrderItem[]
+
+  @@index([status])
+  @@index([operatorId])
+  @@index([paymentType])
+  @@map("retail_orders")
+}
+
+// 零售订单明细
+model RetailOrderItem {
+  id Int @id @default(autoincrement())
+
+  retailOrderId Int
+  retailOrder   RetailOrder @relation(fields: [retailOrderId], references: [id])
+
+  productId    Int
+  productName  String  @db.VarChar(100)
+  productImage String? @db.VarChar(500)
+  price        Decimal @db.Decimal(10, 2)
+  quantity     Int
+  subtotal     Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  @@index([retailOrderId])
+  @@index([productId])
+  @@map("retail_order_items")
+}
+
+// ============ 系统配置 ============
+
+// 系统配置
+model Config {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique @db.VarChar(50)
+  value     String   @db.Text
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("configs")
+}
+
+// 操作日志
+model AuditLog {
+  id Int @id @default(autoincrement())
+
+  // 操作人
+  userId   Int
+  userType String  @db.VarChar(20) // admin/agent/staff
+  userName String? @db.VarChar(50)
+
+  // 操作信息
+  action String  @db.VarChar(50) // create/update/delete/login/logout
+  module String  @db.VarChar(50) // 模块名称
+  detail String? @db.Text // 操作详情
+
+  // 请求信息
+  ip        String? @db.VarChar(50)
+  userAgent String? @db.VarChar(500)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([module])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============ 客服管理 ============
+
+// 锁货申请
+model LockStockRequest {
+  id        Int    @id @default(autoincrement())
+  requestNo String @unique @db.VarChar(30)
+
+  // 申请人
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 商品信息
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int // 申请数量
+
+  // 状态: PENDING(待审核), APPROVED(已通过), REJECTED(已驳回)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 审核信息
+  reviewedBy   Int?
+  reviewedAt   DateTime?
+  rejectReason String?   @db.VarChar(255)
+
+  remark    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([productId])
+  @@index([status])
+  @@map("lock_stock_requests")
+}
+
+// 异常工单
+model ExceptionOrder {
+  id       Int    @id @default(autoincrement())
+  ticketNo String @unique @db.VarChar(30)
+
+  // 关联订单
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  // 异常类型: QUALITY(质量问题), SHORTAGE(缺货), DAMAGE(破损), OTHER(其他)
+  type        String @db.VarChar(30)
+  description String @db.Text
+
+  // 状态: PENDING(待处理), PROCESSING(处理中), RESOLVED(已解决), CLOSED(已关闭)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 处理信息
+  resolvedBy Int?
+  resolvedAt DateTime?
+  resolution String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+  @@index([type])
+  @@map("exception_orders")
+}
+
+// ============ H5素材管理 ============
+
+// H5轮播图
+model H5Banner {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(100) // 标题
+  imageUrl  String    @db.VarChar(500) // 图片URL
+  linkType  String    @db.VarChar(20) // 链接类型: PRODUCT(商品), CATEGORY(分类), URL(外链), NONE(无)
+  linkValue String?   @db.VarChar(200) // 链接值: 商品ID/分类ID/URL
+  sort      Int       @default(0) // 排序（数字越小越靠前）
+  status    String    @default("ACTIVE") @db.VarChar(20) // 状态: ACTIVE(启用), INACTIVE(禁用)
+  startTime DateTime? // 开始时间
+  endTime   DateTime? // 结束时间
+
+  createdBy Int // 创建人
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([sort])
+  @@map("h5_banners")
+}
+
+// H5推荐商品
+model H5RecommendProduct {
+  id        Int     @id @default(autoincrement())
+  productId Int // 商品ID
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  type     String  @db.VarChar(20) // 推荐类型: HOT(热销), NEW(新品), FEATURED(精选)
+  title    String? @db.VarChar(100) // 推荐标题
+  subtitle String? @db.VarChar(200) // 推荐副标题
+  badge    String? @db.VarChar(20) // 角标文字（如"热卖"、"新品"）
+  sort     Int     @default(0) // 排序
+  status   String  @default("ACTIVE") @db.VarChar(20)
+
+  createdBy Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([type])
+  @@index([status])
+  @@index([sort])
+  @@map("h5_recommend_products")
+}
+
+// H5公告通知
+model H5Notice {
+  id      Int    @id @default(autoincrement())
+  title   String @db.VarChar(100)
+  content String @db.Text
+  type    String @db.VarChar(20) // 类型: SYSTEM(系统), ACTIVITY(活动), IMPORTANT(重要)
+  status  String @default("ACTIVE") @db.VarChar(20)
+  sort    Int    @default(0)
+
+  startTime DateTime?
+  endTime   DateTime?
+
+  createdBy Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@map("h5_notices")
+}
+
+// ============ 员工财务相关 ============
+
+// 员工提现记录（货管/库管）
+model StaffWithdrawal {
+  id Int @id @default(autoincrement())
+
+  // 申请人（SystemUser）
+  staffId   Int
+  staffName String @db.VarChar(50) // 冗余存储，方便查询
+
+  // 提现金额
+  amount Decimal @db.Decimal(10, 2)
+
+  // 收款信息
+  bankName    String? @db.VarChar(50) // 银行名称
+  bankAccount String? @db.VarChar(50) // 银行账号
+  accountName String? @db.VarChar(50) // 账户姓名
+  alipay      String? @db.VarChar(50) // 支付宝账号
+  wechat      String? @db.VarChar(50) // 微信号
+
+  // 状态: PENDING(待审核), APPROVED(已通过), REJECTED(已拒绝), COMPLETED(已打款)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 审核信息
+  reviewedBy   Int?
+  reviewedAt   DateTime?
+  rejectReason String?   @db.VarChar(255)
+
+  // 打款信息
+  completedBy    Int?
+  completedAt    DateTime?
+  completeRemark String?   @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([staffId])
+  @@index([status])
+  @@map("staff_withdrawals")
+}
+
+// ============ 【2026-01-16 预约模式】预约系统 ============
+
+// 预约单
+model Reservation {
+  id            Int    @id @default(autoincrement())
+  reservationNo String @unique @db.VarChar(32) // 预约号 MQ2026011700001
+
+  // 客户信息
+  customerName  String   @db.VarChar(50) // 提货人姓名
+  customerPhone String   @db.VarChar(20) // 提货人手机号
+  pickupDate    DateTime @db.Date // 预约提货日期
+
+  // 归属信息
+  salespersonId       Int? // 推销员ID
+  salespersonLevel    Int? @db.TinyInt // 推销员级别 1=一级 2=二级
+  parentSalespersonId Int? // 上级推销员ID（一级）
+  agentId             Int? // 总代理ID
+  storeId             Int // 门店ID
+
+  // 金额
+  totalAmount Decimal @db.Decimal(10, 2) // 商品总价（到店应付）
+
+  // 赠品
+  giftTierId    Int? // 赠品档位ID
+  giftName      String? @db.VarChar(200) // 赠品名称
+  giftDelivered Boolean @default(false) // 赠品是否已发放
+
+  // 状态：0=待确认 1=确认中 2=已确认 3=已完成 4=已取消 5=已过期 6=确认失败
+  status Int @default(0) @db.TinyInt
+
+  // 电话确认
+  callCount   Int       @default(0) @db.TinyInt // 拨打次数
+  lastCallAt  DateTime? // 最后拨打时间
+  confirmedAt DateTime? // 确认时间
+  confirmedBy Int? // 确认人
+
+  // 核销
+  completedAt   DateTime? // 完成时间（提货时间）
+  completedBy   Int? // 核销人
+  paymentMethod String?   @db.VarChar(20) // 支付方式：cash/wechat/alipay
+
+  // 【2026-01-17 备货环节】
+  staffId    Int? // 负责备货的员工ID
+  pickupCode String?   @db.VarChar(20) // 提货码（8位数字）
+  preparedAt DateTime? // 备货完成时间
+
+  // 【2026-01-17 超时分配优化】
+  assignedStaffId Int?       // 分配的员工ID（超时自动分配用）
+  assignedAt      DateTime?  // 分配时间
+
+  // 结算
+  settled   Boolean   @default(false) // 是否已结算
+  settledAt DateTime? // 结算时间
+
+  // 利润分配
+  masterProfit Decimal @default(0) @db.Decimal(10, 2) // 总代理利润
+  level1Profit Decimal @default(0) @db.Decimal(10, 2) // 一级推销员利润
+  level2Profit Decimal @default(0) @db.Decimal(10, 2) // 二级推销员利润
+
+  // 风控
+  customerRiskLevel Int @default(0) @db.TinyInt // 客户风险等级
+
+  // 【2026-01-20 秒杀系统】
+  hasFlashSaleItems   Boolean @default(false) @map("has_flash_sale_items") // 是否包含秒杀商品
+  flashSaleActivityId Int?    @map("flash_sale_activity_id") // 秒杀活动ID
+
+  // 【2026-01-21 顺路拼团-区域】
+  regionId   Int?    @map("region_id")    // 客户所在区域ID（乡镇/街道级）
+  regionName String? @map("region_name") @db.VarChar(100) // 冗余存储区域全名（如"赛罕区/大学西路街道"）
+
+  expireAt  DateTime? // 预约截止时间（确认后3天）
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // 关联
+  items          ReservationItem[]
+  store          Warehouse              @relation(fields: [storeId], references: [id])
+  prepareIssues  PrepareIssue[]         // 【2026-01-17】备货问题记录
+  audits         ReservationAudit[]     // 【2026-01-17】操作审计日志
+  groupBuyMember GroupBuyMember?        // 【2026-01-21】拼团成员关联
+  region         Region?                @relation("ReservationRegion", fields: [regionId], references: [id]) // 【2026-01-21】区域
+
+  // 【2026-01-16 索引优化】提升查询性能
+  @@index([salespersonId])
+  @@index([status])
+  @@index([storeId])
+  @@index([customerPhone])
+  @@index([pickupDate])
+  @@index([storeId, status])                    // 门店待确认列表
+  @@index([storeId, status, pickupDate])        // 门店预约筛选
+  @@index([salespersonId, status])              // 推销员预约列表
+  @@index([customerPhone, pickupDate])          // 客户预约查询
+  @@index([status, createdAt])                  // 状态+时间排序
+  @@index([status, expireAt])                   // 过期检查
+  @@index([pickupCode, storeId, status])        // 【2026-01-17】提货码验证
+  @@index([regionId])                           // 【2026-01-21】区域索引
+  @@map("reservations")
+}
+
+// 预约商品明细
+model ReservationItem {
+  id Int @id @default(autoincrement())
+
+  reservationId Int
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  productId    Int
+  productName  String  @db.VarChar(200) // 商品名称
+  productImage String? @db.VarChar(500) // 商品图片
+  quantity     Int // 数量
+  price        Decimal @db.Decimal(10, 2) // 单价
+
+  // 价格快照（用于利润计算）
+  snapshotCostPrice   Decimal? @db.Decimal(10, 2) // 成本价
+  snapshotSupplyPrice Decimal? @db.Decimal(10, 2) // 供货价
+  snapshotLevel1Price Decimal? @db.Decimal(10, 2) // 一级给二级价
+  snapshotRetailPrice Decimal? @db.Decimal(10, 2) // 零售价
+
+  // 【2026-01-17 备货环节】
+  prepared Boolean @default(false) // 是否已备货
+
+  // 【2026-01-20 秒杀系统】
+  isFlashSale     Boolean @default(false) @map("is_flash_sale") // 是否秒杀商品
+  flashSaleItemId Int?    @map("flash_sale_item_id") // 秒杀商品项ID
+
+  // 【2026-01-23 砍价系统】
+  isBargain  Boolean @default(false) @map("is_bargain") // 是否砍价商品
+  bargainId  Int?    @map("bargain_id") // 砍价记录ID
+
+  // 【2026-01-25 套餐系统】
+  isPackage    Boolean @default(false) @map("is_package") // 是否套餐商品
+  packageId    Int?    @map("package_id") // 套餐ID
+  packageName  String? @map("package_name") @db.VarChar(100) // 套餐名称
+  packageItems String? @map("package_items") @db.Text // 套餐商品明细JSON快照
+
+  // 【2026-01-26 特价商品】
+  isSpecialPrice Boolean @default(false) @map("is_special_price") // 是否特价商品（快照）
+
+  @@index([reservationId])
+  @@index([productId])
+  @@index([bargainId])
+  @@index([packageId])
+  @@map("reservation_items")
+}
+
+// 赠品档位表
+model GiftTier {
+  id Int @id @default(autoincrement())
+
+  minAmount Decimal  @db.Decimal(10, 2) // 最低金额
+  giftName  String   @db.VarChar(200) // 赠品名称
+  giftItems String?  @db.Text // 赠品明细JSON
+  giftCost  Decimal? @db.Decimal(10, 2) // 赠品成本
+  isActive  Boolean  @default(true) // 是否启用
+  sortOrder Int      @default(0) // 排序
+
+  // 【2026-01-19】增强字段
+  giftImage   String?   @map("gift_image") @db.VarChar(500) // 赠品图片
+  giftStock   Int       @default(0) @map("gift_stock") // 赠品库存(0=不限)
+  usedCount   Int       @default(0) @map("used_count") // 已发放数量
+  startTime   DateTime? @map("start_time") // 活动开始时间
+  endTime     DateTime? @map("end_time") // 活动结束时间
+  description String?   @db.VarChar(500) // 档位描述
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, startTime, endTime])
+  @@map("gift_tiers")
+}
+
+// 客户记录表（风控）
+model CustomerRecord {
+  id Int @id @default(autoincrement())
+
+  phone String  @unique @db.VarChar(20) // 手机号
+  name  String? @db.VarChar(50) // 姓名
+
+  totalOrders     Int @default(0) // 总预约数
+  completedOrders Int @default(0) // 完成数
+  noShowCount     Int @default(0) // 爽约次数
+
+  // 风险等级：0=正常 1=有记录 2=高风险 3=黑名单
+  riskLevel     Int     @default(0) @db.TinyInt
+  isBlocked     Boolean @default(false) // 是否禁止预约
+  blockedReason String? @db.VarChar(200) // 禁止原因
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 【2026-01-16 索引优化】风控查询
+  @@index([riskLevel])                          // 风险等级筛选
+  @@index([isBlocked])                          // 黑名单筛选
+  @@index([riskLevel, isBlocked])               // 组合筛选
+  @@map("customer_records")
+}
+
+// ============ 【已废弃】配送/抢单/移库打包系统已删除 ============
+// DeliveryPool、TransferBundle、TransferConfig 模型已删除（2026-01-16）
+
+// ============ 【2026-01-16 推广体系升级】推销员定价与奖励系统 ============
+
+// 推销员定价表
+model AgentPrice {
+  id Int @id @default(autoincrement())
+
+  // 推销员
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 商品
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  // 定价
+  retailPrice Decimal? @db.Decimal(10, 2) // 我的零售价（卖给客户的价格）
+  subPrice    Decimal? @db.Decimal(10, 2) // 给下级的价格（一级推销员专用）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agentId, productId])
+  @@index([productId])
+  @@map("agent_prices")
+}
+
+// 奖励配置表
+model RewardConfig {
+  id Int @id @default(autoincrement())
+
+  configKey   String  @unique @db.VarChar(50) // 配置键
+  configValue String  @db.VarChar(200) // 配置值
+  description String? @db.VarChar(200) // 说明
+
+  updatedAt DateTime @updatedAt
+  updatedBy Int? // 更新人
+
+  @@map("reward_configs")
+}
+
+// 团队奖励阶梯表
+model TeamRewardTier {
+  id Int @id @default(autoincrement())
+
+  tierLevel      Int     @unique // 阶梯档位（1/2/3...）
+  salesThreshold Decimal @db.Decimal(12, 2) // 销售额门槛
+  rewardAmount   Decimal @db.Decimal(10, 2) // 奖励金额
+  isActive       Boolean @default(true) // 是否启用
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("team_reward_tiers")
+}
+
+// 奖励记录表
+model RewardRecord {
+  id Int @id @default(autoincrement())
+
+  // 获奖推销员
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 奖励类型: 1=激活奖励 2=团队奖励 3=升级补偿
+  rewardType Int @db.TinyInt
+
+  // 奖励金额
+  amount Decimal @db.Decimal(10, 2)
+
+  // 关联信息
+  relatedAgentId Int? // 关联推销员ID（激活奖励/升级补偿用）
+  tierLevel      Int? // 阶梯档位（团队奖励用）
+  orderId        Int? // 关联订单ID
+  remark         String? @db.VarChar(200) // 备注
+
+  // 状态: 0=待发放 1=已发放
+  status Int @default(1) @db.TinyInt
+
+  createdAt DateTime @default(now())
+
+  @@index([agentId])
+  @@index([rewardType])
+  @@map("reward_records")
+}
+
+// 升级申请表
+model UpgradeApplication {
+  id Int @id @default(autoincrement())
+
+  // 申请人
+  agentId Int
+  agent   Agent @relation(fields: [agentId], references: [id])
+
+  // 原上级ID（升级后会脱离原上级）
+  oldParentId Int?
+
+  // 申请时的数据快照
+  applySales  Decimal? @db.Decimal(12, 2) // 申请时销售额
+  applyOrders Int? // 申请时订单数
+  applyReason String?  @db.Text // 申请理由
+
+  // 状态: 0=待审核 1=通过 2=拒绝
+  status Int @default(0) @db.TinyInt
+
+  // 审核信息
+  reviewRemark String?   @db.VarChar(500) // 审核备注
+  reviewedBy   Int? // 审核人
+  reviewedAt   DateTime? // 审核时间
+
+  // 补偿是否已发放
+  compensationPaid Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([agentId])
+  @@index([status])
+  @@map("upgrade_applications")
+}
+
+// ============ 【2026-01-17 备货问题上报】============
+
+// 备货问题记录表
+model PrepareIssue {
+  id Int @id @default(autoincrement())
+
+  // 关联预约
+  reservationId Int
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  // 关联商品项（可选，具体到某个商品的问题）
+  itemId Int? // 预约商品项ID
+
+  // 问题类型: STOCK_SHORTAGE(库存不足), PRODUCT_DAMAGED(商品损坏), PRODUCT_NOT_FOUND(找不到商品), OTHER(其他)
+  issueType String @db.VarChar(30)
+
+  // 问题描述
+  description String? @db.Text
+
+  // 上报人
+  reportedBy   Int // 员工ID
+  reportedName String? @db.VarChar(50) // 员工姓名
+
+  // 状态: PENDING(待处理), PROCESSING(处理中), RESOLVED(已解决), CLOSED(已关闭)
+  status String @default("PENDING") @db.VarChar(20)
+
+  // 处理信息
+  resolvedBy   Int? // 处理人ID
+  resolvedName String?   @db.VarChar(50) // 处理人姓名
+  resolvedAt   DateTime? // 处理时间
+  resolution   String?   @db.Text // 处理结果
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reservationId])
+  @@index([status])
+  @@index([issueType])
+  @@index([reportedBy])
+  @@index([createdAt])
+  @@map("prepare_issues")
+}
+
+// ============ 【2026-01-17 预约操作审计】============
+
+// 预约操作审计日志表
+model ReservationAudit {
+  id Int @id @default(autoincrement())
+
+  // 关联预约
+  reservationId Int
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  // 操作类型
+  // CREATED=创建预约, ASSIGNED=自动分配, CALL_RECORDED=记录拨打电话,
+  // CONFIRMED=确认成功, CALL_FAILED=确认失败, PREPARE_STARTED=开始备货,
+  // PREPARE_COMPLETED=完成备货, PICKUP_COMPLETED=核销完成, CANCELLED=取消预约, EXPIRED=预约过期
+  action String @db.VarChar(30)
+
+  // 操作人
+  operatorId   Int? // 操作人ID
+  operatorType String? @db.VarChar(20) // 操作人类型：SYSTEM/STAFF/ADMIN/CUSTOMER
+  operatorName String? @db.VarChar(50) // 操作人名称
+
+  // 操作详情
+  details String? @db.Text // JSON格式的详情
+
+  // IP地址
+  ipAddress String? @db.VarChar(50)
+
+  createdAt DateTime @default(now())
+
+  @@index([reservationId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([operatorType])
+  @@map("reservation_audits")
+}
+
+// ============ 【2026-01-17 推广资料系统】============
+
+// 推广文案表
+model PromotionCopy {
+  id Int @id @default(autoincrement())
+
+  // 文案类型: MOMENTS(朋友圈), TALK(客户话术), PRODUCT(商品卖点)
+  type String @db.VarChar(20)
+
+  // 关联商品（商品卖点类型可选）
+  productId Int?
+
+  // 文案内容
+  title   String @db.VarChar(100) // 标题
+  content String @db.Text // 内容
+
+  // 使用场景/标签 JSON数组: ["新品推荐", "热销款"]
+  tags String? @db.VarChar(200)
+
+  // 排序
+  sort Int @default(0)
+
+  // 状态: ACTIVE/INACTIVE
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  createdBy Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, status])
+  @@index([productId])
+  @@map("promotion_copies")
+}
+
+// 品牌素材表
+model BrandAsset {
+  id Int @id @default(autoincrement())
+
+  // 素材类型: LOGO(品牌LOGO), PHOTO(产品实拍), VIDEO(产品视频), POSTER(海报模板)
+  type String @db.VarChar(20)
+
+  // 素材信息
+  name        String  @db.VarChar(100) // 名称
+  url         String  @db.VarChar(500) // 文件URL
+  thumbnail   String? @db.VarChar(500) // 缩略图URL（视频使用）
+  fileSize    Int? // 文件大小（KB）
+  description String? @db.VarChar(255) // 描述
+
+  // 排序
+  sort Int @default(0)
+
+  // 状态: ACTIVE/INACTIVE
+  status String @default("ACTIVE") @db.VarChar(20)
+
+  createdBy Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, status])
+  @@map("brand_assets")
+}
+
+// ============ 【2026-01-18 春节营销活动系统】============
+
+// 代金券表
+model Coupon {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique @db.VarChar(20)  // 券码: CPN + 时间戳后6位 + 4位随机数
+  agentId     Int                                 // 持有推销员
+  amount      Decimal   @db.Decimal(10, 2)        // 面额
+
+  // 来源
+  sourceType  String    @db.VarChar(30)           // 奖励类型: REGISTER/FIRST_SHARE/FIRST_RESERVATION/FIRST_COMPLETE/RECRUIT/RECRUIT_ACTIVATE/WEEK_SALES_X/WEEK_SHARE_FULL/WEEK_RECRUIT_3/ACTIVITY
+  sourceDesc  String?   @db.VarChar(100)          // 来源说明
+
+  // 【2026-01-19】代金券活动关联
+  activityId  Int?      @map("activity_id")       // 代金券活动ID（活动领取时填写）
+
+  // 成本承担
+  costBearerId Int?                               // 成本承担人ID（null=总代理承担）
+
+  // 状态
+  status      String    @default("UNUSED") @db.VarChar(20)  // UNUSED/USED/EXPIRED
+  usedAt      DateTime?                           // 使用时间
+  usedOrderNo String?   @db.VarChar(30)           // 使用的订单号/预约号
+  usedBy      Int?                                // 核销操作人ID
+
+  expiredAt   DateTime                            // 过期时间
+  createdAt   DateTime  @default(now())
+
+  agent       Agent     @relation(fields: [agentId], references: [id])
+
+  @@index([agentId, status])
+  @@index([code])
+  @@index([status, expiredAt])
+  @@index([activityId])
+  @@map("coupons")
+}
+
+// 推销员活动追踪表
+model AgentActivity {
+  id                        Int       @id @default(autoincrement())
+  agentId                   Int       @unique
+
+  // 即时奖励标记
+  registerBonusPaid         Boolean   @default(false)  // 注册5元
+  firstShareBonusPaid       Boolean   @default(false)  // 首发圈5元
+  firstReservationBonusPaid Boolean   @default(false)  // 首预约10元
+  firstCompleteBonusPaid    Boolean   @default(false)  // 首单成交20元
+
+  // 首次时间记录
+  firstShareAt              DateTime?
+  firstReservationAt        DateTime?
+  firstCompleteAt           DateTime?
+
+  agent                     Agent     @relation(fields: [agentId], references: [id])
+
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@map("agent_activities")
+}
+
+// 发圈记录表
+model ShareRecord {
+  id           Int       @id @default(autoincrement())
+  agentId      Int
+  imageUrl     String    @db.VarChar(500)   // 发圈截图URL
+  shareType    String    @default("MOMENTS") @db.VarChar(20)  // MOMENTS=朋友圈
+  status       String    @default("PENDING") @db.VarChar(20)  // PENDING/APPROVED/REJECTED
+  reviewedBy   Int?                          // 审核人
+  reviewedAt   DateTime?                     // 审核时间
+  rejectReason String?   @db.VarChar(200)   // 驳回原因
+  bonusPaid    Boolean   @default(false)    // 奖励是否已发放
+
+  agent        Agent     @relation(fields: [agentId], references: [id])
+
+  createdAt    DateTime  @default(now())
+
+  @@index([agentId, createdAt])
+  @@index([status])
+  @@map("share_records")
+}
+
+// 周统计表
+model WeeklyStats {
+  id                  Int       @id @default(autoincrement())
+  agentId             Int
+  weekStart           DateTime  @db.Date      // 周一日期
+  completedOrders     Int       @default(0)   // 周完成单数
+  completedAmount     Decimal   @default(0) @db.Decimal(12, 2)  // 周完成金额
+  approvedShares      Int       @default(0)   // 审核通过发圈数
+  newRecruits         Int       @default(0)   // 新增下级数
+  salesBonusPaid      Boolean   @default(false)  // 周销售奖励已发
+  shareBonusPaid      Boolean   @default(false)  // 周发圈奖励已发
+  recruitBonusPaid    Boolean   @default(false)  // 周拉新奖励已发
+
+  agent               Agent     @relation(fields: [agentId], references: [id])
+
+  @@unique([agentId, weekStart])
+  @@index([weekStart])
+  @@map("weekly_stats")
+}
+
+// ============ 【2026-01-19】营销活动系统 ============
+
+// 限时秒杀活动
+model FlashSaleActivity {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(100)                 // 活动名称
+  startTime     DateTime  @map("start_time")               // 开始时间
+  endTime       DateTime  @map("end_time")                 // 结束时间
+  status        String    @default("DRAFT") @db.VarChar(20) // DRAFT/ACTIVE/ENDED
+  minOrderAmount Decimal  @default(200) @map("min_order_amount") @db.Decimal(10, 2) // 【2026-01-20】加购门槛金额
+  bannerImage   String?   @map("banner_image") @db.VarChar(500) // 活动Banner图
+  description   String?   @db.Text                         // 活动描述
+  createdBy     Int       @map("created_by")               // 创建人ID
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  items       FlashSaleItem[]
+
+  @@index([status, startTime, endTime])
+  @@map("flash_sale_activities")
+}
+
+// 秒杀商品
+model FlashSaleItem {
+  id            Int       @id @default(autoincrement())
+  activityId    Int       @map("activity_id")            // 活动ID
+  productId     Int       @map("product_id")             // 商品ID
+  flashPrice    Decimal   @map("flash_price") @db.Decimal(10, 2) // 秒杀价
+  flashStock    Int       @map("flash_stock")            // 秒杀库存（独立库存，不占用主库存）
+  soldCount     Int       @default(0) @map("sold_count") // 已售数量
+  limitPerUser  Int       @default(0) @map("limit_per_user") // 每人限购(0=不限)
+  sort          Int       @default(0)                    // 排序
+
+  activity      FlashSaleActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  product       Product   @relation(fields: [productId], references: [id])
+
+  @@unique([activityId, productId])
+  @@index([activityId])
+  @@map("flash_sale_items")
+}
+
+// 代金券活动（可领取的代金券）
+model CouponActivity {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(100)               // 活动名称
+  couponAmount  Decimal   @map("coupon_amount") @db.Decimal(10, 2) // 券面额
+  totalCount    Int       @map("total_count")            // 发放总量
+  issuedCount   Int       @default(0) @map("issued_count") // 已发放数量
+  limitPerUser  Int       @default(1) @map("limit_per_user") // 每人限领
+  startTime     DateTime  @map("start_time")             // 领取开始时间
+  endTime       DateTime  @map("end_time")               // 领取结束时间
+  expiredAt     DateTime  @map("expired_at")             // 券过期时间
+  status        String    @default("DRAFT") @db.VarChar(20) // DRAFT/ACTIVE/ENDED
+  createdBy     Int       @map("created_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([status, startTime, endTime])
+  @@map("coupon_activities")
+}
+
+// 活动专题页
+model ActivityPage {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(100)               // 专题名称
+  slug          String    @unique @db.VarChar(50)        // URL标识
+  bannerImage   String?   @map("banner_image") @db.VarChar(500) // 顶部Banner
+  description   String?   @db.Text                       // 描述
+  startTime     DateTime? @map("start_time")             // 开始时间
+  endTime       DateTime? @map("end_time")               // 结束时间
+  status        String    @default("DRAFT") @db.VarChar(20) // DRAFT/ACTIVE/INACTIVE
+  layout        String    @default("GRID") @db.VarChar(20)  // GRID/LIST
+  createdBy     Int       @map("created_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  sections      ActivityPageSection[]
+
+  @@index([status, slug])
+  @@map("activity_pages")
+}
+
+// 专题页区块
+model ActivityPageSection {
+  id            Int       @id @default(autoincrement())
+  pageId        Int       @map("page_id")                // 所属专题页
+  title         String?   @db.VarChar(100)               // 区块标题
+  type          String    @db.VarChar(20)                // PRODUCTS(商品网格)
+  content       String?   @db.Text                       // JSON配置（商品ID列表等）
+  sort          Int       @default(0)                    // 排序
+
+  page          ActivityPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId])
+  @@map("activity_page_sections")
+}
+
+// ============ 【2026-01-21 拼团到店功能】============
+
+// 拼团配置表
+model GroupBuyConfig {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)              // 活动名称
+  requiredCount   Int       @default(3) @map("required_count")  // 成团人数（最低档）
+  minAmount       Decimal   @map("min_amount") @db.Decimal(10, 2)  // 单人最低预约金额
+  bonusGiftName   String?   @map("bonus_gift_name") @db.VarChar(200)  // 拼团赠品名称（旧字段，兼容）
+  bonusGiftCost   Decimal?  @map("bonus_gift_cost") @db.Decimal(10, 2)  // 赠品成本（旧字段，兼容）
+  formingHours    Int       @default(24) @map("forming_hours")  // 组团有效期（小时）
+
+  // 【2026-01-25 多档位拼团支持】
+  // JSON格式: {"tiers": [{"count": 3, "memberGifts": ["28寸仙女棒×2盒"], "leaderGift": "超级棒棒糖", "leaderCount": 1}, ...]}
+  memberGiftsJson String?   @map("member_gifts_json") @db.Text     // 多档位团员赠品配置JSON
+  leaderGiftName  String?   @map("leader_gift_name") @db.VarChar(200)  // 团长奖励名称
+  leaderGiftCost  Decimal?  @map("leader_gift_cost") @db.Decimal(10, 2) // 团长奖励成本
+  costSplitRatio  Int       @default(50) @map("cost_split_ratio")  // 上级承担成本比例(0-100)，默认50%
+
+  startTime       DateTime? @map("start_time")            // 活动开始时间
+  endTime         DateTime? @map("end_time")              // 活动结束时间
+  isActive        Boolean   @default(true) @map("is_active")
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  groupBuys       GroupBuy[]
+
+  @@index([isActive, startTime, endTime])
+  @@map("group_buy_configs")
+}
+
+// 拼团活动表
+model GroupBuy {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique @db.VarChar(20)       // 拼团码: GB + 时间戳
+
+  // 发起人信息
+  initiatorId     Int       @map("initiator_id")          // 发起人预约ID
+  initiatorPhone  String    @map("initiator_phone") @db.VarChar(20)
+  initiatorName   String    @map("initiator_name") @db.VarChar(50)
+
+  // 拼团配置
+  configId        Int       @map("config_id")
+  requiredCount   Int       @default(3) @map("required_count")  // 成团人数
+  bonusGiftName   String?   @map("bonus_gift_name") @db.VarChar(200)  // 拼团赠品名称
+
+  // 门店与提货日期
+  storeId         Int       @map("store_id")
+  pickupDate      DateTime  @map("pickup_date") @db.Date  // 约定提货日期（必须同一天）
+
+  // 【2026-01-21 顺路拼团-区域】
+  regionId        Int?      @map("region_id")    // 区域ID（乡镇/街道级）
+  regionName      String?   @map("region_name") @db.VarChar(100) // 冗余存储区域全名
+
+  // 状态: FORMING(组队中), FULL(已满员), COMPLETED(已完成), EXPIRED(已过期), CANCELLED(已取消)
+  status          String    @default("FORMING") @db.VarChar(20)
+  currentCount    Int       @default(1) @map("current_count")  // 当前人数
+
+  expireAt        DateTime  @map("expire_at")             // 过期时间
+  completedAt     DateTime? @map("completed_at")          // 全员提货完成时间
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  config          GroupBuyConfig @relation(fields: [configId], references: [id])
+  store           Warehouse      @relation(fields: [storeId], references: [id])
+  members         GroupBuyMember[]
+  region          Region?        @relation("GroupBuyRegion", fields: [regionId], references: [id])
+
+  @@index([code])
+  @@index([status, expireAt])
+  @@index([storeId, status])
+  @@index([initiatorPhone])
+  @@index([regionId, status])    // 【2026-01-21】区域+状态索引（顺路拼团查询）
+  @@map("group_buys")
+}
+
+// 拼团成员表
+model GroupBuyMember {
+  id                  Int       @id @default(autoincrement())
+  groupBuyId          Int       @map("group_buy_id")
+  reservationId       Int       @unique @map("reservation_id")  // 一个预约只能加入一个拼团
+
+  // 成员信息
+  customerPhone       String    @map("customer_phone") @db.VarChar(20)
+  customerName        String    @map("customer_name") @db.VarChar(50)
+
+  // 状态: JOINED(已加入), PICKED_UP(已提货), QUIT(已退出)
+  status              String    @default("JOINED") @db.VarChar(20)
+  joinedAt            DateTime  @default(now()) @map("joined_at")
+  pickedUpAt          DateTime? @map("picked_up_at")
+
+  // 拼团赠品
+  bonusGiftDelivered  Boolean   @default(false) @map("bonus_gift_delivered")
+
+  // 【2026-01-25 多档位赠品记录】
+  memberGiftName      String?   @map("member_gift_name") @db.VarChar(200)  // 团员获得赠品
+  leaderGiftName      String?   @map("leader_gift_name") @db.VarChar(200)  // 团长奖励(仅团长有)
+  leaderGiftCount     Int?      @map("leader_gift_count")                  // 团长奖励数量
+
+  // 关联
+  groupBuy            GroupBuy    @relation(fields: [groupBuyId], references: [id])
+  reservation         Reservation @relation(fields: [reservationId], references: [id])
+
+  @@index([groupBuyId])
+  @@index([customerPhone])
+  @@map("group_buy_members")
+}
+
+// ============ 【2026-01-21 限时锁价功能】============
+
+// 锁价配置表
+model PriceLockConfig {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)              // 活动名称
+  lockHours       Int       @default(24) @map("lock_hours")  // 锁价有效期（小时）
+  minAmount       Decimal?  @map("min_amount") @db.Decimal(10, 2)  // 最低金额门槛
+
+  startTime       DateTime? @map("start_time")
+  endTime         DateTime? @map("end_time")
+  isActive        Boolean   @default(true) @map("is_active")
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([isActive, startTime, endTime])
+  @@map("price_lock_configs")
+}
+
+// 锁价记录表
+model PriceLock {
+  id                  Int       @id @default(autoincrement())
+  code                String    @unique @db.VarChar(20)   // 锁价码: PL + 时间戳
+
+  // 客户信息
+  customerPhone       String    @map("customer_phone") @db.VarChar(20)
+  customerName        String?   @map("customer_name") @db.VarChar(50)
+
+  // 推销员信息
+  salespersonId       Int?      @map("salesperson_id")
+  agentId             Int?      @map("agent_id")          // 总代理ID（无推销员时）
+
+  // 锁价商品（JSON）
+  lockedItems         String    @map("locked_items") @db.Text  // [{productId, lockedPrice, quantity}]
+  totalAmount         Decimal   @map("total_amount") @db.Decimal(10, 2)
+
+  // 状态: ACTIVE(有效), USED(已使用), EXPIRED(已过期)
+  status              String    @default("ACTIVE") @db.VarChar(20)
+
+  expireAt            DateTime  @map("expire_at")
+  usedAt              DateTime? @map("used_at")
+  usedReservationId   Int?      @map("used_reservation_id")
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([code])
+  @@index([customerPhone, status])
+  @@index([status, expireAt])
+  @@map("price_locks")
+}
+
+// ============ 【2026-01-22 交易审计追踪系统】============
+
+// 交易追踪表 - 记录所有资金变动的完整链路
+model TransactionTrace {
+  id            Int      @id @default(autoincrement())
+  traceId       String   @unique @map("trace_id") @db.VarChar(32)  // 唯一追踪ID: TRC + 时间戳 + 随机数
+
+  // 交易类型
+  // PROFIT_SETTLE: 利润结算
+  // COUPON_ISSUE: 代金券发放
+  // COUPON_REDEEM: 代金券核销
+  // RECHARGE: 充值
+  // WITHDRAW: 提现
+  // GIFT_COST: 赠品成本
+  // BALANCE_ADJUST: 人工调账
+  // REFUND: 退款
+  traceType     String   @map("trace_type") @db.VarChar(30)
+
+  // 涉及的推销员
+  agentId       Int      @map("agent_id")
+  agent         Agent    @relation(fields: [agentId], references: [id])
+
+  // 金额信息
+  amount        Decimal  @db.Decimal(10, 2)          // 变动金额（正数增加，负数减少）
+  beforeBalance Decimal  @map("before_balance") @db.Decimal(10, 2)  // 变动前余额
+  afterBalance  Decimal  @map("after_balance") @db.Decimal(10, 2)   // 变动后余额
+
+  // 关联源头（可追溯到具体业务单据）
+  sourceTable   String   @map("source_table") @db.VarChar(50)  // 源表名: reservations/coupons/withdrawals等
+  sourceId      Int      @map("source_id")                      // 源记录ID
+  sourceNo      String?  @map("source_no") @db.VarChar(50)     // 源单号（如预约号MQ开头）
+
+  // 详细信息（JSON格式，存储计算过程和原始数据）
+  details       String?  @db.Text  // JSON: {计算公式, 原始价格, 分配比例等}
+
+  // 操作人信息
+  operatorType  String   @map("operator_type") @db.VarChar(20)  // SYSTEM/STAFF/ADMIN/AGENT
+  operatorId    Int?     @map("operator_id")                     // 操作人ID
+  operatorName  String?  @map("operator_name") @db.VarChar(50)   // 操作人姓名
+
+  // 状态和校验
+  status        String   @default("SUCCESS") @db.VarChar(20)    // SUCCESS/FAILED/PENDING/REVERSED
+  checksum      String?  @db.VarChar(64)                         // 数据校验和（防篡改）
+  reversedBy    Int?     @map("reversed_by")                     // 被哪条记录冲正
+  reversesId    Int?     @map("reverses_id")                     // 冲正哪条记录
+
+  remark        String?  @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([agentId, createdAt])
+  @@index([traceType, createdAt])
+  @@index([sourceTable, sourceId])
+  @@index([traceId])
+  @@index([status])
+  @@map("transaction_traces")
+}
+
+// 余额快照表 - 定期记录推销员余额，用于对账和恢复
+model BalanceSnapshot {
+  id            Int      @id @default(autoincrement())
+
+  agentId       Int      @map("agent_id")
+  agent         Agent    @relation(fields: [agentId], references: [id])
+
+  // 快照时的余额信息
+  balance           Decimal  @db.Decimal(10, 2)                 // 当时余额
+  totalCommission   Decimal  @map("total_commission") @db.Decimal(10, 2)  // 累计分润
+  totalSales        Decimal  @map("total_sales") @db.Decimal(10, 2)       // 个人销售额
+  teamSales         Decimal  @map("team_sales") @db.Decimal(10, 2)        // 团队销售额
+
+  // 快照类型
+  // DAILY: 每日快照（凌晨2点自动）
+  // WEEKLY: 每周快照（周一凌晨）
+  // MONTHLY: 每月快照（1号凌晨）
+  // MANUAL: 人工触发
+  // PRE_OPERATION: 重要操作前快照
+  snapshotType  String   @map("snapshot_type") @db.VarChar(20)
+
+  // 关联的交易追踪（如果是操作前快照）
+  relatedTraceId String? @map("related_trace_id") @db.VarChar(32)
+
+  // 校验信息
+  transactionCount Int   @map("transaction_count")  // 该时间段的交易数量
+  expectedBalance  Decimal? @map("expected_balance") @db.Decimal(10, 2)  // 根据流水计算的预期余额
+  isConsistent     Boolean  @default(true) @map("is_consistent")         // 余额是否一致
+  discrepancy      Decimal? @db.Decimal(10, 2)                           // 差异金额
+
+  remark        String?  @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([agentId, createdAt])
+  @@index([snapshotType, createdAt])
+  @@index([isConsistent])
+  @@map("balance_snapshots")
+}
+
+// 对账记录表 - 记录每次对账结果
+model ReconciliationLog {
+  id            Int      @id @default(autoincrement())
+
+  // 对账范围
+  startTime     DateTime @map("start_time")
+  endTime       DateTime @map("end_time")
+
+  // 对账类型: DAILY/WEEKLY/MONTHLY/MANUAL
+  reconcileType String   @map("reconcile_type") @db.VarChar(20)
+
+  // 对账结果统计
+  totalAgents      Int   @map("total_agents")       // 检查的推销员数量
+  consistentCount  Int   @map("consistent_count")   // 余额一致数量
+  discrepancyCount Int   @map("discrepancy_count")  // 有差异数量
+
+  // 差异详情（JSON数组）
+  discrepancies    String? @db.Text  // [{agentId, expected, actual, diff, possibleCause}]
+
+  // 对账执行信息
+  executedBy    String   @map("executed_by") @db.VarChar(20)  // SYSTEM/ADMIN
+  executorId    Int?     @map("executor_id")
+  executionTime Int      @map("execution_time")               // 执行耗时（毫秒）
+
+  status        String   @default("COMPLETED") @db.VarChar(20)  // RUNNING/COMPLETED/FAILED
+  errorMessage  String?  @map("error_message") @db.Text
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([reconcileType, createdAt])
+  @@index([status])
+  @@map("reconciliation_logs")
+}
+
+// 异常告警表 - 记录系统检测到的异常
+model AuditAlert {
+  id            Int      @id @default(autoincrement())
+
+  // 告警类型
+  // BALANCE_MISMATCH: 余额不一致
+  // DUPLICATE_SETTLE: 重复结算
+  // NEGATIVE_BALANCE: 负余额
+  // LARGE_TRANSACTION: 大额交易
+  // SUSPICIOUS_PATTERN: 可疑模式
+  // MISSING_TRACE: 缺失追踪记录
+  alertType     String   @map("alert_type") @db.VarChar(30)
+
+  // 严重程度: LOW/MEDIUM/HIGH/CRITICAL
+  severity      String   @db.VarChar(10)
+
+  // 涉及的实体
+  agentId       Int?     @map("agent_id")
+  relatedTable  String?  @map("related_table") @db.VarChar(50)
+  relatedId     Int?     @map("related_id")
+
+  // 告警详情
+  title         String   @db.VarChar(100)
+  description   String   @db.Text
+  details       String?  @db.Text  // JSON格式的详细数据
+
+  // 处理状态
+  // PENDING: 待处理
+  // INVESTIGATING: 调查中
+  // RESOLVED: 已解决
+  // IGNORED: 已忽略
+  // AUTO_FIXED: 自动修复
+  status        String   @default("PENDING") @db.VarChar(20)
+
+  // 处理信息
+  handledBy     Int?     @map("handled_by")
+  handledAt     DateTime? @map("handled_at")
+  resolution    String?  @db.Text  // 解决方案描述
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([alertType, status])
+  @@index([severity, status])
+  @@index([agentId])
+  @@index([createdAt])
+  @@map("audit_alerts")
+}
+
+// ============ 【2026-01-21 顺路拼团-区域功能】============
+
+// 区域表（呼和浩特市行政区划：区县 → 乡镇/街道）
+model Region {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(50)              // 区域名称
+  parentId  Int?     @map("parent_id")            // 父级ID（区县→乡镇）
+  level     Int      @default(1) @db.TinyInt      // 级别: 1=区县 2=乡镇/街道
+  sortOrder Int      @default(0) @map("sort_order") // 排序
+  isActive  Boolean  @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 自关联（树形结构）
+  parent    Region?  @relation("RegionTree", fields: [parentId], references: [id])
+  children  Region[] @relation("RegionTree")
+
+  // 关联
+  reservations Reservation[] @relation("ReservationRegion")
+  groupBuys    GroupBuy[]    @relation("GroupBuyRegion")
+
+  @@index([parentId])
+  @@index([level, isActive])
+  @@map("regions")
+}
+
+// ============ 【2026-01-22 砍价活动系统】============
+
+// 砍价活动配置表
+model BargainConfig {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)              // 活动名称
+
+  // 时间配置
+  startTime       DateTime  @map("start_time")            // 活动开始时间
+  endTime         DateTime  @map("end_time")              // 活动结束时间
+  bargainHours    Int       @default(24) @map("bargain_hours")  // 砍价有效期（小时）
+
+  // 砍价规则
+  minBargainCount Int       @default(3) @map("min_bargain_count")   // 最少砍价次数（达到底价需要的最少人数）
+  maxBargainCount Int       @default(20) @map("max_bargain_count")  // 最多砍价次数
+  newUserBonus    Decimal   @default(2) @map("new_user_bonus") @db.Decimal(5, 2)  // 新用户额外加成倍数
+
+  // 成本承担配置
+  // PLATFORM: 平台（总代理）承担全部
+  // SHARED: 推销员和平台按比例承担
+  // AGENT: 推销员承担全部
+  costBearerType  String    @default("PLATFORM") @map("cost_bearer_type") @db.VarChar(20)
+  agentBearRatio  Int       @default(0) @map("agent_bear_ratio")  // 推销员承担比例(0-100)
+
+  // 状态
+  isActive        Boolean   @default(true) @map("is_active")
+
+  // 【新增】购物车门槛配置
+  minCartAmount   Decimal?  @default(0) @map("min_cart_amount") @db.Decimal(10, 2)
+  // 采购单最低金额门槛（0=不限制），不含砍价商品本身
+
+  // 【2026-01-25 防反复砍价机制】
+  maxTotalPerUser           Int     @default(4) @map("max_total_per_user")           // 每人活动期间最多砍价次数
+  requireCompleteBeforeNext Boolean @default(true) @map("require_complete_before_next") // 是否需要核销才能发起下一次
+  categoryLimitPerUser      Int     @default(1) @map("category_limit_per_user")       // 每个品类每人限砍次数
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  items           BargainConfigItem[]
+  bargains        Bargain[]
+  customerStats   CustomerBargainStats[]
+
+  @@index([isActive, startTime, endTime])
+  @@map("bargain_configs")
+}
+
+// 砍价商品配置表
+model BargainConfigItem {
+  id            Int       @id @default(autoincrement())
+  configId      Int       @map("config_id")              // 活动ID
+  productId     Int       @map("product_id")             // 商品ID
+
+  // 【2026-01-25 品类标识】用于防反复机制
+  categoryCode  String?   @map("category_code") @db.VarChar(50)  // 品类标识(如GIFT_SMALL_1/GIFT_SMALL_2)
+
+  // 价格配置
+  originalPrice Decimal   @map("original_price") @db.Decimal(10, 2)  // 原价（零售价）
+  floorPrice    Decimal   @map("floor_price") @db.Decimal(10, 2)     // 底价（最低可砍到的价格）
+
+  // 【2026-01-25 商品级砍价人数配置】
+  minBargainCount Int?    @map("min_bargain_count")  // 商品级最少砍价人数(覆盖活动配置)
+
+  // 库存限制
+  bargainStock  Int       @default(0) @map("bargain_stock")  // 砍价专属库存(0=不限，使用商品库存)
+  soldCount     Int       @default(0) @map("sold_count")     // 已成功砍价数量
+
+  // 限购
+  limitPerUser  Int       @default(1) @map("limit_per_user")  // 每人限购
+
+  sort          Int       @default(0)
+
+  config        BargainConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id])
+
+  @@unique([configId, productId])
+  @@index([configId])
+  @@map("bargain_config_items")
+}
+
+// 砍价活动表（用户发起的砍价）
+model Bargain {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique @db.VarChar(20)       // 砍价码: BG + 时间戳 + 随机数
+
+  // 发起人信息
+  initiatorPhone  String    @map("initiator_phone") @db.VarChar(20)
+  initiatorName   String?   @map("initiator_name") @db.VarChar(50)
+
+  // 推销员信息（继承自分享链接）
+  salespersonId       Int?      @map("salesperson_id")
+  salespersonLevel    Int?      @map("salesperson_level") @db.TinyInt
+  parentSalespersonId Int?      @map("parent_salesperson_id")
+  agentId             Int?      @map("agent_id")          // 总代理ID
+
+  // 活动配置关联
+  configId        Int       @map("config_id")
+  productId       Int       @map("product_id")
+
+  // 价格信息
+  originalPrice   Decimal   @map("original_price") @db.Decimal(10, 2)   // 原价
+  floorPrice      Decimal   @map("floor_price") @db.Decimal(10, 2)       // 底价
+  currentPrice    Decimal   @map("current_price") @db.Decimal(10, 2)     // 当前价格
+  totalCut        Decimal   @default(0) @map("total_cut") @db.Decimal(10, 2)  // 已砍金额
+
+  // 数量
+  quantity        Int       @default(1)                    // 购买数量
+
+  // 门店信息
+  storeId         Int       @map("store_id")
+  pickupDate      DateTime? @map("pickup_date")              // 提货日期
+
+  // 砍价次数统计
+  cutCount        Int       @default(0) @map("cut_count")  // 已砍次数
+
+  // 状态: BARGAINING(砍价中), SUCCESS(砍价成功), ORDERED(已下单), EXPIRED(已过期), CANCELLED(已取消)
+  status          String    @default("BARGAINING") @db.VarChar(20)
+
+  // 是否达到底价
+  reachedFloor    Boolean   @default(false) @map("reached_floor")
+
+  // 关联的预约（砍价成功后创建）
+  reservationId   Int?      @unique @map("reservation_id")
+
+  // 成本承担记录
+  platformCost    Decimal   @default(0) @map("platform_cost") @db.Decimal(10, 2)  // 平台承担成本
+  agentCost       Decimal   @default(0) @map("agent_cost") @db.Decimal(10, 2)     // 推销员承担成本
+
+  expireAt        DateTime  @map("expire_at")
+  orderedAt       DateTime? @map("ordered_at")            // 下单时间
+  successAt       DateTime? @map("success_at")            // 【2026-01-23 P1-07】砍价成功时间
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  config          BargainConfig @relation(fields: [configId], references: [id])
+  product         Product       @relation(fields: [productId], references: [id])
+  store           Warehouse     @relation(fields: [storeId], references: [id])
+  cuts            BargainCut[]
+
+  @@index([code])
+  @@index([initiatorPhone])
+  @@index([status, expireAt])
+  @@index([salespersonId])
+  @@index([configId, productId])
+  @@map("bargains")
+}
+
+// 砍价记录表（每次砍价的详情）
+model BargainCut {
+  id              Int       @id @default(autoincrement())
+  bargainId       Int       @map("bargain_id")
+
+  // 帮砍人信息
+  helperPhone     String    @map("helper_phone") @db.VarChar(20)
+  helperName      String?   @map("helper_name") @db.VarChar(50)
+
+  // 砍价金额
+  cutAmount       Decimal   @map("cut_amount") @db.Decimal(10, 2)
+
+  // 是否新用户（首次在平台帮砍）
+  isNewUser       Boolean   @default(false) @map("is_new_user")
+
+  // 砍价后的价格
+  priceAfterCut   Decimal   @map("price_after_cut") @db.Decimal(10, 2)
+
+  // 风控信息
+  ipAddress       String?   @map("ip_address") @db.VarChar(50)
+  deviceId        String?   @map("device_id") @db.VarChar(100)
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  bargain         Bargain   @relation(fields: [bargainId], references: [id], onDelete: Cascade)
+
+  @@unique([bargainId, helperPhone])  // 同一用户只能帮砍一次
+  @@index([bargainId])
+  @@index([helperPhone])
+  @@map("bargain_cuts")
+}
+
+// 砍价黑名单（防刷）
+model BargainBlacklist {
+  id              Int       @id @default(autoincrement())
+
+  // 黑名单类型: PHONE(手机号), IP(IP地址), DEVICE(设备ID)
+  type            String    @db.VarChar(20)
+  value           String    @db.VarChar(100)
+
+  reason          String?   @db.VarChar(255)
+
+  // 封禁时间范围（null表示永久）
+  expireAt        DateTime? @map("expire_at")
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@unique([type, value])
+  @@index([type, value, expireAt])
+  @@map("bargain_blacklists")
+}
+
+// 【2026-01-25 客户砍价统计表 - 防反复砍价机制】
+model CustomerBargainStats {
+  id                    Int       @id @default(autoincrement())
+  customerPhone         String    @map("customer_phone") @db.VarChar(20)  // 客户手机号
+  configId              Int       @map("config_id")                       // 活动配置ID
+
+  // 总次数统计（整个活动期间最多4次）
+  totalBargainCount     Int       @default(0) @map("total_bargain_count")     // 总发起砍价次数
+  totalCompletedCount   Int       @default(0) @map("total_completed_count")   // 已核销次数
+
+  // 品类砍价记录（JSON格式）
+  // 示例: {"GIFT_SMALL_1": {"bargainId": 123, "productId": 1, "status": "ORDERED"}, ...}
+  categoryRecords       String?   @map("category_records") @db.Text
+
+  // 当前进行中的砍价（必须核销才能发起下一个）
+  currentBargainId      Int?      @map("current_bargain_id")
+  currentBargainStatus  String?   @map("current_bargain_status") @db.VarChar(20)
+
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  config                BargainConfig @relation(fields: [configId], references: [id])
+
+  @@unique([customerPhone, configId])
+  @@index([customerPhone])
+  @@map("customer_bargain_stats")
+}
+
+// ============ 【2026-01-23 现金大转盘裂变系统】============
+
+// 转盘活动配置表
+model SpinWheelConfig {
+  id                Int       @id @default(autoincrement())
+  name              String    @db.VarChar(100)              // 活动名称
+
+  // 时间配置
+  startTime         DateTime  @map("start_time")            // 活动开始时间
+  endTime           DateTime  @map("end_time")              // 活动结束时间
+
+  // 奖池配置（JSON格式）
+  // 示例: [{"name": "0.01元", "amount": 0.01, "weight": 50}, ...]
+  prizePool         String    @map("prize_pool") @db.Text
+
+  // 兑换门槛
+  redeemThreshold   Decimal   @default(100) @map("redeem_threshold") @db.Decimal(10, 2)  // 兑换门槛（默认100元）
+
+  // 抽奖次数配置
+  freeSpinCount     Int       @default(3) @map("free_spin_count")     // 每日免费抽奖次数
+  shareSpinCount    Int       @default(2) @map("share_spin_count")    // 分享可获得次数
+  maxDailyHelp      Int       @default(10) @map("max_daily_help")     // 每日最多被助力次数
+
+  // 助力金额配置
+  newUserHelpMin    Decimal   @default(3) @map("new_user_help_min") @db.Decimal(5, 2)    // 新用户助力最小金额
+  newUserHelpMax    Decimal   @default(5) @map("new_user_help_max") @db.Decimal(5, 2)    // 新用户助力最大金额
+  oldUserHelpMin    Decimal   @default(0.01) @map("old_user_help_min") @db.Decimal(5, 2) // 老用户助力最小金额
+  oldUserHelpMax    Decimal   @default(0.5) @map("old_user_help_max") @db.Decimal(5, 2)  // 老用户助力最大金额
+
+  // 碎片过期配置
+  fragmentExpireDays Int      @default(7) @map("fragment_expire_days") // 碎片过期天数（0=不过期）
+
+  // 状态
+  isActive          Boolean   @default(true) @map("is_active")
+
+  createdBy         Int       @map("created_by")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  participations    SpinWheelParticipation[]
+  records           SpinWheelRecord[]
+  helps             SpinWheelHelp[]
+  redeems           SpinWheelRedeem[]
+
+  @@index([isActive, startTime, endTime])
+  @@map("spin_wheel_configs")
+}
+
+// 用户参与记录表（核心）
+model SpinWheelParticipation {
+  id                Int       @id @default(autoincrement())
+  code              String    @unique @db.VarChar(20)       // 参与码: SW + 时间戳 + 随机数
+
+  configId          Int       @map("config_id")             // 活动ID
+  phone             String    @db.VarChar(20)               // 用户手机号
+  name              String?   @db.VarChar(50)               // 用户姓名
+
+  // 金额统计
+  totalAmount       Decimal   @default(0) @map("total_amount") @db.Decimal(10, 2)     // 累计碎片金额
+  redeemedAmount    Decimal   @default(0) @map("redeemed_amount") @db.Decimal(10, 2)  // 已兑换金额
+  expiredAmount     Decimal   @default(0) @map("expired_amount") @db.Decimal(10, 2)   // 已过期金额
+
+  // 今日统计（每日重置）
+  todaySpinCount    Int       @default(0) @map("today_spin_count")   // 今日抽奖次数
+  todayHelpCount    Int       @default(0) @map("today_help_count")   // 今日被助力次数
+  todayDate         DateTime? @map("today_date") @db.Date            // 今日日期（用于判断是否需要重置）
+
+  // 抽奖次数
+  spinCount         Int       @default(0) @map("spin_count")         // 总抽奖次数
+  remainingSpins    Int       @default(0) @map("remaining_spins")    // 剩余抽奖次数
+  shareBonus        Boolean   @default(false) @map("share_bonus")    // 今日是否已获得分享奖励
+
+  // 推销员信息（继承自分享链接）
+  salespersonId     Int?      @map("salesperson_id")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  config            SpinWheelConfig @relation(fields: [configId], references: [id])
+  records           SpinWheelRecord[]
+  helpsReceived     SpinWheelHelp[] @relation("HelpReceiver")
+  redeems           SpinWheelRedeem[]
+
+  @@unique([configId, phone])
+  @@index([code])
+  @@index([phone])
+  @@index([configId])
+  @@index([salespersonId])
+  @@map("spin_wheel_participations")
+}
+
+// 抽奖记录表
+model SpinWheelRecord {
+  id                Int       @id @default(autoincrement())
+  participationId   Int       @map("participation_id")
+  configId          Int       @map("config_id")
+
+  // 奖品信息
+  prizeName         String    @map("prize_name") @db.VarChar(50)      // 奖品名称
+  prizeAmount       Decimal   @map("prize_amount") @db.Decimal(10, 2) // 奖品金额
+
+  // 抽奖类型: FREE(免费抽奖), SHARE(分享获得), HELP(助力获得)
+  spinType          String    @map("spin_type") @db.VarChar(20)
+
+  // 是否过期
+  isExpired         Boolean   @default(false) @map("is_expired")
+  expireAt          DateTime? @map("expire_at")                        // 过期时间
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  participation     SpinWheelParticipation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+  config            SpinWheelConfig @relation(fields: [configId], references: [id])
+
+  @@index([participationId])
+  @@index([configId])
+  @@index([isExpired, expireAt])
+  @@map("spin_wheel_records")
+}
+
+// 助力记录表
+model SpinWheelHelp {
+  id                Int       @id @default(autoincrement())
+  participationId   Int       @map("participation_id")      // 被助力的参与记录ID
+  configId          Int       @map("config_id")
+
+  // 助力人信息
+  helperPhone       String    @map("helper_phone") @db.VarChar(20)
+  helperName        String?   @map("helper_name") @db.VarChar(50)
+
+  // 助力金额
+  helpAmount        Decimal   @map("help_amount") @db.Decimal(10, 2)
+
+  // 是否新用户（首次在平台助力）
+  isNewUser         Boolean   @default(false) @map("is_new_user")
+
+  // 风控信息
+  ipAddress         String?   @map("ip_address") @db.VarChar(50)
+  deviceId          String?   @map("device_id") @db.VarChar(100)
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  participation     SpinWheelParticipation @relation("HelpReceiver", fields: [participationId], references: [id], onDelete: Cascade)
+  config            SpinWheelConfig @relation(fields: [configId], references: [id])
+
+  @@unique([participationId, helperPhone])  // 同一用户只能助力一次
+  @@index([participationId])
+  @@index([helperPhone])
+  @@index([configId])
+  @@map("spin_wheel_helps")
+}
+
+// 兑换记录表
+model SpinWheelRedeem {
+  id                Int       @id @default(autoincrement())
+  participationId   Int       @map("participation_id")
+  configId          Int       @map("config_id")
+
+  // 兑换金额
+  redeemAmount      Decimal   @map("redeem_amount") @db.Decimal(10, 2)
+
+  // 关联的代金券
+  couponId          Int?      @map("coupon_id")
+
+  // 状态: PENDING(处理中), SUCCESS(成功), FAILED(失败)
+  status            String    @default("PENDING") @db.VarChar(20)
+  failReason        String?   @map("fail_reason") @db.VarChar(255)
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  participation     SpinWheelParticipation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+  config            SpinWheelConfig @relation(fields: [configId], references: [id])
+
+  @@index([participationId])
+  @@index([configId])
+  @@index([status])
+  @@map("spin_wheel_redeems")
+}
+
+// 转盘黑名单（防刷）
+model SpinWheelBlacklist {
+  id              Int       @id @default(autoincrement())
+
+  // 黑名单类型: PHONE(手机号), IP(IP地址), DEVICE(设备ID)
+  type            String    @db.VarChar(20)
+  value           String    @db.VarChar(100)
+
+  reason          String?   @db.VarChar(255)
+
+  // 封禁时间范围（null表示永久）
+  expireAt        DateTime? @map("expire_at")
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@unique([type, value])
+  @@index([type, value, expireAt])
+  @@map("spin_wheel_blacklists")
+}
+
+// ============ 【2026-01-25 套餐系统】============
+
+// 套餐配置表
+model ProductPackage {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique @db.VarChar(20)  // 套餐编码: PKG001
+  name            String    @db.VarChar(100)         // 套餐名称: 欢乐体验装
+
+  // 定位: ENTRY(引流款)/HOT(爆款)/PROFIT(利润款)
+  positioning     String    @db.VarChar(20)
+
+  description     String?   @db.Text                 // 套餐描述
+  images          String    @db.Text                 // 套餐图片(JSON数组)
+
+  // 四级价格体系（与Product表一致）
+  costPrice         Decimal   @map("cost_price") @db.Decimal(10, 2)       // 成本价(商品成本合计)
+  supplyPrice       Decimal   @map("supply_price") @db.Decimal(10, 2)     // 供货价(给一级推销员)
+  suggestedPrice    Decimal?  @map("suggested_price") @db.Decimal(10, 2)  // 建议零售价
+  masterRetailPrice Decimal   @map("master_retail_price") @db.Decimal(10, 2) // 总代理零售价(默认展示价)
+
+  // 毛利率（前端展示用，由成本和零售价计算）
+  grossMargin     Decimal?  @map("gross_margin") @db.Decimal(5, 2)
+
+  // 适用场景标签(JSON数组): ["入门尝鲜", "预算有限"]
+  sceneTags       String?   @map("scene_tags") @db.VarChar(500)
+  targetAudience  String?   @map("target_audience") @db.VarChar(100)  // 目标人群
+
+  // 库存策略: COMPONENT(按组成商品计算), INDEPENDENT(独立库存)
+  stockStrategy   String    @default("COMPONENT") @map("stock_strategy") @db.VarChar(20)
+  independentStock Int      @default(0) @map("independent_stock")  // 独立库存数量
+
+  // 排序和状态
+  sort            Int       @default(0)
+  status          String    @default("ACTIVE") @db.VarChar(20)  // ACTIVE/INACTIVE
+
+  createdBy       Int       @map("created_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  items           PackageItem[]
+  agentPrices     PackageAgentPrice[]
+
+  @@index([status, sort])
+  @@index([positioning])
+  @@map("product_packages")
+}
+
+// 套餐商品明细表
+model PackageItem {
+  id              Int       @id @default(autoincrement())
+  packageId       Int       @map("package_id")
+  productId       Int       @map("product_id")
+  quantity        Int       @default(1)              // 商品数量
+
+  // 价格快照(创建时冻结，用于计算套餐成本)
+  snapshotCostPrice   Decimal? @map("snapshot_cost_price") @db.Decimal(10, 2)
+  snapshotSupplyPrice Decimal? @map("snapshot_supply_price") @db.Decimal(10, 2)
+  snapshotRetailPrice Decimal? @map("snapshot_retail_price") @db.Decimal(10, 2)
+
+  sort            Int       @default(0)
+
+  package         ProductPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  product         Product @relation(fields: [productId], references: [id])
+
+  @@unique([packageId, productId])
+  @@index([packageId])
+  @@index([productId])
+  @@map("package_items")
+}
+
+// 套餐推销员定价表
+model PackageAgentPrice {
+  id              Int       @id @default(autoincrement())
+  packageId       Int       @map("package_id")
+  agentId         Int       @map("agent_id")
+
+  retailPrice     Decimal?  @map("retail_price") @db.Decimal(10, 2)   // 我的零售价
+  subPrice        Decimal?  @map("sub_price") @db.Decimal(10, 2)      // 给下级的价格(一级专用)
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  package         ProductPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, agentId])
+  @@index([agentId])
+  @@map("package_agent_prices")
+}

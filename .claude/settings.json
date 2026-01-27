@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(ssh root@39.104.58.26 \"mysql -h rm-hp39t0j1y3xo2a25g.mysql.huhehaote.rds.aliyuncs.com -P 3306 -u yanhuaxitong -pc65623518+ firework_db -e \"\"SELECT id, phone, name, type, parentId FROM agents WHERE phone IN \\(''13800138000'', ''13800138001'', ''13800138002'', ''13800138003''\\); SELECT id, username, name, role, is_active FROM system_users WHERE username IN \\(''warehouse01'', ''logistics01'', ''admin''\\);\"\"\")"
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+/* 打印专用样式 - 用于订单小票打印 */
+
+/* 打印时隐藏页面其他元素，只显示小票 */
+@media print {
+  /* 隐藏所有元素 */
+  body * {
+    visibility: hidden;
+  }
+
+  /* 只显示小票内容 */
+  #order-receipt,
+  #order-receipt * {
+    visibility: visible;
+  }
+
+  /* 小票定位到页面左上角 */
+  #order-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm !important;
+    padding: 3mm !important;
+    margin: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* 隐藏打印预览时不需要的元素 */
+  .no-print,
+  .action-section,
+  .bottom-bar,
+  nav,
+  header,
+  footer,
+  .t-navbar {
+    display: none !important;
+  }
+
+  /* 确保黑白打印 */
+  #order-receipt {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 避免分页 */
+  #order-receipt {
+    page-break-inside: avoid;
+  }
+
+  /* 打印页面设置 */
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+}
+
+/* 打印预览容器样式（非打印时使用） */
+.print-preview-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.print-preview-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.print-preview-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}

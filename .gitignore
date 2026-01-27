@@ -1,0 +1,37 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+**/.DS_Store
+**/*.log
+**/coverage
+**/.vite
+**/.cache
+**/.turbo
+deploy
+**/.vscode
+**/miniprogram_npm
+apk-output
+app-download
+qrcode-page.html
+qrcode-print.html
+**/dist.tar.gz
+tmpclaude-*-cwd
+**/tmpclaude-*-cwd
+nul
+**/nul
+*.key
+*.pem
+
+# 【2026-01-27】构建压缩包（防止误提交）
+*.tar.gz
+!*.tar.gz.sample
+
+# Office临时文件
+~$*
+
+# 临时JSON文件
+*_temp.json
+
+# 产品数据压缩包
+贾录给新增门店产品.zip

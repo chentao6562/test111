@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H5测试页面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+            background: #FAF7F9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #EF062D;
+            margin: 0 0 20px 0;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .success { background: #52c41a; }
+        .error { background: #ff4d4f; }
+        button {
+            background: linear-gradient(135deg, #EF062D 0%, #FF4D6D 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🎆 蒙庆烟花H5测试页面</h1>
+
+            <div class="status">
+                <div class="dot success"></div>
+                <span>服务器运行正常</span>
+            </div>
+
+            <div class="status">
+                <div class="dot success"></div>
+                <span>主题色已统一为 #EF062D</span>
+            </div>
+
+            <div class="status">
+                <div class="dot success"></div>
+                <span>背景色已统一为 #FAF7F9</span>
+            </div>
+
+            <button onclick="testAPI()">测试API连接</button>
+            <button onclick="goToMain()">前往主应用</button>
+
+            <div class="info" id="result"></div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-top:0; font-size: 16px;">访问说明</h2>
+            <p style="margin: 8px 0; font-size: 14px; color: #666;">
+                1. 主应用地址：<a href="http://localhost:5173/" style="color: #EF062D;">http://localhost:5173/</a><br>
+                2. 首次访问会跳转到登录页<br>
+                3. 测试账号：13800138000 / 验证码：123456
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '正在测试API连接...';
+
+            fetch('http://39.104.58.26/api/categories')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 0) {
+                        resultDiv.innerHTML = `✅ API连接成功！<br>获取到 ${data.data.length} 个分类`;
+                    } else {
+                        resultDiv.innerHTML = `⚠️ API返回错误: ${data.message}`;
+                    }
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = `❌ API连接失败: ${err.message}`;
+                });
+        }
+
+        function goToMain() {
+            window.location.href = 'http://localhost:5173/';
+        }
+    </script>
+</body>
+</html>

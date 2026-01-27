@@ -1,0 +1,241 @@
+{
+  "summary": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "passRate": "100.00%"
+  },
+  "details": [
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\login.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\登录页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\index.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\首页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\products.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\商品列表\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\product-detail.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\商品详情\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\cart.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\订货单\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\checkout.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\结算页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\orders.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\订单列表\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\order-detail.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\订单详情\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\profile.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\个人中心\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\commission.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\分润中心\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\team.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\我的团队\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\agent\\promotion.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\代理商端页面\\推广中心\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\index.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\控制台首页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\agents.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\代理商管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\orders.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\订单管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\products.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\商品管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\inventory.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\库存管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\commission.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\分润配置\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\finance.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\财务管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\service.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\客服管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\reports.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\报表中心\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\admin\\settings.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\后台管理端页面\\系统设置\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\login.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\登录页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\index.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\订单工作台\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\order-detail.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\订单详情\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\inventory.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\库存管理\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\pickup.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\提货核销\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\warehouse\\retail.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\库管端页面\\门店零售\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\logistics\\login.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\货管端页面\\登录页\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\logistics\\index.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\货管端页面\\任务列表\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\logistics\\task-detail.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\货管端页面\\任务详情\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\logistics\\income.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\货管端页面\\收入统计\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    },
+    {
+      "jsonFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\ui-design-prompts\\logistics\\profile.json",
+      "htmlFile": "C:\\Users\\Administrator\\Desktop\\烟花5\\货管端页面\\个人中心\\code.html",
+      "passed": true,
+      "issues": [],
+      "warnings": []
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #EF062D;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #C11010;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>库管端登录API测试</h1>
+
+    <div class="form-group">
+        <label for="username">用户名:</label>
+        <input type="text" id="username" value="warehouse01">
+    </div>
+
+    <div class="form-group">
+        <label for="password">密码:</label>
+        <input type="password" id="password" value="123456">
+    </div>
+
+    <button onclick="testLogin()">测试登录</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.textContent = '正在请求...';
+            resultDiv.className = '';
+
+            try {
+                const response = await fetch('http://39.104.58.26:8083/api/staff/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 0) {
+                    resultDiv.className = 'success';
+                    resultDiv.textContent = '✅ 登录成功！\n\n' +
+                        'Token: ' + data.data.token.substring(0, 50) + '...\n' +
+                        '用户信息: ' + JSON.stringify(data.data.userInfo, null, 2);
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.textContent = '❌ 登录失败！\n\n' +
+                        'HTTP状态码: ' + response.status + '\n' +
+                        '返回数据: ' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = '❌ 请求错误！\n\n' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

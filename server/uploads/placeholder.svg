@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f5f5f5"/>
+  <text x="100" y="90" text-anchor="middle" fill="#ccc" font-size="14" font-family="Arial">套餐</text>
+  <text x="100" y="115" text-anchor="middle" fill="#ccc" font-size="12" font-family="Arial">Package</text>
+  <path d="M85 130 L100 150 L115 130 L105 130 L105 140 L95 140 L95 130 Z" fill="#ddd"/>
+  <rect x="80" y="145" width="40" height="8" rx="2" fill="#ddd"/>
+</svg>
