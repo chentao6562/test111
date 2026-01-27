@@ -385,7 +385,9 @@ const loadSelectedItems = async () => {
 
       if (cartItems.value.length === 0) {
         Toast({ message: '请先选择商品', theme: 'warning' })
-        router.back()
+        // 【2026-01-28修复】购物车为空时跳转到首页，避免back()返回错误页面
+        router.replace('/')
+        return
       }
     } else {
       // 【2026-01-20修复】推销员自己结算时不传s参数，获取拿货价
@@ -414,7 +416,9 @@ const loadSelectedItems = async () => {
 
       if (cartItems.value.length === 0) {
         Toast({ message: '请先选择商品', theme: 'warning' })
-        router.back()
+        // 【2026-01-28修复】购物车为空时跳转到首页，避免back()返回错误页面
+        router.replace('/')
+        return
       }
     }
 

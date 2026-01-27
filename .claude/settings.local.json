@@ -655,7 +655,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: 修复管理后台供货价等新价格字段无法保存的问题\n\n问题：后端API未处理supplyPrice、suggestedPrice、minRetailPrice、masterRetailPrice字段\n修复：\n- productController.ts: create\\(\\)和update\\(\\)方法添加新字段提取和解析\n- productService.ts: 更新DTO类型定义，create\\(\\)和update\\(\\)方法添加数据库写入\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: 修复推销员价格显示问题\n\n1. 推荐商品API添加authOptional中间件\n2. 推荐商品服务根据推销员类型返回正确价格\n   - 一级推销员：返回供货价（supplyPrice）\n   - 二级推销员：返回上级subPrice或供货价\n   - 客户：返回零售价（retailPrice）\n3. 套餐列表页面简化价格显示逻辑\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(ssh root@39.104.113.121 \"cd /root/projects/firework && git pull origin main && cd server && npm run build && pm2 restart firework-api\")",
-      "Bash(ssh root@39.104.113.121 \"cd /root/projects/firework && tar -xzvf server-price-fix.tar.gz && pm2 restart firework-api && pm2 logs firework-api --lines 10 --nostream\")"
+      "Bash(ssh root@39.104.113.121 \"cd /root/projects/firework && tar -xzvf server-price-fix.tar.gz && pm2 restart firework-api && pm2 logs firework-api --lines 10 --nostream\")",
+      "Bash(ssh root@39.104.58.26 \"cd /root/projects/test111/server && mysql -h rm-hp39t0j1y3xo2a25g.mysql.huhehaote.rds.aliyuncs.com -u yanhuaxitong -p''c65623518+'' firework_db_test -e \"\"SELECT code, status, initiator_phone, current_price, floor_price, expire_at FROM bargain WHERE status=''BARGAINING'' ORDER BY created_at DESC LIMIT 3;\"\"\")"
     ],
     "deny": []
   }

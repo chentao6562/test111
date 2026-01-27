@@ -85,16 +85,29 @@ const submitGrant = async () => {
     })
 
     if (res.data) {
+      const grantedName = selectedLevel2.value.name
+      const grantedAmount = grantForm.value.amount
+      const couponCode = res.data.code
+
+      grantDialogVisible.value = false
+      // 【2026-01-28修复】使用Promise.all等待刷新完成，避免竞态条件
+      await Promise.all([loadLevel2List(), userStore.refreshUserInfo()])
+
+      // 【2026-01-28修复】添加Dialog回调处理
       Dialog.confirm({
         title: '发放成功',
-        content: `已向 ${selectedLevel2.value.name} 发放 ¥${grantForm.value.amount} 代金券\n券码: ${res.data.code}`,
+        content: `已向 ${grantedName} 发放 ¥${grantedAmount} 代金券\n券码: ${couponCode}`,
         confirmBtn: '继续发放',
-        cancelBtn: '返回'
+        cancelBtn: '返回',
+        onConfirm: () => {
+          // 点击"继续发放" - 重新打开发券弹窗
+          grantForm.value = { amount: 10, remark: '' }
+          grantDialogVisible.value = true
+        },
+        onCancel: () => {
+          // 点击"返回" - 保持在当前页面，不需要额外操作
+        }
       })
-      grantDialogVisible.value = false
-      // 刷新列表和余额
-      loadLevel2List()
-      userStore.refreshUserInfo()
     }
   } catch (error: any) {
     Toast({ message: error.message || '发放失败', theme: 'error' })

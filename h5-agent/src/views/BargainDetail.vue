@@ -17,6 +17,7 @@ import {
   type BargainDetail
 } from '../api/bargain'
 import { useUserStore } from '../stores/user'
+import { matchMaskedPhone } from '../utils/phoneUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -51,8 +52,7 @@ const showRules = ref(false)
 // 是否是发起人
 const isInitiator = computed(() => {
   if (!detail.value || !userStore.userInfo?.phone) return false
-  const maskedPhone = userStore.userInfo.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-  return detail.value.initiatorPhone === maskedPhone
+  return matchMaskedPhone(userStore.userInfo.phone, detail.value.initiatorPhone)
 })
 
 // 是否可以取消
@@ -112,6 +112,12 @@ const startCountdown = () => {
     if (diff <= 0) {
       remainingTime.value = '已过期'
       countdownParts.value = { hours: '00', minutes: '00', seconds: '00' }
+      // 【2026-01-28修复】过期时停止定时器，只刷新一次
+      if (countdownTimer.value) {
+        clearInterval(countdownTimer.value)
+        countdownTimer.value = null
+      }
+      // 刷新一次详情以获取最新状态
       loadDetail()
       return
     }

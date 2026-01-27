@@ -17,6 +17,7 @@ import {
   type GroupBuyConfig
 } from '../api/groupBuy'
 import { useUserStore } from '../stores/user'
+import { matchMaskedPhone } from '../utils/phoneUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -37,24 +38,19 @@ const currentUserPhone = computed(() => userStore.userInfo?.phone || '')
 // 是否是当前用户参与的拼团（发起人或成员）
 const isParticipant = computed(() => {
   if (!detail.value || !currentUserPhone.value) return false
-  return detail.value.members.some(m =>
-    m.customerPhone.replace(/\*+/g, '') === currentUserPhone.value.replace(/(\d{3})\d{4}(\d{4})/, '$1$2') ||
-    m.customerPhone === currentUserPhone.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-  )
+  return detail.value.members.some(m => matchMaskedPhone(currentUserPhone.value, m.customerPhone))
 })
 
 // 是否是发起人
 const isInitiator = computed(() => {
   if (!detail.value || !currentUserPhone.value) return false
-  const maskedPhone = currentUserPhone.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-  return detail.value.initiatorPhone === maskedPhone
+  return matchMaskedPhone(currentUserPhone.value, detail.value.initiatorPhone)
 })
 
 // 获取当前用户的成员信息
 const currentMember = computed(() => {
   if (!detail.value || !currentUserPhone.value) return null
-  const maskedPhone = currentUserPhone.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-  return detail.value.members.find(m => m.customerPhone === maskedPhone) || null
+  return detail.value.members.find(m => matchMaskedPhone(currentUserPhone.value, m.customerPhone)) || null
 })
 
 // 是否可以退出（组队中状态且是参与者且未退出）

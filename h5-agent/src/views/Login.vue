@@ -188,6 +188,8 @@ const goBack = () => {
 // 【2026-01-22】欢迎弹窗关闭
 const handleWelcomeClose = () => {
   showWelcomeGuide.value = false
+  // 【2026-01-28修复】标记欢迎弹窗已显示，避免每次登录都显示
+  localStorage.setItem('welcome_guide_shown', 'true')
   // 跳转到之前的页面或首页
   const redirect = route.query.redirect as string
   router.replace(redirect || '/')

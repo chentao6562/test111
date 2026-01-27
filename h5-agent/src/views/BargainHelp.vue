@@ -16,6 +16,7 @@ import {
   formatCountdown,
   type BargainDetail
 } from '../api/bargain'
+import { matchMaskedPhone } from '../utils/phoneUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -111,8 +112,7 @@ const bargainCountdownTimer = ref<number | null>(null)
 // 是否已帮砍过
 const hasHelped = computed(() => {
   if (!detail.value || !helpForm.value.phone) return false
-  const maskedPhone = helpForm.value.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-  return detail.value.cuts.some(cut => cut.helperPhone === maskedPhone)
+  return detail.value.cuts.some(cut => matchMaskedPhone(helpForm.value.phone, cut.helperPhone))
 })
 
 // 加载砍价详情

@@ -237,10 +237,9 @@ const submitApply = async () => {
       inviteCode: applyInviteCode.value.toUpperCase()
     })
 
-    // 更新用户信息
+    // 【2026-01-28修复】使用store方法更新用户信息，确保响应式生效
     if (res.data.userInfo) {
-      userStore.userInfo = res.data.userInfo
-      localStorage.setItem('h5_agent_user', JSON.stringify(res.data.userInfo))
+      userStore.updateUserInfo(res.data.userInfo)
     }
 
     Toast({ message: '申请成功！您已成为推销员', theme: 'success' })
