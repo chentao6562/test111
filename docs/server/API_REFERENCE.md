@@ -1,6 +1,6 @@
 # API参考文档
 
-**版本**: v2.0 | **更新**: 2026-01-25
+**版本**: v2.1 | **更新**: 2026-01-27
 
 | 环境 | 基础URL |
 |------|---------|
@@ -15,6 +15,7 @@
 |------|--------|------|
 | [认证API](#认证api) | 4 | 登录、验证码 |
 | [商品API](#商品api) | 8 | 商品、分类 |
+| [套餐API](#套餐api) | 11 | 套餐管理、预约 |
 | [订单API](#订单api) | 15 | 订单管理 |
 | [库管API](#库管api) | 12 | 接单、核销、库存 |
 | [货管API](#货管api) | 18 | 移库任务、抢单、提现 |
@@ -29,7 +30,7 @@
 | [管理后台API](#管理后台api) | 25+ | 全部管理功能 |
 | [移库管理API](#移库管理api) | 12 | 撮合打包 |
 
-**总计**: 200+ API端点
+**总计**: 210+ API端点
 
 ---
 
@@ -193,6 +194,323 @@ GET /api/products/:id
 ### 获取分类列表
 ```http
 GET /api/categories
+```
+
+---
+
+## 📦 套餐API
+
+> **基础路径**: `/api/packages` (H5端) / `/api/admin/packages` (管理后台)
+> **功能说明**: 套餐是多个商品的组合销售，支持独立定价和库存管理
+
+### H5端接口
+
+#### 获取套餐列表
+```http
+GET /api/packages?page=1&pageSize=10&positioning=HOT&keyword=
+Authorization: Bearer <token> (可选)
+```
+
+**查询参数**:
+- `page`: 页码（默认1）
+- `pageSize`: 每页数量（默认10）
+- `positioning`: 套餐定位（ENTRY引流款/HOT爆款/PROFIT利润款）
+- `keyword`: 搜索关键词
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "code": "PKG001",
+        "name": "欢乐体验装",
+        "positioning": "ENTRY",
+        "images": ["uploads/packages/xxx.jpg"],
+        "costPrice": 100,
+        "supplyPrice": 120,
+        "suggestedPrice": 188,
+        "masterRetailPrice": 168,
+        "retailPrice": 168,
+        "agentPrice": 120,
+        "grossMargin": 40,
+        "sceneTags": ["入门尝鲜", "预算有限"],
+        "targetAudience": "首次购买客户",
+        "stockStrategy": "COMPONENT",
+        "availableStock": 50,
+        "items": [
+          {
+            "productId": 1,
+            "productName": "小烟花A",
+            "quantity": 2,
+            "productImage": "..."
+          }
+        ]
+      }
+    ],
+    "total": 10,
+    "page": 1,
+    "pageSize": 10
+  }
+}
+```
+
+---
+
+#### 获取套餐详情
+```http
+GET /api/packages/:id
+Authorization: Bearer <token> (可选)
+```
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "code": "PKG001",
+    "name": "欢乐体验装",
+    "positioning": "ENTRY",
+    "description": "套餐详细描述...",
+    "images": ["uploads/packages/xxx.jpg"],
+    "costPrice": 100,
+    "supplyPrice": 120,
+    "suggestedPrice": 188,
+    "masterRetailPrice": 168,
+    "retailPrice": 168,
+    "agentPrice": 120,
+    "items": [
+      {
+        "productId": 1,
+        "productName": "小烟花A",
+        "productImage": "...",
+        "quantity": 2,
+        "snapshotCostPrice": 50,
+        "snapshotSupplyPrice": 60,
+        "snapshotRetailPrice": 94
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### 推销员设置套餐价格
+```http
+PUT /api/packages/:id/price
+Authorization: Bearer <agent-token>
+Content-Type: application/json
+
+{
+  "retailPrice": 188,
+  "subPrice": 150
+}
+```
+
+**参数说明**:
+- `retailPrice`: 我的零售价（必须 ≥ 拿货价）
+- `subPrice`: 给下级的价格（仅一级推销员可设置）
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "价格设置成功",
+  "data": {
+    "id": 1,
+    "packageId": 1,
+    "agentId": 10,
+    "retailPrice": 188,
+    "subPrice": 150
+  }
+}
+```
+
+---
+
+#### 创建套餐预约
+```http
+POST /api/packages/:id/reserve
+Authorization: Bearer <token> (可选)
+Content-Type: application/json
+
+{
+  "customerName": "张三",
+  "customerPhone": "13800138000",
+  "pickupDate": "2026-02-01",
+  "storeId": 1,
+  "remark": "备注信息"
+}
+```
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "预约成功",
+  "data": {
+    "reservationId": 123,
+    "reservationNo": "RV20260127001"
+  }
+}
+```
+
+---
+
+### 管理后台接口
+
+#### 获取套餐列表
+```http
+GET /api/admin/packages?page=1&pageSize=20&positioning=&status=&keyword=
+Authorization: Bearer <admin-token>
+```
+
+**查询参数**:
+- `page`: 页码
+- `pageSize`: 每页数量
+- `positioning`: 套餐定位筛选
+- `status`: 状态筛选（ACTIVE/INACTIVE）
+- `keyword`: 搜索关键词
+
+---
+
+#### 获取套餐详情
+```http
+GET /api/admin/packages/:id
+Authorization: Bearer <admin-token>
+```
+
+---
+
+#### 创建套餐
+```http
+POST /api/admin/packages
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{
+  "code": "PKG002",
+  "name": "豪华礼花套装",
+  "positioning": "HOT",
+  "description": "套餐描述...",
+  "images": ["uploads/packages/xxx.jpg"],
+  "costPrice": 200,
+  "supplyPrice": 250,
+  "suggestedPrice": 388,
+  "masterRetailPrice": 358,
+  "sceneTags": ["节日送礼", "高端体验"],
+  "targetAudience": "有预算客户",
+  "stockStrategy": "COMPONENT",
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 3
+    },
+    {
+      "productId": 2,
+      "quantity": 2
+    }
+  ]
+}
+```
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "创建成功",
+  "data": {
+    "id": 2,
+    "code": "PKG002",
+    "name": "豪华礼花套装"
+  }
+}
+```
+
+---
+
+#### 更新套餐
+```http
+PUT /api/admin/packages/:id
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{
+  "name": "更新后的名称",
+  "description": "更新后的描述",
+  "suggestedPrice": 398
+}
+```
+
+---
+
+#### 删除套餐
+```http
+DELETE /api/admin/packages/:id
+Authorization: Bearer <admin-token>
+```
+
+---
+
+#### 切换套餐状态
+```http
+PUT /api/admin/packages/:id/toggle
+Authorization: Bearer <admin-token>
+```
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "已上架",
+  "data": {
+    "id": 1,
+    "status": "ACTIVE"
+  }
+}
+```
+
+---
+
+#### 配置套餐商品
+```http
+PUT /api/admin/packages/:id/items
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 3,
+      "sort": 0
+    },
+    {
+      "productId": 2,
+      "quantity": 2,
+      "sort": 1
+    }
+  ]
+}
+```
+
+**响应**:
+```json
+{
+  "code": 0,
+  "message": "配置成功",
+  "data": {
+    "packageId": 1,
+    "itemCount": 2,
+    "totalCost": 200
+  }
+}
 ```
 
 ---

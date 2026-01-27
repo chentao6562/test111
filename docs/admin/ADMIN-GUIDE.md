@@ -1,6 +1,6 @@
 # 管理后台开发手册
 
-**版本**: v3.0 | **更新**: 2026-01-24 | **状态**: 生产就绪
+**版本**: v3.1 | **更新**: 2026-01-27 | **状态**: 生产就绪
 
 ---
 
@@ -20,9 +20,10 @@
 | 类别 | 模块数 | 说明 |
 |------|--------|------|
 | 基础功能 | 17 | 预约/商品/推销员/库存/财务等 |
+| 套餐管理 | 1 | 套餐CRUD/商品配置/上下架 |
 | 营销活动 | 8 | 砍价/拼团/转盘/锁价/代金券等 |
 | 推销员激励 | 3 | 发圈审核/周期奖励/激励配置 |
-| **总计** | **46个路由** | |
+| **总计** | **47个路由** | |
 
 ---
 
@@ -772,6 +773,87 @@ interface IncentiveConfig {
 
 ---
 
+## 套餐管理【2026-01-27新增】
+
+### 26. 套餐管理 (`/packages`)
+
+**页面**: `pages/package/index.vue`
+
+**功能清单**:
+| 功能 | 说明 |
+|------|------|
+| 套餐列表 | 搜索、定位筛选、状态筛选、分页 |
+| 新增套餐 | 名称、编码、定位、定价、库存策略 |
+| 编辑套餐 | 修改套餐信息 |
+| 配置商品 | 添加/移除套餐内商品，设置数量 |
+| 上下架 | 切换套餐销售状态 |
+| 删除套餐 | 删除未使用的套餐 |
+
+**核心API**:
+- `GET /api/admin/packages` - 获取套餐列表
+- `GET /api/admin/packages/:id` - 获取套餐详情
+- `POST /api/admin/packages` - 创建套餐
+- `PUT /api/admin/packages/:id` - 更新套餐
+- `DELETE /api/admin/packages/:id` - 删除套餐
+- `PUT /api/admin/packages/:id/toggle` - 切换上下架状态
+- `PUT /api/admin/packages/:id/items` - 配置套餐商品
+
+**套餐定位类型**:
+```typescript
+const PACKAGE_POSITIONING = {
+  ENTRY: '引流款',   // 低价引流，吸引新客
+  HOT: '爆款',       // 主推款，销量担当
+  PROFIT: '利润款'   // 高毛利款，提升利润
+}
+```
+
+**库存策略**:
+```typescript
+const STOCK_STRATEGY = {
+  COMPONENT: '按组成商品计算',  // 库存=各商品可组成套餐的最小数量
+  INDEPENDENT: '独立库存'       // 套餐有独立库存，不影响单品
+}
+```
+
+**创建套餐表单**:
+```typescript
+interface PackageForm {
+  code: string              // 套餐编码（唯一）
+  name: string              // 套餐名称
+  positioning: string       // 定位（ENTRY/HOT/PROFIT）
+  description?: string      // 套餐描述
+  images?: string[]         // 套餐图片
+  costPrice: number         // 成本价
+  supplyPrice: number       // 供货价（给一级的拿货价）
+  suggestedPrice: number    // 建议零售价
+  stockStrategy: string     // 库存策略
+  independentStock?: number // 独立库存数量（INDEPENDENT策略时）
+  sort?: number             // 排序
+}
+```
+
+**配置商品表单**:
+```typescript
+interface PackageItemForm {
+  productId: number    // 商品ID
+  quantity: number     // 数量（≥1）
+}
+```
+
+**套餐价格校验**:
+```typescript
+// 创建/编辑套餐时的价格校验
+if (costPrice > supplyPrice) throw '成本价不能大于供货价'
+if (supplyPrice > suggestedPrice) throw '供货价不能大于建议零售价'
+```
+
+**重要说明**:
+1. **套餐不参与营销活动**：砍价、拼团、锁价、秒杀活动不适用于套餐
+2. **推销员定价**：一级推销员需单独为套餐设置零售价和给二级的价
+3. **拼接图自动生成**：套餐无主图时自动生成商品拼接图+价格爆炸贴
+
+---
+
 ## 开发规范
 
 ### 组件命名
@@ -876,6 +958,19 @@ isValidAmount(100.5) // true
 
 ## 更新日志
 
+### 2026-01-27【套餐管理功能】
+
+**新增模块（1个）**
+- 套餐管理 `/packages`
+  - 套餐CRUD操作
+  - 套餐商品配置
+  - 三种定位类型（引流款/爆款/利润款）
+  - 两种库存策略（按组成商品计算/独立库存）
+
+**文档更新**
+- 更新模块统计（47个路由）
+- 新增套餐管理完整文档
+
 ### 2026-01-24【营销活动体系完善】
 
 **新增模块（8个）**
@@ -940,5 +1035,5 @@ isValidAmount(100.5) // true
 
 ---
 
-**最后更新**: 2026-01-24
+**最后更新**: 2026-01-27
 **维护者**: Claude AI

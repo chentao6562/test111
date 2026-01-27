@@ -13,7 +13,7 @@
 | ORM框架 | Prisma |
 | Schema文件 | `server/prisma/schema.prisma` |
 | 迁移目录 | `server/prisma/migrations/` |
-| **总表数** | **72个** |
+| **总表数** | **75个** |
 
 ### 表分类统计
 
@@ -21,6 +21,7 @@
 |------|--------|------|
 | 用户与认证 | 3 | 推销员、系统用户、验证码 |
 | 商品与库存 | 5 | 商品、分类、购物车、库存日志 |
+| 套餐系统 | 3 | 套餐、套餐商品、套餐定价 |
 | 预约系统 | 7 | 预约单、预约项、赠品、客户记录等 |
 | 推销员体系 | 7 | 定价、奖励、返券、层级、统计 |
 | 代金券系统 | 5 | 代金券、活动、发圈记录、周统计 |
@@ -57,6 +58,14 @@
 | **cart_items** | 采购单表 | 临时采购单存储 |
 | **stock_logs** | 库存日志表 | 所有库存变动记录 |
 | **warehouse** | 仓库/门店表 | 门店信息管理 |
+
+### 2.2.1 套餐系统（3表）
+
+| 表名 | 中文名 | 主要用途 |
+|------|--------|---------|
+| **product_packages** | 套餐主表 | 套餐基本信息、四级价格体系 |
+| **package_items** | 套餐商品表 | 套餐内商品明细、价格快照 |
+| **package_agent_prices** | 套餐推销员定价表 | 推销员自定义套餐价格 |
 
 ### 2.3 预约系统（7表）
 
@@ -270,6 +279,112 @@ availableStock = stock - lockStock
 
 // 价格层级：costPrice ≤ supplyPrice ≤ subPrice ≤ retailPrice
 ```
+
+---
+
+### 3.2.1 product_packages（套餐主表）
+
+**用途**: 套餐信息管理，支持多商品组合销售
+
+**核心字段**:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | Int | 主键 |
+| code | String(20) | 套餐编码（唯一，如 PKG001） |
+| name | String(100) | 套餐名称 |
+| positioning | String(20) | 定位：ENTRY(引流款)/HOT(爆款)/PROFIT(利润款) |
+| description | Text? | 套餐描述 |
+| images | Text | 套餐图片（JSON数组） |
+
+**四级价格体系**:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| costPrice | Decimal(10,2) | 成本价（商品成本合计） |
+| supplyPrice | Decimal(10,2) | 供货价（给一级推销员的拿货价） |
+| suggestedPrice | Decimal(10,2)? | 建议零售价 |
+| masterRetailPrice | Decimal(10,2) | 总代理零售价（默认展示价） |
+| grossMargin | Decimal(5,2)? | 毛利率（前端展示用） |
+
+**库存与标签**:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| stockStrategy | String(20) | 库存策略：COMPONENT(按组成商品)/INDEPENDENT(独立库存) |
+| independentStock | Int | 独立库存数量（仅INDEPENDENT策略使用） |
+| sceneTags | String(500)? | 适用场景标签（JSON数组，如["入门尝鲜","预算有限"]） |
+| targetAudience | String(100)? | 目标人群 |
+| sort | Int | 排序权重 |
+| status | String(20) | 状态：ACTIVE/INACTIVE |
+
+**关系**:
+- 一对多：items（套餐商品明细）
+- 一对多：agentPrices（推销员定价）
+
+**索引**:
+- UNIQUE: code
+- INDEX: status + sort
+- INDEX: positioning
+
+---
+
+### 3.2.2 package_items（套餐商品明细表）
+
+**用途**: 记录套餐包含的商品及数量
+
+**核心字段**:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | Int | 主键 |
+| packageId | Int | 所属套餐ID |
+| productId | Int | 商品ID |
+| quantity | Int | 商品数量 |
+| sort | Int | 排序顺序 |
+
+**价格快照字段**（创建时冻结，用于计算套餐成本）:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| snapshotCostPrice | Decimal(10,2)? | 商品成本价快照 |
+| snapshotSupplyPrice | Decimal(10,2)? | 商品供货价快照 |
+| snapshotRetailPrice | Decimal(10,2)? | 商品零售价快照 |
+
+**关系**:
+- 多对一：package（所属套餐）
+- 多对一：product（关联商品）
+
+**约束**:
+- 唯一约束：@@unique([packageId, productId])
+
+---
+
+### 3.2.3 package_agent_prices（套餐推销员定价表）
+
+**用途**: 推销员自定义套餐价格
+
+**核心字段**:
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | Int | 主键 |
+| packageId | Int | 套餐ID |
+| agentId | Int | 推销员ID |
+| retailPrice | Decimal(10,2)? | 我的零售价 |
+| subPrice | Decimal(10,2)? | 给下级的价格（仅一级可设） |
+
+**定价规则**:
+- 一级推销员：retailPrice ≥ supplyPrice，subPrice ≥ supplyPrice
+- 二级推销员：retailPrice ≥ 一级设置的subPrice
+- 二级推销员无法设置subPrice
+
+**关系**:
+- 多对一：package（套餐）
+
+**约束**:
+- 唯一约束：@@unique([packageId, agentId])
+- INDEX: agentId
 
 ---
 
@@ -728,7 +843,19 @@ Product（商品）
   ├─ reservationItems → ReservationItem（一对多）
   ├─ agentProductPrices → AgentProductPrice（一对多）
   ├─ bargainConfigItems → BargainConfigItem（一对多）
-  └─ groupBuyConfigs → GroupBuyConfig（一对多）
+  ├─ groupBuyConfigs → GroupBuyConfig（一对多）
+  └─ packageItems → PackageItem（一对多）
+
+ProductPackage（套餐）
+  ├─ items → PackageItem（一对多）
+  └─ agentPrices → PackageAgentPrice（一对多）
+
+PackageItem（套餐商品）
+  ├─ packageId → ProductPackage（多对一）
+  └─ productId → Product（多对一）
+
+PackageAgentPrice（套餐定价）
+  └─ packageId → ProductPackage（多对一）
 
 BargainConfig（砍价活动）
   ├─ items → BargainConfigItem（一对多）
@@ -801,6 +928,22 @@ SpinWheelConfig（转盘活动）
 ---
 
 ## 六、数据迁移记录
+
+### 2026-01-25：套餐系统
+
+**新增表**:
+- `product_packages` - 套餐主表
+- `package_items` - 套餐商品明细表
+- `package_agent_prices` - 套餐推销员定价表
+
+**核心功能**:
+- 多商品组合销售
+- 四级价格体系与单品一致
+- 支持按组成商品计算库存或独立库存
+- 推销员可自定义套餐零售价和给下级的价格
+- 套餐预约自动拆分为商品明细入预约单
+
+---
 
 ### 2026-01-22：审计追踪系统
 
@@ -1075,7 +1218,7 @@ DELETE FROM coupons WHERE status = 'EXPIRED' AND expireAt < DATE_SUB(NOW(), INTE
 
 ---
 
-## 附录：完整表清单（57表）
+## 附录：完整表清单（60表）
 
 | # | 表名 | 中文名 | 分类 |
 |---|------|--------|------|
@@ -1087,7 +1230,10 @@ DELETE FROM coupons WHERE status = 'EXPIRED' AND expireAt < DATE_SUB(NOW(), INTE
 | 6 | cart_items | 采购单表 | 商品与库存 |
 | 7 | stock_logs | 库存日志表 | 商品与库存 |
 | 8 | warehouse | 仓库/门店表 | 商品与库存 |
-| 9 | reservations | 预约单表 | 预约系统 |
+| 9 | product_packages | 套餐主表 | 套餐系统 |
+| 10 | package_items | 套餐商品表 | 套餐系统 |
+| 11 | package_agent_prices | 套餐推销员定价表 | 套餐系统 |
+| 12 | reservations | 预约单表 | 预约系统 |
 | 10 | reservation_items | 预约商品表 | 预约系统 |
 | 11 | reservation_confirm_logs | 确认日志表 | 预约系统 |
 | 12 | gift_tiers | 赠品档位表 | 预约系统 |
@@ -1140,6 +1286,6 @@ DELETE FROM coupons WHERE status = 'EXPIRED' AND expireAt < DATE_SUB(NOW(), INTE
 ---
 
 **文档维护**: 蒙庆烟花开发团队
-**文档版本**: v2.0
-**最后更新**: 2026-01-24
+**文档版本**: v2.1
+**最后更新**: 2026-01-27
 **Schema来源**: `server/prisma/schema.prisma`

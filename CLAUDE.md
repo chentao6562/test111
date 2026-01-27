@@ -340,6 +340,19 @@ server/src/
 
 ## 套餐功能（2026-01-25新增）
 
+### 套餐定位分类
+| 定位 | 编码 | 说明 |
+|------|------|------|
+| 引流款 | ENTRY | 低价引流，吸引新客 |
+| 爆款 | HOT | 主推款，销量担当 |
+| 利润款 | PROFIT | 高毛利款，提升利润 |
+
+### 库存策略
+| 策略 | 编码 | 说明 |
+|------|------|------|
+| 按组成商品计算 | COMPONENT | 库存=各商品可组成套餐的最小数量 |
+| 独立库存 | INDEPENDENT | 套餐有独立库存，不影响单品 |
+
 ### 套餐数据模型
 | 表名 | 说明 |
 |------|------|
@@ -356,8 +369,8 @@ server/src/
 | 显示价 | displayPrice | 根据用户角色动态返回 |
 
 ### 套餐特殊规则
-- 套餐不参与砍价、拼团、锁价活动
-- 套餐内商品不能单独购买
+- 套餐不参与砍价、拼团、锁价、秒杀活动
+- 一级需设置subPrice后，二级才能销售
 - 无主图时自动生成拼接图+价格爆炸贴
 
 ### 套餐相关文件
@@ -481,9 +494,12 @@ npm run build         # 生产构建
 
 ---
 
-## 系统状态：🟢 A级（生产就绪）
+## 系统状态：🟢 v1.0正式版（生产就绪）
 
-所有核心功能已完成并上线运行（2026-01-22 全面优化完成）
+所有核心功能已完成并上线运行
+- 2026-01-27 v1.0正式版标签创建
+- 2026-01-25 套餐功能上线
+- 2026-01-22 全面优化完成
 
 ---
 
@@ -493,8 +509,8 @@ npm run build         # 生产构建
 | 文档 | 说明 |
 |------|------|
 | `CLAUDE.md` | 本文件，系统概览和强制规则 |
-| `docs/server/DATABASE.md` | 72个数据表详解 |
-| `docs/server/API_REFERENCE.md` | 178个API端点 |
+| `docs/server/DATABASE.md` | 75个数据表详解 |
+| `docs/server/API_REFERENCE.md` | 210+个API端点 |
 | `docs/server/AUDIT_SYSTEM.md` | 审计追踪系统 |
 | `docs/global/BUSINESS_MANUAL.md` | 完整业务手册 |
 
@@ -510,9 +526,9 @@ npm run build         # 生产构建
 ### 前端开发必读
 | 端 | 文档 |
 |------|------|
-| H5推销员端 | `docs/agent/AGENT_MINIPROGRAM_MANUAL.md` (38路由) |
+| H5推销员端 | `docs/agent/AGENT_MINIPROGRAM_MANUAL.md` (42路由) |
 | 门店端H5 | `docs/store/STORE-GUIDE.md` (14路由) |
-| 管理后台 | `docs/admin/ADMIN-GUIDE.md` (46路由) |
+| 管理后台 | `docs/admin/ADMIN-GUIDE.md` (47路由) |
 
 ---
 

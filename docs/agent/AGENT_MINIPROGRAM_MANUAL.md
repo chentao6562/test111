@@ -2,8 +2,8 @@
 
 > 本文档是推销员端（小程序及H5版本）的完整技术手册，供所有后续参与开发工作的AI和开发者参考。
 
-**最后更新**: 2026-01-24
-**版本**: 3.0.0
+**最后更新**: 2026-01-27
+**版本**: 3.1.0
 **维护者**: Claude AI
 
 ---
@@ -47,6 +47,7 @@
 19. [活动中心模块](#十九活动中心模块)
 20. [发圈打卡模块](#二十发圈打卡模块)
 21. [团队返券功能](#二十一团队返券功能)
+22. [套餐模块详解](#二十二套餐模块详解)
 
 ---
 
@@ -454,35 +455,128 @@ function matchGiftTier(amount, giftTiers) {
 **文件位置**: `views/packages/`, `utils/packageThumbnailGenerator.ts`
 
 **功能清单**:
-- 套餐列表展示（按分类横向导航）
+- 套餐列表展示（按定位横向导航：引流款/爆款/利润款）
 - 套餐详情页面（包含商品列表、价格信息）
-- 套餐定价管理（推销员设置零售价）
+- 套餐定价管理（推销员设置零售价和给下级的价）
 - 套餐预约流程（与普通商品类似）
 - 拼接图自动生成（无主图时自动生成商品拼接图+价格爆炸贴）
 
-**关键API**:
+#### 套餐定位分类
+
+| 定位 | 英文代码 | 说明 |
+|------|---------|------|
+| 引流款 | ENTRY | 低价吸引客户，主打性价比 |
+| 爆款 | HOT | 销量担当，适合大多数客户 |
+| 利润款 | PROFIT | 高毛利，提升推销员收益 |
+
+#### 套餐四级价格体系
+
+与单品一致的价格层级：
+```
+成本价(costPrice) ≤ 供货价(supplyPrice) ≤ 给二级价(subPrice) ≤ 零售价(retailPrice)
+```
+
+| 角色 | 可设置价格 | 拿货价基准 |
+|------|-----------|-----------|
+| 总代理 | 成本价、供货价、建议零售价 | 成本价 |
+| 一级推销员 | 零售价、给二级的价 | 供货价 |
+| 二级推销员 | 零售价 | 一级设置的subPrice |
+
+#### 库存策略
+
+| 策略 | 英文代码 | 说明 |
+|------|---------|------|
+| 按组成商品计算 | COMPONENT | 可用库存 = min(各商品库存/各商品数量) |
+| 独立库存 | INDEPENDENT | 套餐独立维护库存数量 |
+
+#### 拼接图自动生成
+
+**触发条件**: 套餐无主图时，前端自动生成展示用拼接图
+
+**生成规则**:
+- 取套餐内前4个商品的图片拼接成2×2网格
+- 右上角添加价格爆炸贴（显示建议零售价）
+- 生成的图片仅用于前端展示，不上传服务器
+
+**技术实现**:
+```typescript
+// utils/packageThumbnailGenerator.ts
+export async function generatePackageThumbnail(
+  items: PackageItem[],
+  price: number
+): Promise<string> {
+  const canvas = document.createElement('canvas')
+  canvas.width = 400
+  canvas.height = 400
+  const ctx = canvas.getContext('2d')!
+
+  // 绘制商品图片网格
+  const images = items.slice(0, 4).map(item => item.product.image)
+  // ... 绘制逻辑
+
+  // 绘制价格爆炸贴
+  drawPriceTag(ctx, price)
+
+  return canvas.toDataURL('image/jpeg', 0.8)
+}
+```
+
+#### 关键API
 
 | 接口 | 方法 | 说明 |
 |------|------|------|
-| /packages | GET | 获取套餐列表 |
-| /packages/:id | GET | 获取套餐详情 |
-| /packages/:id/price | POST | 设置套餐定价 |
-| /agent/package-prices | GET | 获取推销员套餐价格列表 |
+| GET /packages | GET | 获取套餐列表（支持positioning筛选） |
+| GET /packages/:id | GET | 获取套餐详情（含商品列表） |
+| PUT /packages/:id/price | PUT | 推销员设置套餐价格 |
+| POST /packages/:id/reserve | POST | 创建套餐预约 |
 
-**套餐数据结构**:
+#### 套餐数据结构
+
 ```typescript
 interface Package {
   id: number
-  name: string           // 套餐名称
-  description: string    // 套餐描述
-  mainImage: string      // 主图（可为空，为空时自动生成拼接图）
-  costPrice: number      // 成本价
-  supplyPrice: number    // 供货价
-  suggestedPrice: number // 建议零售价
-  categoryId: number     // 分类ID
-  items: PackageItem[]   // 包含的商品
+  code: string             // 套餐编码 (PKG001)
+  name: string             // 套餐名称
+  positioning: 'ENTRY' | 'HOT' | 'PROFIT'  // 定位
+  description: string      // 套餐描述
+  images: string[]         // 图片数组（可为空，为空时自动生成拼接图）
+  costPrice: number        // 成本价
+  supplyPrice: number      // 供货价
+  suggestedPrice: number   // 建议零售价
+  masterRetailPrice: number // 总代理零售价
+  retailPrice: number      // 当前用户看到的零售价
+  agentPrice: number       // 当前用户的拿货价
+  grossMargin: number      // 毛利率
+  sceneTags: string[]      // 场景标签
+  targetAudience: string   // 目标人群
+  stockStrategy: 'COMPONENT' | 'INDEPENDENT'  // 库存策略
+  availableStock: number   // 可用库存
+  items: PackageItem[]     // 包含的商品
+}
+
+interface PackageItem {
+  productId: number
+  productName: string
+  productImage: string
+  quantity: number         // 商品数量
+  snapshotCostPrice: number    // 成本价快照
+  snapshotSupplyPrice: number  // 供货价快照
+  snapshotRetailPrice: number  // 零售价快照
 }
 ```
+
+#### 套餐预约流程
+
+```
+套餐列表 → 选择套餐 → 套餐详情 → 立即预约
+    ↓          ↓          ↓          ↓
+ 横向分类    查看包含商品  推销员可定价  填写客户信息
+```
+
+**与普通商品预约的差异**:
+- 套餐不加入购物车，直接从详情页进入预约
+- 预约提交后，系统自动将套餐拆分为商品明细入预约单
+- 套餐商品的库存按策略计算并锁定
 
 ---
 
@@ -1000,6 +1094,23 @@ onLoad() {
 
 ## 十四、更新日志
 
+### 2026-01-27【套餐功能完善】
+
+**新增模块**
+- 套餐模块详解（第22章）
+- 套餐列表页面 `/packages`
+- 套餐详情页面 `/packages/:id`
+- 套餐预约页面 `/packages/:id/checkout`
+
+**功能说明**
+- 套餐三种定位：引流款(ENTRY)、爆款(HOT)、利润款(PROFIT)
+- 四级价格体系与单品一致
+- 两种库存策略：按组成商品计算(COMPONENT)、独立库存(INDEPENDENT)
+- 无主图时自动生成拼接图+价格爆炸贴
+- 推销员可设置套餐零售价和给下级的价
+
+---
+
 ### 2026-01-24【营销活动体系完善】
 
 **新增模块**
@@ -1412,6 +1523,107 @@ const grantCoupon = async () => {
   }
 }
 ```
+
+---
+
+## 二十二、套餐模块详解
+
+### 22.1 业务背景
+
+套餐功能是v1.0版本的重要新增功能，允许管理员将多个商品组合成套餐销售。套餐具有以下业务优势：
+- **提高客单价**: 组合销售促进客户购买更多商品
+- **简化选择**: 客户无需逐一挑选，直接选择适合的套餐
+- **差异化定价**: 推销员可针对套餐设置独立价格
+
+### 22.2 页面路由
+
+| 路由 | 组件文件 | 功能 |
+|------|---------|------|
+| /packages | PackageList.vue | 套餐列表，横向Tab切换定位分类 |
+| /packages/:id | PackageDetail.vue | 套餐详情，展示商品列表和价格 |
+| /packages/:id/checkout | PackageCheckout.vue | 套餐预约页，填写客户信息 |
+
+### 22.3 组件层级
+
+```
+PackageList.vue
+├── 分类Tab栏（ENTRY/HOT/PROFIT）
+├── 套餐卡片列表
+│   ├── 套餐图片（主图或拼接图）
+│   ├── 套餐名称
+│   ├── 场景标签
+│   ├── 价格显示
+│   └── 立即预约按钮
+└── 加载更多
+
+PackageDetail.vue
+├── 轮播图区域
+├── 价格信息区
+│   ├── 零售价
+│   ├── 建议零售价（划线价）
+│   └── 毛利率标签
+├── 套餐描述
+├── 包含商品列表
+│   ├── 商品图片
+│   ├── 商品名称
+│   └── 数量×N
+├── 定价按钮（推销员可见）
+└── 立即预约按钮
+
+PackageCheckout.vue
+├── 套餐信息卡片
+├── 客户信息表单
+│   ├── 姓名
+│   ├── 电话
+│   └── 提货日期
+├── 金额统计
+│   ├── 套餐价格
+│   └── 赠品信息
+└── 提交预约按钮
+```
+
+### 22.4 价格显示规则
+
+**重要**: 价格显示必须使用 `priceUtils.ts` 中的统一函数：
+
+```typescript
+import { getDisplayPrice, getOriginalPrice } from '@/utils/priceUtils'
+
+// 获取显示价格（根据用户类型自动返回对应价格）
+const displayPrice = getDisplayPrice(packageData)
+
+// 获取原价（划线价）
+const originalPrice = getOriginalPrice(packageData)
+```
+
+**用户类型与价格对应**:
+| 用户类型 | 显示价格 | 拿货价 |
+|---------|---------|-------|
+| 游客 | masterRetailPrice | - |
+| 一级推销员 | 自定义retailPrice或masterRetailPrice | supplyPrice |
+| 二级推销员 | 自定义retailPrice或上级subPrice | 上级subPrice |
+
+### 22.5 与营销活动的关系
+
+**互斥规则**: 套餐与以下活动互斥
+- 砍价活动：套餐不能参与砍价
+- 拼团活动：套餐不能开团/参团
+- 锁价活动：套餐不能锁价
+
+**可叠加规则**:
+- 赠品机制：套餐预约金额计入赠品门槛
+- 代金券：核销时可使用代金券抵扣
+
+### 22.6 常见问题
+
+**Q: 套餐库存不足怎么显示？**
+A: 当按COMPONENT策略计算的可用库存为0时，显示"已售罄"，禁用预约按钮。
+
+**Q: 套餐商品价格变动后，套餐价格会变吗？**
+A: 不会。套餐创建时会快照商品价格，后续商品价格变动不影响已创建的套餐。
+
+**Q: 二级推销员如何获得套餐的拿货价？**
+A: 需要一级推销员先设置套餐的subPrice，否则二级无法看到该套餐。
 
 ---
 
