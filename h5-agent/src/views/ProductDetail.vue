@@ -513,7 +513,8 @@ const loadProduct = async () => {
     }
   } catch {
     Toast({ message: '商品不存在', theme: 'error' })
-    router.back()
+    // 【2026-01-28修复】加载失败跳转首页，避免back()返回错误页面
+    router.replace('/')
   } finally {
     loading.value = false
   }

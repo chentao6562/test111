@@ -7,6 +7,7 @@
  */
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { Toast } from 'tdesign-mobile-vue'
 import {
   getMyReservations,
   StatusLabels,
@@ -82,7 +83,9 @@ const loadData = async (refresh = false) => {
     const statusValue = tab?.value
     const phone = userStore.userInfo?.phone
     if (!phone) {
-      console.error('用户未登录或手机号为空')
+      // 【2026-01-28修复】未登录时提示用户并跳转登录页
+      Toast({ message: '请先登录查看预约', theme: 'warning' })
+      router.replace('/login?redirect=/reservations')
       return
     }
     const res = await getMyReservations({
