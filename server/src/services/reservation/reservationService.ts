@@ -120,7 +120,16 @@ export async function createReservation(input: CreateReservationInput): Promise<
 
   // 检查库存
   // 【2026-01-22 安全修复】添加库存非负检查和数据异常处理
+  // 【2026-01-27 BUG修复】添加数量必须大于0的验证
   for (const item of items) {
+    // 【2026-01-27】验证数量必须大于0
+    if (!item.quantity || item.quantity <= 0) {
+      return {
+        success: false,
+        message: '商品数量必须大于0',
+      };
+    }
+
     const product = products.find(p => p.id === item.productId);
     if (!product) continue;
 
