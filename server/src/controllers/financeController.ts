@@ -102,9 +102,13 @@ export async function getFundFlowListHandler(req: Request, res: Response) {
       endDate
     } = req.query;
 
+    // 校验分页参数，确保page>=1, pageSize在1-100之间
+    const parsedPage = Math.max(1, parseInt(page as string, 10) || 1);
+    const parsedPageSize = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 10));
+
     const data = await getFundFlowList({
-      page: parseInt(page as string, 10),
-      pageSize: Math.min(parseInt(pageSize as string, 10), 100),
+      page: parsedPage,
+      pageSize: parsedPageSize,
       type: type as string,
       agentId: agentId ? parseInt(agentId as string, 10) : undefined,
       keyword: keyword ? sanitize(keyword as string) : undefined,

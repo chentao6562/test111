@@ -191,7 +191,9 @@ export async function reviewWithdrawal(req: Request, res: Response) {
     success(res, data, action === 'APPROVED' ? '审核通过' : '已拒绝');
   } catch (err: any) {
     console.error('审核提现失败:', err);
-    error(res, err.message || '审核提现失败', 500);
+    // 业务异常返回400，系统异常返回500
+    const isBusinessError = ['提现记录不存在', '该提现申请已处理'].includes(err.message);
+    error(res, err.message || '审核提现失败', isBusinessError ? 400 : 500);
   }
 }
 
@@ -218,7 +220,9 @@ export async function completeWithdrawal(req: Request, res: Response) {
     success(res, data, '已确认打款');
   } catch (err: any) {
     console.error('确认打款失败:', err);
-    error(res, err.message || '确认打款失败', 500);
+    // 业务异常返回400，系统异常返回500
+    const isBusinessError = ['提现记录不存在', '只有已审核通过的提现才能确认打款完成'].includes(err.message);
+    error(res, err.message || '确认打款失败', isBusinessError ? 400 : 500);
   }
 }
 

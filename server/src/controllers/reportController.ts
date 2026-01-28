@@ -26,8 +26,33 @@ import {
   getCustomerTrend,
   getCustomerRiskDistribution,
 } from '../services/reportService';
-import { success, error } from '../utils/response';
+import { success, error, validationError } from '../utils/response';
 import { sanitize } from '../utils/sanitize';
+
+/**
+ * 校验日期字符串格式
+ * @param dateStr 日期字符串
+ * @returns 是否是有效日期
+ */
+function isValidDateString(dateStr: string | undefined): boolean {
+  if (!dateStr) return true; // undefined/null 表示不筛选，是有效的
+  const date = new Date(dateStr);
+  return !isNaN(date.getTime());
+}
+
+/**
+ * 校验日期范围参数
+ * @returns 错误消息，如果校验通过返回null
+ */
+function validateDateRange(startDate?: string, endDate?: string): string | null {
+  if (startDate && !isValidDateString(startDate)) {
+    return '开始日期格式无效';
+  }
+  if (endDate && !isValidDateString(endDate)) {
+    return '结束日期格式无效';
+  }
+  return null;
+}
 
 // 获取控制台首页数据
 export async function getDashboard(req: Request, res: Response) {
@@ -221,6 +246,13 @@ export async function getCommissionListHandler(req: Request, res: Response) {
 export async function getReservationStatsHandler(req: Request, res: Response) {
   try {
     const { startDate, endDate } = req.query;
+
+    // 校验日期格式
+    const dateError = validateDateRange(startDate as string, endDate as string);
+    if (dateError) {
+      return validationError(res, dateError);
+    }
+
     const data = await getReservationStatistics(
       startDate as string,
       endDate as string
