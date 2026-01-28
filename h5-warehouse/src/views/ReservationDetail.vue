@@ -148,6 +148,17 @@
 
       <!-- 底部操作按钮 -->
       <div class="bottom-actions">
+        <!-- 【2026-01-28】打印按钮 - 所有非取消状态显示 -->
+        <div v-if="![4, 5, 6].includes(reservation.status)" class="print-actions">
+          <t-button theme="default" size="small" variant="outline" @click="showPrinterSetup = true">
+            <t-icon name="setting" size="16px" />
+          </t-button>
+          <t-button theme="default" size="medium" :loading="isPrinting" @click="handlePrint">
+            <t-icon name="print" size="16px" />
+            打印小票
+          </t-button>
+        </div>
+
         <!-- 待确认/确认中状态 -->
         <template v-if="reservation.status === 0 || reservation.status === 1">
           <t-button theme="primary" size="large" block @click="goToConfirm">
@@ -164,6 +175,14 @@
           <t-button theme="primary" size="large" block @click="goToPickup">
             直接核销
           </t-button>
+        </template>
+
+        <!-- 已完成状态 -->
+        <template v-else-if="reservation.status === 3">
+          <div class="status-tip success">
+            <t-icon name="check-circle" size="16px" />
+            <span>订单已完成</span>
+          </div>
         </template>
 
         <!-- 待备货状态 -->
@@ -187,6 +206,9 @@
           </t-button>
         </template>
       </div>
+
+      <!-- 【2026-01-28】打印机设置弹窗 -->
+      <PrinterSetup v-model="showPrinterSetup" />
     </template>
 
     <!-- 空状态 -->
@@ -209,12 +231,19 @@ import {
 } from '@/api/reservation'
 import { formatPrice, formatDate, formatDateTime, getImageUrl } from '@/utils/format'
 import { vibrate } from '@/utils/bridge'
+import PrinterSetup from '@/components/PrinterSetup.vue'
+import { BluetoothPrinterService, printerService } from '@/services/bluetoothPrinter'
+import type { ReceiptData } from '@/services/bluetoothPrinter'
 
 const route = useRoute()
 const router = useRouter()
 
 const loading = ref(true)
 const reservation = ref<Reservation | null>(null)
+
+// 【2026-01-28】打印相关状态
+const showPrinterSetup = ref(false)
+const isPrinting = ref(false)
 
 onMounted(() => {
   loadDetail()
@@ -333,13 +362,170 @@ function goToPrepare() {
   if (!reservation.value) return
   router.push(`/prepare/${reservation.value.id}`)
 }
+
+// 【2026-01-28】打印小票功能
+async function handlePrint() {
+  if (!reservation.value) return
+
+  isPrinting.value = true
+
+  try {
+    // 构造小票数据
+    const receiptData: ReceiptData = {
+      storeName: '蒙庆烟花',
+      storePhone: '13190531439',
+      reservationNo: reservation.value.reservationNo || `MQ${reservation.value.id}`,
+      customerName: reservation.value.customerName,
+      customerPhone: reservation.value.customerPhone,
+      items: (reservation.value.items || []).map(item => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: Number(item.price),
+        subtotal: Number(item.subtotal || item.price * item.quantity)
+      })),
+      totalAmount: reservation.value.totalAmount,
+      actualPayment: reservation.value.totalAmount,
+      paymentMethod: reservation.value.paymentMethod || 'cash',
+      gift: reservation.value.giftName ? {
+        name: reservation.value.giftName,
+        delivered: reservation.value.giftDelivered || false
+      } : undefined,
+      printTime: new Date()
+    }
+
+    // 检查蓝牙支持和连接状态
+    const support = BluetoothPrinterService.checkSupport()
+    if (support.supported && printerService.isConnected()) {
+      // 使用蓝牙打印
+      const result = await printerService.print(receiptData)
+      if (result.success) {
+        Toast({ message: '打印成功', theme: 'success' })
+        vibrate(100)
+      } else {
+        // 蓝牙打印失败，fallback到HTML打印
+        console.warn('蓝牙打印失败，使用HTML打印:', result.error)
+        printHTML(receiptData)
+      }
+    } else {
+      // 蓝牙不可用或未连接，使用HTML打印
+      printHTML(receiptData)
+    }
+  } catch (error) {
+    console.error('打印失败:', error)
+    Toast({ message: '打印失败', theme: 'error' })
+  } finally {
+    isPrinting.value = false
+  }
+}
+
+// HTML打印（fallback方案）
+function printHTML(data: ReceiptData) {
+  // 生成商品明细HTML
+  const itemsHtml = data.items.map(item => `
+    <div class="item">
+      <div class="item-name">${item.name}</div>
+      <div class="item-detail">
+        <span>x${item.quantity}</span>
+        <span>单价¥${item.price.toFixed(2)}</span>
+        <span>¥${item.subtotal.toFixed(2)}</span>
+      </div>
+    </div>
+  `).join('')
+
+  // 赠品HTML
+  const giftHtml = data.gift ? `
+    <div class="section">
+      <div class="section-title">【赠品】</div>
+      <div class="gift-item">${data.gift.name} ${data.gift.delivered ? '[已发放]' : '[待发放]'}</div>
+    </div>
+    <div class="divider"></div>
+  ` : ''
+
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>预约小票</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; padding: 10px; max-width: 300px; margin: 0 auto; font-size: 12px; }
+        h2 { text-align: center; margin-bottom: 4px; font-size: 18px; }
+        .subtitle { text-align: center; font-size: 12px; color: #666; margin-bottom: 8px; }
+        .divider { border-bottom: 1px dashed #000; margin: 8px 0; }
+        .double-divider { border-bottom: 2px solid #000; margin: 8px 0; }
+        .row { display: flex; justify-content: space-between; margin: 4px 0; }
+        .section { margin: 8px 0; }
+        .section-title { font-weight: bold; margin-bottom: 4px; }
+        .item { margin: 6px 0; }
+        .item-name { font-size: 12px; }
+        .item-detail { display: flex; justify-content: space-between; color: #666; font-size: 11px; margin-top: 2px; }
+        .gift-item { font-size: 12px; }
+        .amount { font-size: 16px; font-weight: bold; }
+        .footer { margin-top: 12px; text-align: center; font-size: 11px; color: #666; }
+        @media print { body { width: 58mm; padding: 2mm; } }
+      </style>
+    </head>
+    <body>
+      <h2>${data.storeName}</h2>
+      <p class="subtitle">预约凭证</p>
+      <div class="divider"></div>
+      <div class="row"><span>预约号</span><span>${data.reservationNo}</span></div>
+      <div class="row"><span>客户</span><span>${data.customerName}</span></div>
+      <div class="row"><span>电话</span><span>${maskPhone(data.customerPhone)}</span></div>
+      <div class="divider"></div>
+      <div class="section">
+        <div class="section-title">【商品明细】</div>
+        ${itemsHtml}
+      </div>
+      <div class="divider"></div>
+      ${giftHtml}
+      <div class="double-divider"></div>
+      <div class="row"><span>预约金额</span><span class="amount">¥${data.totalAmount.toFixed(2)}</span></div>
+      <div class="double-divider"></div>
+      <p class="footer">${formatPrintDateTime(data.printTime)}</p>
+      <p class="footer">感谢光临，欢迎再来！</p>
+      <p class="footer">客服电话: ${data.storePhone}</p>
+    </body>
+    </html>
+  `
+
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(printContent)
+    printWindow.document.close()
+    setTimeout(() => {
+      printWindow.print()
+      printWindow.close()
+    }, 200)
+  } else {
+    Toast({ message: '无法打开打印窗口，请检查浏览器设置', theme: 'warning' })
+  }
+}
+
+// 手机号脱敏
+function maskPhone(phone: string): string {
+  if (!phone || phone.length !== 11) return phone
+  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+}
+
+// 格式化打印日期时间
+function formatPrintDateTime(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hour = String(date.getHours()).padStart(2, '0')
+  const minute = String(date.getMinutes()).padStart(2, '0')
+  const second = String(date.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+}
 </script>
 
 <style scoped>
 .detail-page {
   min-height: 100vh;
   background-color: var(--bg-page);
-  padding-bottom: 100px;
+  padding-bottom: 160px; /* 增加以适应打印按钮 */
 }
 
 .loading-container {
@@ -564,6 +750,29 @@ function goToPrepare() {
   padding: 8px;
   background-color: #fff8e6;
   border-radius: 4px;
+}
+
+.status-tip.success {
+  background-color: #e8f5e9;
+  color: #4CAF50;
+}
+
+/* 【2026-01-28】打印按钮区域 */
+.print-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.print-actions .t-button:first-child {
+  flex: 0 0 auto;
+  width: 36px;
+  padding: 0;
+}
+
+.print-actions .t-button:last-child {
+  flex: 1;
 }
 
 .empty-container {
