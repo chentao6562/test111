@@ -821,91 +821,63 @@ async function handlePrint() {
   }
 }
 
-// HTML打印（fallback方案）
+// HTML打印（fallback方案）- 超紧凑版本适配58mm热敏打印机
 function printHTML(data: ReceiptData, config: PrintConfig) {
-  // 根据纸宽设置打印宽度
-  const paperWidthMm = config.paperWidth === 80 ? '80mm' : '58mm'
-  const maxWidth = config.paperWidth === 80 ? '400px' : '300px'
+  // 58mm纸实际打印宽度约48mm，80mm纸约72mm
+  const printWidth = config.paperWidth === 80 ? '72mm' : '48mm'
 
-  // 生成商品明细HTML
-  const itemsHtml = data.items.map(item => `
-    <div class="item">
-      <div class="item-name">${item.name}</div>
-      <div class="item-detail">
-        <span>x${item.quantity}</span>
-        <span>单价¥${item.price.toFixed(2)}</span>
-        <span>¥${item.subtotal.toFixed(2)}</span>
-      </div>
-    </div>
-  `).join('')
+  // 生成商品明细HTML - 单行紧凑格式
+  const itemsHtml = data.items.map(item => {
+    const name = item.name.length > 8 ? item.name.slice(0, 8) + '..' : item.name
+    return `<div class="item">${name} x${item.quantity} ¥${item.subtotal.toFixed(0)}</div>`
+  }).join('')
 
-  // 赠品HTML
-  const giftHtml = data.gift ? `
-    <div class="section">
-      <div class="section-title">【赠品】</div>
-      <div class="gift-item">${data.gift.name} ${data.gift.delivered ? '[已发放]' : '[待发放]'}</div>
-    </div>
-    <div class="divider"></div>
-  ` : ''
+  // 赠品HTML - 单行
+  const giftHtml = data.gift ? `<div class="row">赠:${data.gift.name}${data.gift.delivered ? '✓' : ''}</div>` : ''
 
-  // 代金券HTML
-  const couponHtml = data.couponDeduction && data.couponDeduction > 0 ? `
-    <div class="row"><span>代金券抵扣</span><span class="coupon">-¥${data.couponDeduction.toFixed(2)}</span></div>
-  ` : ''
+  // 代金券HTML - 单行
+  const couponHtml = data.couponDeduction && data.couponDeduction > 0 ? `<div class="row">券抵:-¥${data.couponDeduction.toFixed(0)}</div>` : ''
 
-  const printContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>提货小票</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; padding: 10px; max-width: ${maxWidth}; margin: 0 auto; font-size: 12px; }
-        h2 { text-align: center; margin-bottom: 4px; font-size: 18px; }
-        .subtitle { text-align: center; font-size: 12px; color: #666; margin-bottom: 8px; }
-        .divider { border-bottom: 1px dashed #000; margin: 8px 0; }
-        .double-divider { border-bottom: 2px solid #000; margin: 8px 0; }
-        .row { display: flex; justify-content: space-between; margin: 4px 0; }
-        .section { margin: 8px 0; }
-        .section-title { font-weight: bold; margin-bottom: 4px; }
-        .item { margin: 6px 0; }
-        .item-name { font-size: 12px; }
-        .item-detail { display: flex; justify-content: space-between; color: #666; font-size: 11px; margin-top: 2px; }
-        .gift-item { font-size: 12px; }
-        .amount { font-size: 16px; font-weight: bold; }
-        .coupon { color: #f44336; }
-        .footer { margin-top: 12px; text-align: center; font-size: 11px; color: #666; }
-        @media print { body { width: ${paperWidthMm}; padding: 2mm; } }
-      </style>
-    </head>
-    <body>
-      <h2>${config.storeName}</h2>
-      <p class="subtitle">提货凭证</p>
-      <div class="divider"></div>
-      <div class="row"><span>预约号</span><span>${data.reservationNo}</span></div>
-      <div class="row"><span>客户</span><span>${data.customerName}</span></div>
-      <div class="row"><span>电话</span><span>${maskPhone(data.customerPhone)}</span></div>
-      <div class="divider"></div>
-      <div class="section">
-        <div class="section-title">【商品明细】</div>
-        ${itemsHtml}
-      </div>
-      <div class="divider"></div>
-      ${giftHtml}
-      <div class="row"><span>订单金额</span><span>¥${data.totalAmount.toFixed(2)}</span></div>
-      ${couponHtml}
-      <div class="double-divider"></div>
-      <div class="row"><span>实付金额</span><span class="amount">¥${data.actualPayment.toFixed(2)}</span></div>
-      <div class="double-divider"></div>
-      <div class="row"><span>支付方式</span><span>${getPaymentLabel(data.paymentMethod)}</span></div>
-      <div class="divider"></div>
-      <p class="footer">${formatDateTime(data.printTime)}</p>
-      <p class="footer">${config.footerText}</p>
-      <p class="footer">客服电话: ${config.storePhone}</p>
-    </body>
-    </html>
-  `
+  const printContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>小票</title>
+<style>
+@page{size:${printWidth} auto;margin:0}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:${printWidth};margin:0;padding:0}
+body{font-family:SimSun,'Courier New',monospace;padding:1mm;font-size:8px;line-height:1.2}
+.title{text-align:center;font-size:10px;font-weight:bold}
+.sub{text-align:center;font-size:7px;margin-bottom:1mm}
+.line{border-bottom:1px dashed #000;margin:1mm 0}
+.row{font-size:7px;margin:0.5mm 0}
+.item{font-size:7px;margin:0.5mm 0}
+.total{font-size:9px;font-weight:bold;text-align:right}
+.ft{text-align:center;font-size:6px;color:#333;margin-top:1mm}
+@media print{html,body{width:${printWidth}!important}}
+</style>
+</head>
+<body>
+<div class="title">${config.storeName}</div>
+<div class="sub">提货凭证</div>
+<div class="line"></div>
+<div class="row">${data.reservationNo}</div>
+<div class="row">${data.customerName} ${maskPhone(data.customerPhone)}</div>
+<div class="line"></div>
+${itemsHtml}
+<div class="line"></div>
+${giftHtml}
+<div class="row">金额:¥${data.totalAmount.toFixed(0)}</div>
+${couponHtml}
+<div class="line"></div>
+<div class="total">实付:¥${data.actualPayment.toFixed(0)}</div>
+<div class="line"></div>
+<div class="row">${getPaymentLabel(data.paymentMethod)}</div>
+<div class="ft">${formatDateTime(data.printTime)}</div>
+<div class="ft">${config.footerText}</div>
+</body>
+</html>`
 
   const printWindow = window.open('', '_blank')
   if (printWindow) {
