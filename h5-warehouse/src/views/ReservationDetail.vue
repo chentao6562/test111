@@ -461,18 +461,18 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
 <meta charset="UTF-8">
 <title>小票</title>
 <style>
-@page{size:${printWidth} auto;margin:0}
+@page{size:${printWidth} auto;margin:0;padding:0}
 *{margin:0;padding:0;box-sizing:border-box;color:#000!important}
-html,body{width:${printWidth};margin:0;padding:0}
-body{font-family:'SimHei','Microsoft YaHei',sans-serif;padding:2mm;font-size:12pt;line-height:1.5;color:#000;font-weight:bold}
-.title{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:2mm}
-.sub{text-align:center;font-size:11pt;margin-bottom:2mm}
-.line{border-bottom:1px dashed #000;margin:2mm 0}
-.row{font-size:10pt;margin:1mm 0}
-.item{font-size:10pt;margin:1mm 0}
-.total{font-size:12pt;font-weight:bold;text-align:right;margin:1mm 0}
-.ft{text-align:center;font-size:9pt;margin-top:1mm}
-@media print{html,body{width:${printWidth}!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
+html{width:${printWidth};height:auto;margin:0;padding:0}
+body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','Microsoft YaHei',sans-serif;font-size:12pt;line-height:1.4;color:#000;font-weight:bold}
+.title{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:1mm}
+.sub{text-align:center;font-size:11pt;margin-bottom:1mm}
+.line{border-bottom:1px dashed #000;margin:1.5mm 0}
+.row{font-size:10pt;margin:0.5mm 0}
+.item{font-size:10pt;margin:0.5mm 0}
+.total{font-size:12pt;font-weight:bold;text-align:right;margin:0.5mm 0}
+.ft{text-align:center;font-size:9pt;margin-top:0.5mm}
+@media print{@page{margin:0}html,body{width:${printWidth}!important;height:auto!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
