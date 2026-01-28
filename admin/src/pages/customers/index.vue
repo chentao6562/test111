@@ -132,6 +132,14 @@
           <span class="phone-text">{{ row.phone }}</span>
         </template>
 
+        <!-- 开发人员【2026-01-28新增】 -->
+        <template #firstAgent="{ row }">
+          <div v-if="row.firstAgentId" class="agent-cell">
+            <span class="agent-name">{{ row.firstAgentName || '-' }}</span>
+          </div>
+          <span v-else class="empty-text">自然流量</span>
+        </template>
+
         <!-- 预约统计 -->
         <template #reservationStats="{ row }">
           <div class="stats-cell">
@@ -362,6 +370,7 @@ const loadingReservations = ref(false)
 // 表格列配置
 const columns = [
   { colKey: 'phone', title: '手机号', width: 140 },
+  { colKey: 'firstAgent', title: '开发人员', width: 140 },
   { colKey: 'reservationStats', title: '预约统计', width: 220 },
   { colKey: 'riskLevel', title: '风险等级', width: 100 },
   { colKey: 'isBlocked', title: '黑名单', width: 100 },
@@ -576,6 +585,14 @@ onMounted(() => {
   font-family: monospace;
   font-size: 14px;
   color: #1890ff;
+}
+
+// 开发人员单元格【2026-01-28新增】
+.agent-cell {
+  .agent-name {
+    font-weight: 500;
+    color: #333;
+  }
 }
 
 .stats-cell {

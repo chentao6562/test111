@@ -168,11 +168,13 @@ export async function createReservation(input: CreateReservationInput): Promise<
   let level1AgentId: number | null = null; // 一级推销员ID（用于获取subPrice）
   // 【2026-01-19】用于获取定价的有效推销员ID（WHOLESALE用户会被替换为其上级）
   let effectiveSalespersonId: number | null = salespersonId ?? null;
+  // 【2026-01-28新增】推销员姓名，用于客户绑定记录
+  let salespersonName: string | null = null;
 
   if (salespersonId) {
     const salesperson = await prisma.agent.findUnique({
       where: { id: salespersonId },
-      select: { id: true, type: true, parentId: true, isMaster: true, status: true },
+      select: { id: true, name: true, type: true, parentId: true, isMaster: true, status: true },
     });
 
     if (salesperson) {
@@ -183,6 +185,9 @@ export async function createReservation(input: CreateReservationInput): Promise<
           message: '推销员已被禁用，无法创建预约',
         };
       }
+
+      // 【2026-01-28新增】记录推销员姓名
+      salespersonName = salesperson.name;
 
       if (salesperson.isMaster) {
         agentId = salesperson.id;
@@ -591,8 +596,8 @@ export async function createReservation(input: CreateReservationInput): Promise<
         },
       });
 
-      // 记录客户预约
-      await getOrCreateCustomer(customerPhone, customerName);
+      // 记录客户预约【2026-01-28】传入推销员信息用于首次绑定
+      await getOrCreateCustomer(customerPhone, customerName, salespersonId ?? undefined, salespersonName ?? undefined);
       await recordReservation(customerPhone);
 
       // 【2026-01-23 砍价系统】更新砍价状态为已下单

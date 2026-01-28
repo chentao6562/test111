@@ -1211,6 +1211,10 @@ model CustomerRecord {
   phone String  @unique @db.VarChar(20) // 手机号
   name  String? @db.VarChar(50) // 姓名
 
+  // 【2026-01-28新增】首次接触的推销员（开发人员）
+  firstAgentId   Int?    // 首次绑定的推销员ID
+  firstAgentName String? @db.VarChar(50) // 推销员姓名（冗余存储）
+
   totalOrders     Int @default(0) // 总预约数
   completedOrders Int @default(0) // 完成数
   noShowCount     Int @default(0) // 爽约次数
@@ -1227,6 +1231,7 @@ model CustomerRecord {
   @@index([riskLevel])                          // 风险等级筛选
   @@index([isBlocked])                          // 黑名单筛选
   @@index([riskLevel, isBlocked])               // 组合筛选
+  @@index([firstAgentId])                       // 【2026-01-28新增】按推销员查询客户
   @@map("customer_records")
 }
 

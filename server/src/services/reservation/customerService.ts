@@ -10,17 +10,27 @@ import { CustomerRiskLevel, ReservationStatus } from './types';
  * 获取或创建客户记录
  * @param phone 手机号
  * @param name 姓名（可选）
+ * @param agentId 推销员ID（可选）【2026-01-28新增】
+ * @param agentName 推销员姓名（可选）【2026-01-28新增】
  */
-export async function getOrCreateCustomer(phone: string, name?: string) {
+export async function getOrCreateCustomer(
+  phone: string,
+  name?: string,
+  agentId?: number,
+  agentName?: string
+) {
   let customer = await prisma.customerRecord.findUnique({
     where: { phone },
   });
 
   if (!customer) {
+    // 新客户：记录首次接触的推销员
     customer = await prisma.customerRecord.create({
       data: {
         phone,
         name,
+        firstAgentId: agentId || null,
+        firstAgentName: agentName || null,
         totalOrders: 0,
         completedOrders: 0,
         noShowCount: 0,

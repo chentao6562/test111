@@ -25,6 +25,9 @@ export const RISK_LEVELS: Record<number, { label: string; color: string }> = {
 export interface CustomerRecord {
   id: number
   phone: string
+  // 【2026-01-28新增】首次接触的推销员（开发人员）
+  firstAgentId?: number
+  firstAgentName?: string
   totalReservations: number
   completedCount: number
   noShowCount: number
