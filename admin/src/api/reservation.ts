@@ -76,6 +76,11 @@ export interface Reservation {
   masterProfit?: number
   level1Profit?: number
   level2Profit?: number
+  // 【2026-01-28新增】推销员（开发人员）信息
+  salespersonId?: number
+  salespersonName?: string
+  salespersonPhone?: string
+  salespersonLevel?: number
 }
 
 export interface ReservationStats {

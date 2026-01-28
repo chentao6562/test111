@@ -185,31 +185,49 @@ export async function getReservationList(req: Request, res: Response) {
       }),
     ]);
 
+    // 【2026-01-28修复】批量获取推销员信息
+    const salespersonIds = [...new Set(list.map(r => r.salespersonId).filter(Boolean))] as number[];
+    const salespersons = salespersonIds.length > 0
+      ? await prisma.agent.findMany({
+          where: { id: { in: salespersonIds } },
+          select: { id: true, name: true, phone: true },
+        })
+      : [];
+    const salespersonMap = new Map(salespersons.map(s => [s.id, s]));
+
     // 处理数据
-    const formattedList = list.map(r => ({
-      id: r.id,
-      reservationNo: r.reservationNo,
-      customerName: r.customerName,
-      customerPhone: r.customerPhone,
-      pickupDate: r.pickupDate,
-      totalAmount: Number(r.totalAmount),
-      giftName: r.giftName,
-      giftDelivered: r.giftDelivered,
-      status: r.status,
-      callCount: r.callCount,
-      createdAt: r.createdAt,
-      confirmedAt: r.confirmedAt,
-      completedAt: r.completedAt,
-      store: r.store,
-      items: r.items.map(item => ({
-        id: item.id,
-        productId: item.productId,
-        productName: item.productName,
-        productImage: item.productImage,
-        quantity: item.quantity,
-        price: Number(item.price),
-      })),
-    }));
+    const formattedList = list.map(r => {
+      const salesperson = r.salespersonId ? salespersonMap.get(r.salespersonId) : null;
+      return {
+        id: r.id,
+        reservationNo: r.reservationNo,
+        customerName: r.customerName,
+        customerPhone: r.customerPhone,
+        pickupDate: r.pickupDate,
+        totalAmount: Number(r.totalAmount),
+        giftName: r.giftName,
+        giftDelivered: r.giftDelivered,
+        status: r.status,
+        callCount: r.callCount,
+        createdAt: r.createdAt,
+        confirmedAt: r.confirmedAt,
+        completedAt: r.completedAt,
+        store: r.store,
+        // 【2026-01-28修复】添加推销员（开发人员）信息
+        salespersonId: r.salespersonId,
+        salespersonName: salesperson?.name || null,
+        salespersonPhone: salesperson?.phone || null,
+        salespersonLevel: r.salespersonLevel,
+        items: r.items.map(item => ({
+          id: item.id,
+          productId: item.productId,
+          productName: item.productName,
+          productImage: item.productImage,
+          quantity: item.quantity,
+          price: Number(item.price),
+        })),
+      };
+    });
 
     return success(res, {
       list: formattedList,

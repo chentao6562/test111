@@ -210,6 +210,17 @@
           </div>
         </template>
 
+        <!-- 开发人员（推销员）【2026-01-28新增】 -->
+        <template #salesperson="{ row }">
+          <div v-if="row.salespersonId" class="salesperson-cell">
+            <span class="salesperson-name">{{ row.salespersonName || '-' }}</span>
+            <span class="salesperson-phone">{{ row.salespersonPhone || '-' }}</span>
+            <t-tag v-if="row.salespersonLevel === 1" theme="primary" size="small" variant="light">一级</t-tag>
+            <t-tag v-else-if="row.salespersonLevel === 2" theme="warning" size="small" variant="light">二级</t-tag>
+          </div>
+          <span v-else class="empty-text">自然流量</span>
+        </template>
+
         <!-- 商品信息 -->
         <template #productInfo="{ row }">
           <ProductCell
@@ -755,6 +766,7 @@ const columns = [
   { colKey: 'row-select', type: 'multiple', width: 50 },
   { colKey: 'reservationNo', title: '预约编号', width: 160 },
   { colKey: 'customer', title: '客户信息', width: 140 },
+  { colKey: 'salesperson', title: '开发人员', width: 140 },
   { colKey: 'productInfo', title: '商品信息', width: 200 },
   { colKey: 'totalAmount', title: '参考金额', width: 100, align: 'right' },
   { colKey: 'gift', title: '赠品', width: 140 },
@@ -1296,6 +1308,26 @@ onMounted(() => {
   .customer-phone {
     font-size: 12px;
     color: #666;
+  }
+}
+
+// 开发人员单元格【2026-01-28新增】
+.salesperson-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .salesperson-name {
+    font-weight: 500;
+    color: #333;
+  }
+  .salesperson-phone {
+    font-size: 12px;
+    color: #666;
+  }
+  .t-tag {
+    width: fit-content;
+    margin-top: 2px;
   }
 }
 
