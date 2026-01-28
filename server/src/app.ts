@@ -85,6 +85,9 @@ import adminPackageRouter from './routes/adminPackage';
 import healthRouter from './routes/health';
 import { incrementRequestCount, incrementErrorCount } from './controllers/healthController';
 
+// 【2026-01-28 微信分享】导入微信JSSDK路由
+import wechatRouter from './routes/wechat';
+
 // 【2026-01-16 预约模式升级】导入预约过期检查定时任务
 import { startReservationExpiryTask } from './tasks/reservationExpiryTask';
 // 【2026-01-17 备货环节】导入备货提醒定时任务
@@ -267,6 +270,9 @@ app.use('/api/admin/flash-sale', adminRateLimiter, require('./routes/adminFlashS
 
 // 【2026-01-23 活动中心横幅】活动汇总API（无需登录）
 app.use('/api/h5/activity-summary', require('./routes/h5ActivitySummary').default);
+
+// 【2026-01-28 微信分享】微信JSSDK配置API（无需登录）
+app.use('/api/wechat', wechatRouter);
 
 // 【2026-01-20】公开统计API（无需登录）
 app.get('/api/agents/public-stats', async (req: Request, res: Response) => {

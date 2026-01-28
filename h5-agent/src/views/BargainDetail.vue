@@ -18,6 +18,7 @@ import {
 } from '../api/bargain'
 import { useUserStore } from '../stores/user'
 import { matchMaskedPhone } from '../utils/phoneUtils'
+import { setupWechatShare, isWechatBrowser } from '../utils/wechatShare'
 
 const router = useRouter()
 const route = useRoute()
@@ -81,6 +82,8 @@ const loadDetail = async () => {
     if (data) {
       detail.value = data
       startCountdown()
+      // 【2026-01-28】配置微信分享卡片
+      configWechatShare(data)
     } else {
       Toast({ message: '砍价不存在', theme: 'error' })
       router.back()
@@ -90,6 +93,23 @@ const loadDetail = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 【2026-01-28】配置微信分享卡片
+const configWechatShare = async (data: BargainDetail) => {
+  if (!isWechatBrowser()) return
+
+  const shareTitle = `帮我助力！${data.productName}免费拿`
+  const shareDesc = `${data.initiatorName || '好友'}发起了0元拿活动，快来帮TA助力吧！`
+  const shareLink = `${window.location.origin}/bargain/${bargainCode.value}/help`
+  const shareImg = getOptimizedImageUrl(data.productImage, 'medium')
+
+  await setupWechatShare({
+    title: shareTitle,
+    desc: shareDesc,
+    link: shareLink,
+    imgUrl: shareImg
+  })
 }
 
 // 开始倒计时
