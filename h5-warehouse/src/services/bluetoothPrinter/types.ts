@@ -60,6 +60,7 @@ export interface ReceiptData {
 
   // 预约信息
   reservationNo: string
+  pickupCode?: string       // 【2026-01-28】提货码，用于双码核对
   customerName: string
   customerPhone: string
 

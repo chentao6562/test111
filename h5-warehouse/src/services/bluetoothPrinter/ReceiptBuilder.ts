@@ -55,6 +55,21 @@ export class ReceiptBuilder {
       .line('提货凭证')
       .line(this.printerConfig.DIVIDER)
 
+    // ========== 提货码（醒目显示）==========
+    if (data.pickupCode) {
+      encoder
+        .align('center')
+        .bold(true)
+      // 使用原始指令放大字体 GS ! n (n=0x11表示宽高各2倍)
+      encoder.raw(new Uint8Array([0x1D, 0x21, 0x11]))
+      encoder.line(`提货码: ${data.pickupCode}`)
+      // 恢复正常字体
+      encoder.raw(new Uint8Array([0x1D, 0x21, 0x00]))
+      encoder
+        .bold(false)
+        .line(this.printerConfig.DIVIDER)
+    }
+
     // ========== 预约信息 ==========
     encoder
       .align('left')

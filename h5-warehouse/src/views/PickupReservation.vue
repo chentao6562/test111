@@ -829,6 +829,7 @@ async function handlePrint() {
       storeName: config.storeName,
       storePhone: config.storePhone,
       reservationNo: completeResult.value.reservationNo,
+      pickupCode: foundReservation.value.pickupCode,  // 【2026-01-28】提货码，用于双码核对
       customerName: foundReservation.value.customerName,
       customerPhone: foundReservation.value.customerPhone,
       items: printItems,
@@ -911,6 +912,7 @@ body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','
 .pkg-header{font-weight:bold;margin-top:1mm}
 .pkg-item{font-size:9pt;color:#333!important;padding-left:2mm}
 .total{font-size:12pt;font-weight:bold;text-align:right;margin:0.5mm 0}
+.pickup-code{text-align:center;font-size:16pt;font-weight:bold;margin:2mm 0;letter-spacing:2px}
 .ft{text-align:center;font-size:9pt;margin-top:0.5mm}
 @media print{@page{margin:0}html,body{width:${printWidth}!important;height:auto!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
 </style>
@@ -919,6 +921,7 @@ body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','
 <div class="title">${config.storeName}</div>
 <div class="sub">提货凭证</div>
 <div class="line"></div>
+${data.pickupCode ? `<div class="pickup-code">提货码: ${data.pickupCode}</div><div class="line"></div>` : ''}
 <div class="row">单号: ${data.reservationNo}</div>
 <div class="row">客户: ${data.customerName}</div>
 <div class="row">电话: ${maskPhone(data.customerPhone)}</div>
