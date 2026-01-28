@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import pinia from './stores'
 import './style.css'
+import { initPushNotifications } from './services/pushService'
 
 const app = createApp(App)
 
@@ -94,3 +95,6 @@ app.use(router)
 app.use(TDesign)
 
 app.mount('#app')
+
+// 初始化推送通知服务（仅在原生环境中有效）
+initPushNotifications()

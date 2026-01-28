@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许HTTP明文传输（生产服务器暂无HTTPS） -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">39.104.113.121</domain>
+        <domain includeSubdomains="true">39.104.58.26</domain>
+    </domain-config>
+</network-security-config>

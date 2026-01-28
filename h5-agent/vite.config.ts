@@ -1,29 +1,77 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import viteCompression from 'vite-plugin-compression'
+import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'path'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // APK构建时禁用压缩（避免.gz/.br文件导致Android资源重复）
+  const isAppBuild = mode === 'app'
+
+  return {
   plugins: [
     vue(),
 
-    // Gzip压缩
+    // Gzip压缩（APK模式禁用）
     viteCompression({
       verbose: true,
-      disable: false,
+      disable: isAppBuild,
       threshold: 10240, // 10KB以上才压缩
       algorithm: 'gzip',
       ext: '.gz',
     }),
 
-    // Brotli压缩（现代浏览器支持，压缩率更高）
+    // Brotli压缩（APK模式禁用）
     viteCompression({
       verbose: true,
-      disable: false,
+      disable: isAppBuild,
       threshold: 10240,
       algorithm: 'brotliCompress',
       ext: '.br',
+    }),
+
+    // PWA离线缓存配置
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['logo.png', 'placeholder.png'],
+      manifest: {
+        name: '蒙庆烟花推销员',
+        short_name: '蒙庆烟花',
+        description: '烟花批发价 免费预约 到店付款',
+        theme_color: '#C41230',
+        background_color: '#FDF6F7',
+        display: 'standalone',
+        orientation: 'portrait',
+        icons: [
+          { src: 'logo.png', sizes: '192x192', type: 'image/png' },
+          { src: 'logo.png', sizes: '512x512', type: 'image/png' }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            // 商品/分类/套餐API缓存（网络优先）
+            urlPattern: /^http:\/\/39\.104\.113\.121\/api\/(shop\/products|shop\/categories|shop\/packages)/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: { maxEntries: 100, maxAgeSeconds: 86400 },
+              networkTimeoutSeconds: 10
+            }
+          },
+          {
+            // 图片缓存（缓存优先）
+            urlPattern: /^http:\/\/39\.104\.113\.121\/images\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: { maxEntries: 200, maxAgeSeconds: 604800 }
+            }
+          }
+        ]
+      }
     }),
   ],
 
@@ -150,4 +198,4 @@ export default defineConfig({
   esbuild: {
     drop: ['console', 'debugger'],
   }
-})
+}})
