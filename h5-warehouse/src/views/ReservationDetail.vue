@@ -465,7 +465,7 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
 @page{size:${printWidth} auto;margin:0}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:${printWidth};margin:0;padding:0}
-body{font-family:SimSun,'Courier New',monospace;padding:1mm;font-size:8px;line-height:1.2}
+body{font-family:'Microsoft YaHei','SimHei','SimSun',sans-serif;padding:2mm;font-size:12px;line-height:1.4;-webkit-print-color-adjust:exact}
 .title{text-align:center;font-size:10px;font-weight:bold}
 .sub{text-align:center;font-size:7px;margin-bottom:1mm}
 .line{border-bottom:1px dashed #000;margin:1mm 0}
