@@ -780,7 +780,7 @@ async function submitIssue() {
 
 .item-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
