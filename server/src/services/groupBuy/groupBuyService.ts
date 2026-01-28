@@ -599,7 +599,11 @@ export async function getMyGroupBuys(customerPhone: string): Promise<MyGroupBuyI
       status: { not: GroupBuyMemberStatus.QUIT },
     },
     include: {
-      groupBuy: true,
+      groupBuy: {
+        include: {
+          config: true, // 【2026-01-28】关联配置以获取多档位信息
+        },
+      },
     },
     orderBy: { joinedAt: 'desc' },
   });
@@ -607,18 +611,23 @@ export async function getMyGroupBuys(customerPhone: string): Promise<MyGroupBuyI
   // 过滤掉已取消的拼团
   return members
     .filter((m) => m.groupBuy.status !== GroupBuyStatus.CANCELLED)
-    .map((m) => ({
-      id: m.groupBuy.id,
-      code: m.groupBuy.code,
-      requiredCount: m.groupBuy.requiredCount,
-      currentCount: m.groupBuy.currentCount,
-      bonusGiftName: m.groupBuy.bonusGiftName,
-      pickupDate: m.groupBuy.pickupDate.toISOString().split('T')[0],
-      status: m.groupBuy.status as any,
-      isInitiator: m.groupBuy.initiatorId === m.reservationId,
-      expireAt: m.groupBuy.expireAt.toISOString(),
-      regionName: m.groupBuy.regionName, // 【2026-01-26】添加区域名称
-    }));
+    .map((m) => {
+      // 【2026-01-28】获取多档位赠品阶梯
+      const giftTiers = getAllTiers(m.groupBuy.config?.memberGiftsJson || null);
+      return {
+        id: m.groupBuy.id,
+        code: m.groupBuy.code,
+        requiredCount: m.groupBuy.requiredCount,
+        currentCount: m.groupBuy.currentCount,
+        bonusGiftName: m.groupBuy.bonusGiftName,
+        pickupDate: m.groupBuy.pickupDate.toISOString().split('T')[0],
+        status: m.groupBuy.status as any,
+        isInitiator: m.groupBuy.initiatorId === m.reservationId,
+        expireAt: m.groupBuy.expireAt.toISOString(),
+        regionName: m.groupBuy.regionName, // 【2026-01-26】添加区域名称
+        giftTiers: giftTiers.length > 0 ? giftTiers : undefined, // 【2026-01-28】多档位赠品阶梯
+      };
+    });
 }
 
 /**

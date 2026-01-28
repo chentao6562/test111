@@ -216,7 +216,12 @@ onMounted(() => {
               <div class="progress-text">{{ item.currentCount }}/{{ item.requiredCount }}人</div>
             </div>
 
-            <div class="gift-info" v-if="item.bonusGiftName">
+            <!-- 【2026-01-28修复】多档位赠品显示阶梯信息，单一模式显示bonusGiftName -->
+            <div class="gift-info" v-if="item.giftTiers && item.giftTiers.length > 0">
+              <t-icon name="gift" size="14px" />
+              阶梯赠品：{{ item.giftTiers.map(t => `${t.count}人档`).join('/') }}
+            </div>
+            <div class="gift-info" v-else-if="item.bonusGiftName">
               <t-icon name="gift" size="14px" />
               成团赠品：{{ item.bonusGiftName }}
             </div>

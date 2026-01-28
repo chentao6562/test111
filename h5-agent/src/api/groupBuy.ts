@@ -86,6 +86,7 @@ export interface MyGroupBuyItem {
   isInitiator: boolean
   expireAt: string
   regionName?: string | null // 【2026-01-26】区域名称
+  giftTiers?: TierGiftConfig[] // 【2026-01-28】多档位赠品阶梯
 }
 
 // 拼团配置
