@@ -115,4 +115,9 @@ router.get('/coupon/verify', verifyCouponHandler);
 // 核销代金券
 router.post('/coupon/redeem', redeemCouponHandler);
 
+// ==================== 打印配置 【2026-01-28 蓝牙打印】 ====================
+
+// 获取打印配置
+router.get('/print-config', storeController.getPrintConfigAction);
+
 export default router;

@@ -1,10 +1,22 @@
 /**
  * 蓝牙打印机服务类型定义
  * DL-5801PW 热敏票据打印机
+ * 【2026-01-28 更新】支持后台动态配置
  */
 
 // 打印机连接状态
 export type PrinterStatus = 'disconnected' | 'connecting' | 'connected' | 'printing' | 'error'
+
+// 打印配置（从后台获取）
+export interface PrintConfig {
+  enablePrint: boolean
+  storeName: string
+  storePhone: string
+  storeAddress: string
+  footerText: string
+  showQRCode: boolean
+  paperWidth: 58 | 80
+}
 
 // 已保存的打印机设备信息
 export interface SavedPrinterDevice {
@@ -42,9 +54,9 @@ export interface ReceiptGift {
 
 // 小票打印数据
 export interface ReceiptData {
-  // 店铺信息
-  storeName: string
-  storePhone: string
+  // 店铺信息（可选，如不传则使用PrintConfig中的值）
+  storeName?: string
+  storePhone?: string
 
   // 预约信息
   reservationNo: string
@@ -76,12 +88,30 @@ export const PAYMENT_LABELS: Record<string, string> = {
   alipay: '支付宝'
 }
 
-// 58mm打印机配置常量
+// 打印机配置常量
 export const PRINTER_CONFIG = {
-  // 打印宽度（字符数，中文算2个）
-  WIDTH: 32,
-  // 分割线
-  DIVIDER: '--------------------------------',
-  // 双线分割
-  DOUBLE_DIVIDER: '================================'
+  // 58mm纸宽配置
+  WIDTH_58: 32,
+  DIVIDER_58: '--------------------------------',
+  DOUBLE_DIVIDER_58: '================================',
+  // 80mm纸宽配置
+  WIDTH_80: 48,
+  DIVIDER_80: '------------------------------------------------',
+  DOUBLE_DIVIDER_80: '================================================'
+}
+
+// 根据纸宽获取配置
+export function getPrinterConfig(paperWidth: 58 | 80 = 58) {
+  if (paperWidth === 80) {
+    return {
+      WIDTH: PRINTER_CONFIG.WIDTH_80,
+      DIVIDER: PRINTER_CONFIG.DIVIDER_80,
+      DOUBLE_DIVIDER: PRINTER_CONFIG.DOUBLE_DIVIDER_80
+    }
+  }
+  return {
+    WIDTH: PRINTER_CONFIG.WIDTH_58,
+    DIVIDER: PRINTER_CONFIG.DIVIDER_58,
+    DOUBLE_DIVIDER: PRINTER_CONFIG.DOUBLE_DIVIDER_58
+  }
 }

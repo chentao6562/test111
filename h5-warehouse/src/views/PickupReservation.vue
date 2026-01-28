@@ -361,8 +361,9 @@ import { vibrate } from '@/utils/bridge'
 import { memoryCache } from '@/utils/performance'
 import QRScanner from '@/components/QRScanner.vue'
 import PrinterSetup from '@/components/PrinterSetup.vue'
-import { BluetoothPrinterService, printerService } from '@/services/bluetoothPrinter'
-import type { ReceiptData } from '@/services/bluetoothPrinter'
+import { BluetoothPrinterService, printerService, ReceiptBuilder } from '@/services/bluetoothPrinter'
+import type { ReceiptData, PrintConfig } from '@/services/bluetoothPrinter'
+import { getPrintConfig } from '@/api/settings'
 
 const route = useRoute()
 const router = useRouter()
@@ -408,6 +409,7 @@ const selectedCouponIds = ref<number[]>([])
 // 【2026-01-28】蓝牙打印相关
 const showPrinterSetup = ref(false)
 const isPrinting = ref(false)
+const printConfig = ref<PrintConfig | null>(null)
 
 // 计算代金券抵扣金额
 const couponDeduction = computed(() => {
@@ -422,8 +424,15 @@ const actualPayment = computed(() => {
   return Math.max(0, foundReservation.value.totalAmount - couponDeduction.value)
 })
 
-onMounted(() => {
+onMounted(async () => {
   loadTodayStats()
+
+  // 【2026-01-28】获取打印配置
+  try {
+    printConfig.value = await getPrintConfig()
+  } catch (error) {
+    console.warn('获取打印配置失败，使用默认配置:', error)
+  }
 
   // 处理路由参数
   const { phone, code } = route.query
@@ -743,13 +752,30 @@ function onSuccessConfirm() {
 async function handlePrint() {
   if (!completeResult.value || !foundReservation.value) return
 
+  // 使用后台配置，如果未获取到则使用默认值
+  const config: PrintConfig = printConfig.value || {
+    enablePrint: true,
+    storeName: '蒙庆烟花',
+    storePhone: '13190531439',
+    storeAddress: '',
+    footerText: '感谢光临，欢迎再来！',
+    showQRCode: false,
+    paperWidth: 58
+  }
+
+  // 检查是否启用打印
+  if (!config.enablePrint) {
+    Toast({ message: '打印功能已关闭', theme: 'warning' })
+    return
+  }
+
   isPrinting.value = true
 
   try {
     // 构造小票数据
     const receiptData: ReceiptData = {
-      storeName: '蒙庆烟花',
-      storePhone: '13190531439',
+      storeName: config.storeName,
+      storePhone: config.storePhone,
       reservationNo: completeResult.value.reservationNo,
       customerName: foundReservation.value.customerName,
       customerPhone: foundReservation.value.customerPhone,
@@ -773,19 +799,19 @@ async function handlePrint() {
     // 检查蓝牙支持和连接状态
     const support = BluetoothPrinterService.checkSupport()
     if (support.supported && printerService.isConnected()) {
-      // 使用蓝牙打印
-      const result = await printerService.print(receiptData)
+      // 使用蓝牙打印 - 传入配置
+      const result = await printerService.print(receiptData, config)
       if (result.success) {
         Toast({ message: '打印成功', theme: 'success' })
         vibrate(100)
       } else {
         // 蓝牙打印失败，fallback到HTML打印
         console.warn('蓝牙打印失败，使用HTML打印:', result.error)
-        printHTML(receiptData)
+        printHTML(receiptData, config)
       }
     } else {
       // 蓝牙不可用或未连接，使用HTML打印
-      printHTML(receiptData)
+      printHTML(receiptData, config)
     }
   } catch (error) {
     console.error('打印失败:', error)
@@ -796,7 +822,11 @@ async function handlePrint() {
 }
 
 // HTML打印（fallback方案）
-function printHTML(data: ReceiptData) {
+function printHTML(data: ReceiptData, config: PrintConfig) {
+  // 根据纸宽设置打印宽度
+  const paperWidthMm = config.paperWidth === 80 ? '80mm' : '58mm'
+  const maxWidth = config.paperWidth === 80 ? '400px' : '300px'
+
   // 生成商品明细HTML
   const itemsHtml = data.items.map(item => `
     <div class="item">
@@ -831,7 +861,7 @@ function printHTML(data: ReceiptData) {
       <title>提货小票</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; padding: 10px; max-width: 300px; margin: 0 auto; font-size: 12px; }
+        body { font-family: 'Courier New', monospace; padding: 10px; max-width: ${maxWidth}; margin: 0 auto; font-size: 12px; }
         h2 { text-align: center; margin-bottom: 4px; font-size: 18px; }
         .subtitle { text-align: center; font-size: 12px; color: #666; margin-bottom: 8px; }
         .divider { border-bottom: 1px dashed #000; margin: 8px 0; }
@@ -846,11 +876,11 @@ function printHTML(data: ReceiptData) {
         .amount { font-size: 16px; font-weight: bold; }
         .coupon { color: #f44336; }
         .footer { margin-top: 12px; text-align: center; font-size: 11px; color: #666; }
-        @media print { body { width: 58mm; padding: 2mm; } }
+        @media print { body { width: ${paperWidthMm}; padding: 2mm; } }
       </style>
     </head>
     <body>
-      <h2>${data.storeName}</h2>
+      <h2>${config.storeName}</h2>
       <p class="subtitle">提货凭证</p>
       <div class="divider"></div>
       <div class="row"><span>预约号</span><span>${data.reservationNo}</span></div>
@@ -871,8 +901,8 @@ function printHTML(data: ReceiptData) {
       <div class="row"><span>支付方式</span><span>${getPaymentLabel(data.paymentMethod)}</span></div>
       <div class="divider"></div>
       <p class="footer">${formatDateTime(data.printTime)}</p>
-      <p class="footer">感谢光临，欢迎再来！</p>
-      <p class="footer">客服电话: ${data.storePhone}</p>
+      <p class="footer">${config.footerText}</p>
+      <p class="footer">客服电话: ${config.storePhone}</p>
     </body>
     </html>
   `

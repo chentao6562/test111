@@ -3,8 +3,19 @@
  * 使用 Web Bluetooth API 连接 DL-5801PW 热敏打印机
  */
 
-import type { PrinterStatus, SavedPrinterDevice, BluetoothSupport, PrintResult, ReceiptData } from './types'
+import type { PrinterStatus, SavedPrinterDevice, BluetoothSupport, PrintResult, ReceiptData, PrintConfig } from './types'
 import { ReceiptBuilder } from './ReceiptBuilder'
+
+// 默认打印配置
+const DEFAULT_PRINT_CONFIG: PrintConfig = {
+  enablePrint: true,
+  storeName: '蒙庆烟花',
+  storePhone: '13190531439',
+  storeAddress: '呼和浩特市和林格尔县',
+  footerText: '感谢惠顾，祝您新年快乐！',
+  showQRCode: false,
+  paperWidth: 58
+}
 
 // localStorage 存储键
 const STORAGE_KEY = 'mq_bluetooth_printer'
@@ -302,8 +313,10 @@ export class BluetoothPrinterService {
 
   /**
    * 打印小票
+   * @param data 小票数据
+   * @param config 可选的打印配置（如不传则使用默认配置）
    */
-  async print(data: ReceiptData): Promise<PrintResult> {
+  async print(data: ReceiptData, config?: PrintConfig): Promise<PrintResult> {
     // 检查连接状态
     if (!this.isConnected()) {
       // 尝试重连
@@ -316,8 +329,10 @@ export class BluetoothPrinterService {
     try {
       this.setStatus('printing')
 
-      // 构建ESC/POS指令
-      const commands = ReceiptBuilder.build(data)
+      // 构建ESC/POS指令（使用传入配置或默认配置）
+      const printConfig = config || DEFAULT_PRINT_CONFIG
+      const builder = new ReceiptBuilder(printConfig)
+      const commands = builder.build(data)
 
       // 发送到打印机
       await this.sendData(commands)
@@ -337,11 +352,10 @@ export class BluetoothPrinterService {
 
   /**
    * 测试打印（打印测试页）
+   * @param config 可选的打印配置
    */
-  async testPrint(): Promise<PrintResult> {
+  async testPrint(config?: PrintConfig): Promise<PrintResult> {
     const testData: ReceiptData = {
-      storeName: '蒙庆烟花',
-      storePhone: '13190531439',
       reservationNo: 'TEST' + Date.now(),
       customerName: '测试客户',
       customerPhone: '13800138000',
@@ -355,7 +369,7 @@ export class BluetoothPrinterService {
       printTime: new Date()
     }
 
-    return this.print(testData)
+    return this.print(testData, config)
   }
 }
 

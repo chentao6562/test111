@@ -1,20 +1,29 @@
 /**
  * 小票ESC/POS指令构建器
- * 适配 DL-5801PW 58mm热敏打印机
+ * 适配 DL-5801PW 58mm/80mm热敏打印机
+ * 【2026-01-28 更新】支持后台动态配置
  */
 
 import ReceiptPrinterEncoder from '@point-of-sale/receipt-printer-encoder'
-import type { ReceiptData, ReceiptItem } from './types'
-import { PAYMENT_LABELS, PRINTER_CONFIG } from './types'
+import type { ReceiptData, ReceiptItem, PrintConfig } from './types'
+import { PAYMENT_LABELS, getPrinterConfig } from './types'
 
 export class ReceiptBuilder {
+  private config: PrintConfig
+  private printerConfig: ReturnType<typeof getPrinterConfig>
+
+  constructor(config: PrintConfig) {
+    this.config = config
+    this.printerConfig = getPrinterConfig(config.paperWidth)
+  }
+
   /**
    * 构建完整的小票ESC/POS指令
    */
-  static build(data: ReceiptData): Uint8Array {
+  build(data: ReceiptData): Uint8Array {
     const encoder = new ReceiptPrinterEncoder({
       language: 'esc-pos',
-      width: PRINTER_CONFIG.WIDTH,
+      width: this.printerConfig.WIDTH,
       codepageMapping: 'cp936'  // 中文GBK编码
     })
 
@@ -22,18 +31,20 @@ export class ReceiptBuilder {
     encoder.initialize()
 
     // ========== 店铺信息 ==========
+    // 优先使用data中的店铺名称，fallback到config
+    const storeName = data.storeName || this.config.storeName
     encoder
       .codepage('cp936')
       .align('center')
       .bold(true)
       .width(2)
       .height(2)
-      .line(data.storeName)
+      .line(storeName)
       .width(1)
       .height(1)
       .bold(false)
       .line('提货凭证')
-      .line(PRINTER_CONFIG.DIVIDER)
+      .line(this.printerConfig.DIVIDER)
 
     // ========== 预约信息 ==========
     encoder
@@ -41,7 +52,7 @@ export class ReceiptBuilder {
       .line(`预约号: ${data.reservationNo}`)
       .line(`客  户: ${data.customerName}`)
       .line(`电  话: ${this.maskPhone(data.customerPhone)}`)
-      .line(PRINTER_CONFIG.DIVIDER)
+      .line(this.printerConfig.DIVIDER)
 
     // ========== 商品明细 ==========
     encoder
@@ -54,7 +65,7 @@ export class ReceiptBuilder {
       this.printItem(encoder, item)
     })
 
-    encoder.line(PRINTER_CONFIG.DIVIDER)
+    encoder.line(this.printerConfig.DIVIDER)
 
     // ========== 赠品信息 ==========
     if (data.gift && data.gift.name) {
@@ -63,7 +74,7 @@ export class ReceiptBuilder {
         .line('【赠品】')
         .bold(false)
         .line(`${data.gift.name}${data.gift.delivered ? '    [已发放]' : '    [待发放]'}`)
-        .line(PRINTER_CONFIG.DIVIDER)
+        .line(this.printerConfig.DIVIDER)
     }
 
     // ========== 金额信息 ==========
@@ -74,7 +85,7 @@ export class ReceiptBuilder {
     }
 
     encoder
-      .line(PRINTER_CONFIG.DOUBLE_DIVIDER)
+      .line(this.printerConfig.DOUBLE_DIVIDER)
       .bold(true)
       .width(1)
       .height(2)
@@ -82,20 +93,22 @@ export class ReceiptBuilder {
       .width(1)
       .height(1)
       .bold(false)
-      .line(PRINTER_CONFIG.DOUBLE_DIVIDER)
+      .line(this.printerConfig.DOUBLE_DIVIDER)
 
     // ========== 支付方式 ==========
     const paymentLabel = PAYMENT_LABELS[data.paymentMethod] || data.paymentMethod
     encoder.line(`支付方式: ${paymentLabel}`)
-    encoder.line(PRINTER_CONFIG.DIVIDER)
+    encoder.line(this.printerConfig.DIVIDER)
 
     // ========== 底部信息 ==========
+    // 优先使用data中的店铺电话，fallback到config
+    const storePhone = data.storePhone || this.config.storePhone
     encoder
       .align('center')
       .line(this.formatDateTime(data.printTime))
       .newline()
-      .line('感谢光临，欢迎再来！')
-      .line(`客服电话: ${data.storePhone}`)
+      .line(this.config.footerText)
+      .line(`客服电话: ${storePhone}`)
       .newline()
       .newline()
       .newline()
@@ -109,9 +122,10 @@ export class ReceiptBuilder {
   /**
    * 打印单个商品项
    */
-  private static printItem(encoder: ReceiptPrinterEncoder, item: ReceiptItem): void {
+  private printItem(encoder: ReceiptPrinterEncoder, item: ReceiptItem): void {
     // 商品名称（可能需要截断）
-    const name = this.truncateName(item.name, 20)
+    const maxNameWidth = this.config.paperWidth === 80 ? 30 : 20
+    const name = this.truncateName(item.name, maxNameWidth)
     encoder.line(name)
 
     // 数量、单价、小计（右对齐）
@@ -125,23 +139,23 @@ export class ReceiptBuilder {
   /**
    * 格式化金额行
    */
-  private static formatAmountLine(label: string, amount: number): string {
+  private formatAmountLine(label: string, amount: number): string {
     const amountStr = amount >= 0 ? `${this.formatPrice(amount)}` : `-${this.formatPrice(Math.abs(amount))}`
-    const spaces = PRINTER_CONFIG.WIDTH - this.getStringWidth(label) - amountStr.length
+    const spaces = this.printerConfig.WIDTH - this.getStringWidth(label) - amountStr.length
     return label + ' '.repeat(Math.max(1, spaces)) + amountStr
   }
 
   /**
    * 格式化价格
    */
-  private static formatPrice(amount: number): string {
+  private formatPrice(amount: number): string {
     return `¥${amount.toFixed(2)}`
   }
 
   /**
    * 格式化日期时间
    */
-  private static formatDateTime(date: Date): string {
+  private formatDateTime(date: Date): string {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
@@ -154,7 +168,7 @@ export class ReceiptBuilder {
   /**
    * 手机号脱敏
    */
-  private static maskPhone(phone: string): string {
+  private maskPhone(phone: string): string {
     if (!phone || phone.length !== 11) return phone
     return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
   }
@@ -162,7 +176,7 @@ export class ReceiptBuilder {
   /**
    * 获取字符串显示宽度（中文算2，英文数字算1）
    */
-  private static getStringWidth(str: string): number {
+  private getStringWidth(str: string): number {
     let width = 0
     for (const char of str) {
       // 中文字符范围
@@ -178,7 +192,7 @@ export class ReceiptBuilder {
   /**
    * 截断字符串（按显示宽度）
    */
-  private static truncateName(name: string, maxWidth: number): string {
+  private truncateName(name: string, maxWidth: number): string {
     let width = 0
     let result = ''
     for (const char of name) {

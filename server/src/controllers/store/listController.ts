@@ -14,6 +14,7 @@ import {
   getTodayPickupStats,
   getSoonExpiringReservations,
 } from '../../services/reservation';
+import { getPrintConfig } from '../../services/settingService';
 import prisma from '../../utils/prisma';
 
 /**
@@ -208,5 +209,20 @@ export async function getExpiring(req: Request, res: Response) {
   } catch (err: any) {
     console.error('[listController] getExpiring error:', err);
     return error(res, '获取即将过期列表失败');
+  }
+}
+
+/**
+ * 获取打印配置
+ * GET /api/store/print-config
+ * 【2026-01-28 蓝牙打印】门店端获取后台配置的打印设置
+ */
+export async function getPrintConfigAction(req: Request, res: Response) {
+  try {
+    const config = await getPrintConfig();
+    return success(res, config);
+  } catch (err: any) {
+    console.error('[listController] getPrintConfig error:', err);
+    return error(res, '获取打印配置失败');
   }
 }

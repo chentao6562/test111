@@ -180,47 +180,50 @@ function truncateName(name: string): string {
 <style scoped>
 .order-receipt {
   width: 58mm;
-  padding: 3mm;
+  max-width: 58mm;
+  padding: 2mm;
   background: #fff;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 1.4;
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.3;
   color: #000;
   box-sizing: border-box;
 }
 
 .receipt-header {
   text-align: center;
-  padding: 2mm 0;
+  padding: 1.5mm 0;
 }
 
 .store-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 }
 
 .divider {
   border-top: 1px dashed #000;
-  margin: 2mm 0;
+  margin: 1.5mm 0;
 }
 
 .divider.thick {
-  border-top: 2px solid #000;
+  border-top: 1.5px solid #000;
 }
 
 .receipt-section {
-  padding: 1mm 0;
+  padding: 0.5mm 0;
 }
 
 .section-title {
   font-weight: bold;
-  margin-bottom: 1mm;
+  font-size: 10px;
+  margin-bottom: 0.5mm;
 }
 
 .receipt-row {
   display: flex;
   justify-content: space-between;
-  margin: 1mm 0;
+  font-size: 10px;
+  margin: 0.5mm 0;
 }
 
 .receipt-row .label {
@@ -233,7 +236,7 @@ function truncateName(name: string): string {
 
 .receipt-row .value.bold {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .receipt-row .value.paid {
@@ -245,18 +248,18 @@ function truncateName(name: string): string {
 }
 
 .receipt-row.total {
-  font-size: 14px;
+  font-size: 11px;
 }
 
 .product-item {
   display: flex;
   align-items: baseline;
-  margin: 1mm 0;
-  font-size: 11px;
+  margin: 0.5mm 0;
+  font-size: 10px;
 }
 
 .product-index {
-  width: 15px;
+  width: 12px;
   flex-shrink: 0;
 }
 
@@ -269,40 +272,40 @@ function truncateName(name: string): string {
 
 .product-qty {
   flex-shrink: 0;
-  margin-left: 5px;
+  margin-left: 3px;
   font-weight: bold;
 }
 
 .code-section {
   text-align: center;
-  padding: 3mm 0;
+  padding: 2mm 0;
 }
 
 .code-label {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 1mm;
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 0.5mm;
 }
 
 .code-value {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
 }
 
 .code-value.pending {
-  font-size: 14px;
-  color: #999;
+  font-size: 12px;
+  color: #666;
   letter-spacing: 0;
 }
 
 .receipt-footer {
   text-align: center;
-  padding: 2mm 0;
+  padding: 1.5mm 0;
 }
 
 .footer-text {
-  font-size: 11px;
-  color: #666;
+  font-size: 9px;
+  color: #333;
 }
 </style>

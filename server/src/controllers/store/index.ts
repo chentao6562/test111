@@ -17,6 +17,7 @@ export {
   getDetail,
   getUrgent,
   getExpiring,
+  getPrintConfigAction,
 } from './listController';
 
 // 电话确认相关
@@ -66,6 +67,7 @@ export default {
   getDetail: listController.getDetail,
   getUrgent: listController.getUrgent,
   getExpiring: listController.getExpiring,
+  getPrintConfigAction: listController.getPrintConfigAction,
   // 电话确认
   recordCallAction: confirmController.recordCallAction,
   confirm: confirmController.confirm,
