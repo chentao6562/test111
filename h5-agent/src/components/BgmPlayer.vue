@@ -57,12 +57,17 @@ const fetchRandomBgm = () => {
         }
         bgmUrl.value = url
         isReady.value = true
+
+        // 【修复】如果用户已经交互过且偏好播放，立即加载音频
+        if (hasUserInteracted.value && getUserPreference()) {
+          shouldLoadAudio.value = true
+        }
       }
     } catch (error) {
       // BGM获取失败，静默处理，不显示按钮
       console.log('获取BGM失败，静默处理')
     }
-  }, 1000) // 延迟1秒再获取BGM，确保页面核心内容先加载
+  }, 500) // 缩短延迟到500ms，更快响应
 }
 
 // 音频可以播放
@@ -139,11 +144,11 @@ const handleFirstInteraction = () => {
   hasUserInteracted.value = true
 
   // 用户交互后才加载音频文件
-  if (bgmUrl.value) {
+  if (bgmUrl.value && getUserPreference()) {
     shouldLoadAudio.value = true
   }
+  // 注意：如果bgmUrl还未获取到，fetchRandomBgm完成后会检查并加载
 
-  // 如果用户偏好是播放，等音频加载后再播放（由onCanPlay触发）
   // 移除监听器
   document.removeEventListener('touchstart', handleFirstInteraction)
   document.removeEventListener('click', handleFirstInteraction)
