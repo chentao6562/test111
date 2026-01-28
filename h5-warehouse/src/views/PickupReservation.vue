@@ -748,6 +748,25 @@ function onSuccessConfirm() {
   selectedCouponIds.value = []
 }
 
+// 【2026-01-28】解析套餐商品详情
+interface PackageItem {
+  productId: number
+  productName: string
+  quantity: number
+  price?: number
+}
+
+function parsePackageItems(packageItemsJson: string | null): PackageItem[] {
+  if (!packageItemsJson) return []
+  try {
+    const items = JSON.parse(packageItemsJson)
+    return Array.isArray(items) ? items : []
+  } catch (e) {
+    console.error('解析套餐商品失败:', e)
+    return []
+  }
+}
+
 // 【2026-01-28】打印小票功能 - 支持蓝牙打印和HTML打印fallback
 async function handlePrint() {
   if (!completeResult.value || !foundReservation.value) return
@@ -772,19 +791,47 @@ async function handlePrint() {
   isPrinting.value = true
 
   try {
-    // 构造小票数据
+    // 构造小票数据 - 【2026-01-28】套餐商品展开显示
+    const printItems: { name: string; quantity: number; price: number; subtotal: number; isPackageHeader?: boolean }[] = []
+
+    for (const item of (foundReservation.value.items || [])) {
+      if (item.isPackage && item.packageItems) {
+        // 套餐商品：先显示套餐名称作为标题，再展开内部商品
+        printItems.push({
+          name: `【${item.productName}】`,
+          quantity: item.quantity,
+          price: Number(item.price),
+          subtotal: Number(item.price) * item.quantity,
+          isPackageHeader: true
+        })
+        // 解析并添加套餐内的商品
+        const pkgItems = parsePackageItems(item.packageItems)
+        for (const pkg of pkgItems) {
+          printItems.push({
+            name: `  ${pkg.productName}`,
+            quantity: pkg.quantity * item.quantity,  // 数量 = 套餐内数量 × 套餐数量
+            price: pkg.price || 0,
+            subtotal: 0  // 套餐内商品不显示小计
+          })
+        }
+      } else {
+        // 普通商品
+        printItems.push({
+          name: item.productName,
+          quantity: item.quantity,
+          price: Number(item.price),
+          subtotal: Number(item.price) * item.quantity
+        })
+      }
+    }
+
     const receiptData: ReceiptData = {
       storeName: config.storeName,
       storePhone: config.storePhone,
       reservationNo: completeResult.value.reservationNo,
       customerName: foundReservation.value.customerName,
       customerPhone: foundReservation.value.customerPhone,
-      items: (foundReservation.value.items || []).map(item => ({
-        name: item.productName,
-        quantity: item.quantity,
-        price: Number(item.price),
-        subtotal: Number(item.price) * item.quantity
-      })),
+      items: printItems,
       totalAmount: completeResult.value.totalAmount,
       couponDeduction: completeResult.value.couponDeduction,
       actualPayment: completeResult.value.actualPayment ?? completeResult.value.totalAmount,
@@ -826,9 +873,18 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
   // 58mm纸实际打印宽度约48mm，80mm纸约72mm
   const printWidth = config.paperWidth === 80 ? '72mm' : '48mm'
 
-  // 生成商品明细HTML
-  const itemsHtml = data.items.map(item => {
-    return `<div class="item">${item.name} x${item.quantity} ¥${item.subtotal.toFixed(2)}</div>`
+  // 生成商品明细HTML - 【2026-01-28】支持套餐展开显示
+  const itemsHtml = data.items.map((item: any) => {
+    if (item.isPackageHeader) {
+      // 套餐标题行：显示套餐名称和总价
+      return `<div class="item pkg-header">${item.name} ¥${item.subtotal.toFixed(2)}</div>`
+    } else if (item.subtotal === 0) {
+      // 套餐内商品：只显示名称和数量，不显示价格
+      return `<div class="item pkg-item">${item.name} x${item.quantity}</div>`
+    } else {
+      // 普通商品：显示名称、数量、价格
+      return `<div class="item">${item.name} x${item.quantity} ¥${item.subtotal.toFixed(2)}</div>`
+    }
   }).join('')
 
   // 赠品HTML
@@ -852,6 +908,8 @@ body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','
 .line{border-bottom:1px dashed #000;margin:1.5mm 0}
 .row{font-size:10pt;margin:0.5mm 0}
 .item{font-size:10pt;margin:0.5mm 0}
+.pkg-header{font-weight:bold;margin-top:1mm}
+.pkg-item{font-size:9pt;color:#333!important;padding-left:2mm}
 .total{font-size:12pt;font-weight:bold;text-align:right;margin:0.5mm 0}
 .ft{text-align:center;font-size:9pt;margin-top:0.5mm}
 @media print{@page{margin:0}html,body{width:${printWidth}!important;height:auto!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
