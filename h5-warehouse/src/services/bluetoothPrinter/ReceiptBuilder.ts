@@ -27,8 +27,14 @@ export class ReceiptBuilder {
       codepageMapping: 'cp936'  // 中文GBK编码
     })
 
-    // 初始化打印机
+    // 初始化打印机 - 发送ESC @指令重置所有设置
     encoder.initialize()
+
+    // 发送原始ESC/POS指令确保打印机正确初始化
+    // ESC @ = 初始化打印机
+    // GS ! 0x00 = 取消放大模式
+    encoder.raw(new Uint8Array([0x1B, 0x40]))  // ESC @ 初始化
+    encoder.raw(new Uint8Array([0x1D, 0x21, 0x00]))  // GS ! 0 取消放大
 
     // ========== 店铺信息 ==========
     // 优先使用data中的店铺名称，fallback到config
@@ -37,11 +43,14 @@ export class ReceiptBuilder {
       .codepage('cp936')
       .align('center')
       .bold(true)
-      .width(2)
-      .height(2)
-      .line(storeName)
-      .width(1)
-      .height(1)
+
+    // 使用原始指令放大字体 GS ! n (n=0x11表示宽高各2倍)
+    encoder.raw(new Uint8Array([0x1D, 0x21, 0x11]))
+    encoder.line(storeName)
+    // 恢复正常字体
+    encoder.raw(new Uint8Array([0x1D, 0x21, 0x00]))
+
+    encoder
       .bold(false)
       .line('提货凭证')
       .line(this.printerConfig.DIVIDER)
@@ -87,11 +96,12 @@ export class ReceiptBuilder {
     encoder
       .line(this.printerConfig.DOUBLE_DIVIDER)
       .bold(true)
-      .width(1)
-      .height(2)
-      .line(this.formatAmountLine('实付金额:', data.actualPayment))
-      .width(1)
-      .height(1)
+    // 使用原始指令放大高度 GS ! n (n=0x01表示高度2倍)
+    encoder.raw(new Uint8Array([0x1D, 0x21, 0x01]))
+    encoder.line(this.formatAmountLine('实付金额:', data.actualPayment))
+    // 恢复正常字体
+    encoder.raw(new Uint8Array([0x1D, 0x21, 0x00]))
+    encoder
       .bold(false)
       .line(this.printerConfig.DOUBLE_DIVIDER)
 
