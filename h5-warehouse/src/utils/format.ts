@@ -147,12 +147,23 @@ export function parseImages(imageField: string | null | undefined): string[] {
   return urls.map(url => encodeImageFilename(url))
 }
 
+// 【2026-01-28修复】微信分享图片不显示 - 将硬编码IP替换为当前域名
+const HARDCODED_IP = 'http://39.104.113.121'
+
 // 图片URL完整化（处理相对路径）
 export function getImageUrl(url: string): string {
   if (!url) return ''
   // 先进行编码处理
   const encodedUrl = encodeImageFilename(url)
-  // 已经是完整URL则直接返回
+
+  // 【2026-01-28修复】处理硬编码IP地址的URL
+  // 微信内置浏览器从域名页面加载IP地址图片会被阻止
+  if (encodedUrl.startsWith(HARDCODED_IP)) {
+    const path = encodedUrl.replace(HARDCODED_IP, '')
+    return `${window.location.origin}${path}`
+  }
+
+  // 其他完整URL则直接返回
   if (encodedUrl.startsWith('http://') || encodedUrl.startsWith('https://')) return encodedUrl
   // 相对路径：确保以 / 开头（由当前域名提供服务）
   return encodedUrl.startsWith('/') ? encodedUrl : `/${encodedUrl}`

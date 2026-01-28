@@ -3,8 +3,14 @@ import { useUserStore } from '../stores/user'
 import { Toast } from 'tdesign-mobile-vue'
 import router from '../router'
 
-// API基础URL - 从环境变量读取
-const BASE_URL = import.meta.env.VITE_API_URL || '/api'
+// 检测Capacitor原生环境
+const isCapacitor = typeof window !== 'undefined' &&
+                    (window as any).Capacitor?.isNativePlatform?.();
+
+// API基础URL - APK内置使用绝对地址，Web端使用相对路径
+const BASE_URL = isCapacitor
+  ? 'http://39.104.113.121/api'
+  : (import.meta.env.VITE_API_URL || '/api');
 
 // 创建axios实例
 const instance: AxiosInstance = axios.create({
@@ -177,17 +183,45 @@ export const del = <T = any>(url: string, params?: any, config?: AxiosRequestCon
 }
 
 // 图片URL处理
+// 【2026-01-28修复】微信分享图片不显示 - 将硬编码IP替换为当前域名
+const HARDCODED_IP = 'http://39.104.113.121'
+
 export const getImageUrl = (url: string | undefined): string => {
   if (!url) return ''
+
+  // 检测Capacitor原生环境
+  const isNative = (window as any).Capacitor?.isNativePlatform?.()
+
+  // 【2026-01-28修复】处理硬编码IP地址的URL
+  // 微信内置浏览器从域名页面加载IP地址图片会被阻止
+  if (url.startsWith(HARDCODED_IP)) {
+    // 提取路径部分
+    const path = url.replace(HARDCODED_IP, '')
+    if (isNative) {
+      return url // 原生APP保持IP地址
+    }
+    // 浏览器环境：使用当前域名
+    return `${window.location.origin}${path}`
+  }
+
+  // 其他完整URL直接返回
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
+
   if (url.startsWith('/images/')) {
+    // APK环境下使用绝对地址
+    if (isNative) {
+      return `${HARDCODED_IP}${url}`
+    }
     return url
   }
-  // 使用当前域名或环境变量中的API_URL域名
+
+  // 使用当前域名或固定服务器地址
   const apiUrl = import.meta.env.VITE_API_URL || ''
-  const baseUrl = apiUrl.replace('/api', '') || window.location.origin
+  const baseUrl = isNative
+    ? HARDCODED_IP
+    : (apiUrl.replace('/api', '') || window.location.origin)
   return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
 }
 
