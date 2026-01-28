@@ -250,6 +250,31 @@ import PrinterSetup from '@/components/PrinterSetup.vue'
 import { BluetoothPrinterService, printerService, ReceiptBuilder } from '@/services/bluetoothPrinter'
 import type { ReceiptData, PrintConfig } from '@/services/bluetoothPrinter'
 import { getPrintConfig } from '@/api/settings'
+import QRCode from 'qrcode'
+
+// 招财猫SVG图片（黑白线稿，适合热敏打印）
+const LUCKY_CAT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
+  <ellipse cx="50" cy="70" rx="35" ry="28" fill="none" stroke="#000" stroke-width="3"/>
+  <circle cx="50" cy="45" r="28" fill="none" stroke="#000" stroke-width="3"/>
+  <path d="M25 25 L30 45 Q32 35 35 38" fill="none" stroke="#000" stroke-width="2.5"/>
+  <path d="M75 25 L70 45 Q68 35 65 38" fill="none" stroke="#000" stroke-width="2.5"/>
+  <circle cx="40" cy="42" r="4" fill="#000"/>
+  <circle cx="60" cy="42" r="4" fill="#000"/>
+  <ellipse cx="50" cy="52" rx="3" ry="2" fill="#000"/>
+  <path d="M47 52 Q50 56 53 52" fill="none" stroke="#000" stroke-width="1.5"/>
+  <line x1="25" y1="48" x2="15" y2="45" stroke="#000" stroke-width="1.5"/>
+  <line x1="25" y1="52" x2="15" y2="52" stroke="#000" stroke-width="1.5"/>
+  <line x1="25" y1="56" x2="15" y2="59" stroke="#000" stroke-width="1.5"/>
+  <line x1="75" y1="48" x2="85" y2="45" stroke="#000" stroke-width="1.5"/>
+  <line x1="75" y1="52" x2="85" y2="52" stroke="#000" stroke-width="1.5"/>
+  <line x1="75" y1="56" x2="85" y2="59" stroke="#000" stroke-width="1.5"/>
+  <path d="M68 60 Q85 50 80 80 Q75 95 60 90" fill="none" stroke="#000" stroke-width="2.5"/>
+  <circle cx="80" cy="68" r="8" fill="none" stroke="#000" stroke-width="2"/>
+  <text x="80" y="72" text-anchor="middle" font-size="10" font-weight="bold">¥</text>
+</svg>`
+
+// Base64编码的招财猫图片
+const LUCKY_CAT_BASE64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(LUCKY_CAT_SVG)))
 
 const route = useRoute()
 const router = useRouter()
@@ -491,11 +516,11 @@ async function handlePrint() {
       } else {
         // 蓝牙打印失败，fallback到HTML打印
         console.warn('蓝牙打印失败，使用HTML打印:', result.error)
-        printHTML(receiptData, config)
+        await printHTML(receiptData, config)
       }
     } else {
       // 蓝牙不可用或未连接，使用HTML打印
-      printHTML(receiptData, config)
+      await printHTML(receiptData, config)
     }
   } catch (error) {
     console.error('打印失败:', error)
@@ -506,7 +531,7 @@ async function handlePrint() {
 }
 
 // HTML打印（fallback方案）- 清晰版本适配58mm热敏打印机
-function printHTML(data: ReceiptData, config: PrintConfig) {
+async function printHTML(data: ReceiptData, config: PrintConfig) {
   // 58mm纸实际打印宽度约48mm，80mm纸约72mm
   const printWidth = config.paperWidth === 80 ? '72mm' : '48mm'
 
@@ -527,6 +552,24 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
   // 赠品HTML
   const giftHtml = data.gift ? `<div class="row">赠品: ${data.gift.name} ${data.gift.delivered ? '[已发]' : '[待发]'}</div>` : ''
 
+  // 【2026-01-28】生成二维码（优先使用提货码，否则使用预约号）
+  let qrCodeDataUrl = ''
+  const qrContent = data.pickupCode || data.reservationNo
+  try {
+    qrCodeDataUrl = await QRCode.toDataURL(qrContent, {
+      width: 100,
+      margin: 1,
+      color: { dark: '#000000', light: '#ffffff' }
+    })
+  } catch (err) {
+    console.error('生成二维码失败:', err)
+  }
+
+  // 二维码HTML
+  const qrCodeHtml = qrCodeDataUrl
+    ? `<div class="qr-section"><img src="${qrCodeDataUrl}" class="qr-code" alt="二维码"/><div class="qr-tip">扫码核验</div></div>`
+    : ''
+
   const printContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -537,8 +580,8 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
 *{margin:0;padding:0;box-sizing:border-box;color:#000!important}
 html{width:${printWidth};height:auto;margin:0;padding:0}
 body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','Microsoft YaHei',sans-serif;font-size:12pt;line-height:1.4;color:#000;font-weight:bold}
-.header{display:flex;align-items:center;justify-content:center;position:relative}
-.cat{position:absolute;left:0;font-size:20pt}
+.header{display:flex;align-items:center;justify-content:center;position:relative;padding:1mm 0}
+.cat{position:absolute;left:0;width:36px;height:36px}
 .title{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:1mm}
 .sub{text-align:center;font-size:11pt;margin-bottom:1mm}
 .line{border-bottom:1px dashed #000;margin:1.5mm 0}
@@ -548,12 +591,15 @@ body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','
 .pkg-item{font-size:9pt;color:#333!important;padding-left:2mm}
 .total{font-size:12pt;font-weight:bold;text-align:right;margin:0.5mm 0}
 .pickup-code{text-align:center;font-size:16pt;font-weight:bold;margin:2mm 0;letter-spacing:2px}
+.qr-section{text-align:center;margin:2mm 0}
+.qr-code{width:25mm;height:25mm}
+.qr-tip{font-size:8pt;color:#666!important;margin-top:1mm}
 .ft{text-align:center;font-size:9pt;margin-top:0.5mm}
 @media print{@page{margin:0}html,body{width:${printWidth}!important;height:auto!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
-<div class="header"><span class="cat">🐱</span><div class="title">${config.storeName}</div></div>
+<div class="header"><img src="${LUCKY_CAT_BASE64}" class="cat" alt="招财猫"/><div class="title">${config.storeName}</div></div>
 <div class="sub">预约凭证</div>
 <div class="line"></div>
 ${data.pickupCode ? `<div class="pickup-code">提货码: ${data.pickupCode}</div><div class="line"></div>` : ''}
@@ -566,6 +612,7 @@ ${giftHtml}
 <div class="line"></div>
 <div class="total">合计: ¥${data.totalAmount.toFixed(2)}</div>
 <div class="line"></div>
+${qrCodeHtml}
 <div class="ft">${formatPrintDateTime(data.printTime)}</div>
 <div class="ft">${config.footerText}</div>
 <div class="ft">${config.storePhone}</div>
