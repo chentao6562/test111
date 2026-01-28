@@ -1,6 +1,6 @@
 <template>
   <!-- BGM播放器按钮 - 左下角位置，避开TabBar -->
-  <div class="bgm-player" v-if="isReady" @click="togglePlay">
+  <div class="bgm-player" v-if="bgmUrl" @click="togglePlay">
     <div :class="['bgm-icon', { rotating: isPlaying }]">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path v-if="isPlaying" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
@@ -8,19 +8,19 @@
       </svg>
     </div>
   </div>
-  <!-- 音频元素：延迟加载，不阻塞页面 -->
+  <!-- 音频元素 -->
   <audio
     ref="audioRef"
-    :src="audioSrc"
+    :src="bgmUrl"
     loop
-    preload="none"
+    preload="auto"
     @canplaythrough="onCanPlay"
     @error="onError"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { get } from '../api'
 
 // BGM数据
@@ -35,44 +35,27 @@ const bgmUrl = ref<string>('')
 const isPlaying = ref(false)
 const audioRef = ref<HTMLAudioElement | null>(null)
 const hasUserInteracted = ref(false)
-const isReady = ref(false) // 是否准备好显示按钮
-const shouldLoadAudio = ref(false) // 是否应该加载音频
 
-// 计算属性：只有在需要时才设置音频src（延迟加载）
-const audioSrc = computed(() => {
-  return shouldLoadAudio.value ? bgmUrl.value : ''
-})
-
-// 获取随机BGM（延迟执行，不阻塞页面渲染）
-const fetchRandomBgm = () => {
-  // 使用setTimeout延迟请求，优先让页面渲染完成
-  setTimeout(async () => {
-    try {
-      const res = await get<BgmData>('/bgm/random')
-      if (res.data) {
-        // 处理URL：如果是相对路径，添加服务器前缀
-        let url = res.data.url
-        if (url && !url.startsWith('http')) {
-          url = url.startsWith('/') ? url : '/' + url
-        }
-        bgmUrl.value = url
-        isReady.value = true
-
-        // 【修复】如果用户已经交互过且偏好播放，立即加载音频
-        if (hasUserInteracted.value && getUserPreference()) {
-          shouldLoadAudio.value = true
-        }
+// 获取随机BGM
+const fetchRandomBgm = async () => {
+  try {
+    const res = await get<BgmData>('/bgm/random')
+    if (res.data) {
+      // 处理URL：如果是相对路径，添加服务器前缀
+      let url = res.data.url
+      if (url && !url.startsWith('http')) {
+        url = url.startsWith('/') ? url : '/' + url
       }
-    } catch (error) {
-      // BGM获取失败，静默处理，不显示按钮
-      console.log('获取BGM失败，静默处理')
+      bgmUrl.value = url
     }
-  }, 500) // 缩短延迟到500ms，更快响应
+  } catch (error) {
+    console.log('获取BGM失败，静默处理')
+  }
 }
 
 // 音频可以播放
 const onCanPlay = () => {
-  // 如果用户已交互且用户偏好是播放，则尝试播放
+  // 如果用户已交互且偏好是播放，则尝试播放
   if (hasUserInteracted.value && getUserPreference()) {
     tryPlay()
   }
@@ -107,14 +90,6 @@ const togglePlay = () => {
     isPlaying.value = false
     saveUserPreference(false)
   } else {
-    // 确保音频已加载
-    if (!shouldLoadAudio.value && bgmUrl.value) {
-      shouldLoadAudio.value = true
-      // 等待音频加载后再播放（由onCanPlay触发）
-      saveUserPreference(true)
-      return
-    }
-
     audioRef.value.play().then(() => {
       isPlaying.value = true
       saveUserPreference(true)
@@ -143,11 +118,10 @@ const handleFirstInteraction = () => {
 
   hasUserInteracted.value = true
 
-  // 用户交互后才加载音频文件
-  if (bgmUrl.value && getUserPreference()) {
-    shouldLoadAudio.value = true
+  // 如果用户偏好是播放，尝试播放
+  if (getUserPreference() && bgmUrl.value) {
+    tryPlay()
   }
-  // 注意：如果bgmUrl还未获取到，fetchRandomBgm完成后会检查并加载
 
   // 移除监听器
   document.removeEventListener('touchstart', handleFirstInteraction)
