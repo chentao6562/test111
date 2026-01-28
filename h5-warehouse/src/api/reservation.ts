@@ -57,6 +57,11 @@ export interface ReservationItem {
   subtotal?: number
   prepared?: boolean  // 【2026-01-17】是否已备货
   unit?: string       // 单位
+  // 【2026-01-28】套餐商品支持
+  isPackage?: boolean      // 是否为套餐
+  packageId?: number       // 套餐ID
+  packageName?: string     // 套餐名称
+  packageItems?: string    // 套餐内商品JSON字符串
 }
 
 // 预约类型
