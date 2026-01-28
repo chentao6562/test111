@@ -904,6 +904,8 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
 *{margin:0;padding:0;box-sizing:border-box;color:#000!important}
 html{width:${printWidth};height:auto;margin:0;padding:0}
 body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','Microsoft YaHei',sans-serif;font-size:12pt;line-height:1.4;color:#000;font-weight:bold}
+.header{display:flex;align-items:center;justify-content:center;position:relative}
+.cat{position:absolute;left:0;font-size:20pt}
 .title{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:1mm}
 .sub{text-align:center;font-size:11pt;margin-bottom:1mm}
 .line{border-bottom:1px dashed #000;margin:1.5mm 0}
@@ -918,7 +920,7 @@ body{width:${printWidth};height:auto;margin:0;padding:2mm;font-family:'SimHei','
 </style>
 </head>
 <body>
-<div class="title">${config.storeName}</div>
+<div class="header"><span class="cat">🐱</span><div class="title">${config.storeName}</div></div>
 <div class="sub">提货凭证</div>
 <div class="line"></div>
 ${data.pickupCode ? `<div class="pickup-code">提货码: ${data.pickupCode}</div><div class="line"></div>` : ''}
