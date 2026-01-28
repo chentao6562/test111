@@ -83,6 +83,26 @@ export async function uploadVideo(file: File): Promise<UploadResult> {
   return response.data.data
 }
 
+// 上传音频（BGM）
+export async function uploadAudio(file: File): Promise<UploadResult> {
+  const formData = new FormData()
+  formData.append('audio', file)
+
+  const token = localStorage.getItem('admin_token')
+  const response = await axios.post('/api/upload/audio', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  })
+
+  if (response.data.code !== 0) {
+    throw new Error(response.data.message || '音频上传失败')
+  }
+
+  return response.data.data
+}
+
 // 删除图片
 export function deleteImage(url: string) {
   return request.delete('/upload/image', { data: { url } })

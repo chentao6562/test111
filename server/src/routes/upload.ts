@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { upload, uploadVideo as uploadVideoMiddleware } from '../services/uploadService';
+import { upload, uploadVideo as uploadVideoMiddleware, uploadAudio as uploadAudioMiddleware } from '../services/uploadService';
 import {
   uploadImage,
   uploadImages,
   uploadVideo,
+  uploadAudio,
   removeImage,
   getConfig,
 } from '../controllers/uploadController';
@@ -94,6 +95,41 @@ router.post(
   uploadVideoMiddleware.single('video'),
   handleVideoError,
   uploadVideo
+);
+
+// 音频上传错误处理中间件
+const handleAudioError = (err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      error(res, '音频大小不能超过10MB', 400);
+      return;
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      error(res, '只能上传1个音频', 400);
+      return;
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      error(res, '文件字段名错误', 400);
+      return;
+    }
+    if (err.message) {
+      error(res, err.message, 400);
+      return;
+    }
+    error(res, '音频上传失败', 500);
+    return;
+  }
+  next();
+};
+
+// 上传音频（需要管理员权限，10MB限制）
+router.post(
+  '/audio',
+  authAdmin,
+  uploadRateLimiter,
+  uploadAudioMiddleware.single('audio'),
+  handleAudioError,
+  uploadAudio
 );
 
 // 删除图片（需要管理员权限）

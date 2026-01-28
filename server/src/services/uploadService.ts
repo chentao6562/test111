@@ -13,10 +13,13 @@ if (!fs.existsSync(uploadDir)) {
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 // 允许的视频类型
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+// 允许的音频类型
+const ALLOWED_AUDIO_TYPES = ['audio/mpeg', 'audio/mp3'];
 // 所有允许的类型
-const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
+const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES, ...ALLOWED_AUDIO_TYPES];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 图片5MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 视频50MB
+const MAX_AUDIO_SIZE = 10 * 1024 * 1024; // 音频10MB
 
 // 【2026-01-22 安全修复】文件类型与扩展名映射（白名单）
 const MIME_TO_EXT: Record<string, string> = {
@@ -27,6 +30,8 @@ const MIME_TO_EXT: Record<string, string> = {
   'video/mp4': '.mp4',
   'video/webm': '.webm',
   'video/quicktime': '.mov',
+  'audio/mpeg': '.mp3',
+  'audio/mp3': '.mp3',
 };
 
 // 【2026-01-22 安全修复】文件魔数（用于验证文件真实类型）
@@ -104,6 +109,22 @@ export const uploadMedia = multer({
   fileFilter,
   limits: {
     fileSize: MAX_VIDEO_SIZE, // 使用视频的最大限制
+    files: 1,
+  },
+});
+
+// 创建multer实例（音频上传，10MB限制）
+export const uploadAudio = multer({
+  storage,
+  fileFilter: (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    if (ALLOWED_AUDIO_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('只支持 MP3 格式的音频'));
+    }
+  },
+  limits: {
+    fileSize: MAX_AUDIO_SIZE,
     files: 1,
   },
 });

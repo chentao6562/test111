@@ -286,6 +286,65 @@
           </div>
         </t-tab-panel>
 
+        <t-tab-panel value="bgm" label="BGM设置">
+          <div class="tab-content">
+            <!-- BGM设置说明 -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <t-icon name="sound" class="section-icon" />
+                背景音乐设置
+              </h3>
+              <p class="section-desc">上传BGM音乐文件，H5端打开页面时会随机播放一首。用户可手动控制播放/暂停。</p>
+              <div class="bgm-actions">
+                <t-button theme="primary" @click="showBgmDialog = true">
+                  <template #icon><t-icon name="add" /></template>
+                  上传BGM
+                </t-button>
+              </div>
+            </div>
+
+            <!-- BGM列表 -->
+            <div class="list-section">
+              <t-table
+                :data="bgmList"
+                :columns="bgmColumns"
+                :loading="bgmLoading"
+                row-key="id"
+                hover
+                stripe
+              >
+                <template #empty>
+                  <EmptyState
+                    type="data"
+                    title="暂无BGM"
+                    description="点击上方按钮上传背景音乐"
+                  />
+                </template>
+                <template #name="{ row }">
+                  <div class="bgm-name-cell">
+                    <t-icon name="sound" class="bgm-icon" />
+                    <span>{{ row.name }}</span>
+                  </div>
+                </template>
+                <template #isActive="{ row }">
+                  <t-switch v-model="row.isActive" @change="handleBgmStatusChange(row)" />
+                </template>
+                <template #preview="{ row }">
+                  <t-button variant="text" theme="primary" @click="previewBgm(row)">
+                    <template #icon><t-icon :name="previewingId === row.id ? 'pause' : 'play'" /></template>
+                    {{ previewingId === row.id ? '暂停' : '试听' }}
+                  </t-button>
+                </template>
+                <template #operation="{ row }">
+                  <t-button variant="text" theme="danger" @click="handleDeleteBgm(row)">
+                    删除
+                  </t-button>
+                </template>
+              </t-table>
+            </div>
+          </div>
+        </t-tab-panel>
+
         <t-tab-panel value="print" label="打印设置">
           <div class="tab-content">
             <!-- 打印功能开关 -->
@@ -406,6 +465,43 @@
         </t-tab-panel>
       </t-tabs>
     </t-card>
+
+    <!-- BGM上传对话框 -->
+    <t-dialog
+      v-model:visible="showBgmDialog"
+      header="上传BGM"
+      :confirm-btn="{ content: '上传', loading: bgmUploading }"
+      :cancel-btn="{ content: '取消' }"
+      @confirm="handleUploadBgm"
+    >
+      <t-form :data="bgmForm" label-width="80px">
+        <t-form-item label="音乐名称" required>
+          <t-input v-model="bgmForm.name" placeholder="请输入音乐名称" maxlength="50" />
+        </t-form-item>
+        <t-form-item label="音乐文件" required>
+          <div class="bgm-upload-area">
+            <div class="upload-info" v-if="bgmForm.url">
+              <t-icon name="check-circle" class="upload-success-icon" />
+              <span>文件已选择</span>
+            </div>
+            <t-button variant="outline" @click="triggerBgmUpload" :loading="bgmFileUploading">
+              {{ bgmFileUploading ? '上传中...' : '选择文件' }}
+            </t-button>
+            <span class="upload-tip">支持 MP3 格式，最大 10MB</span>
+            <input
+              ref="bgmInputRef"
+              type="file"
+              accept="audio/mp3,audio/mpeg"
+              style="display: none"
+              @change="handleBgmFileSelect"
+            />
+          </div>
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+
+    <!-- 音频预览元素 -->
+    <audio ref="previewAudioRef" @ended="previewingId = 0" />
   </div>
 </template>
 
@@ -414,7 +510,8 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import { EmptyState } from '@/components'
 import { getSettings, updateSettings, executeBackup, getAuditLogs, getAdminList, getStaffList, getPrintConfig, updatePrintConfig } from '@/api/settings'
-import { uploadImage } from '@/api/upload'
+import { uploadImage, uploadAudio } from '@/api/upload'
+import { getBgmList, createBgm, updateBgm, deleteBgm } from '@/api/bgm'
 
 // Tab状态
 const activeTab = ref('company')
@@ -461,6 +558,26 @@ const staffLoading = ref(false)
 const logLoading = ref(false)
 const logoUploading = ref(false)
 const printSaveLoading = ref(false)
+
+// BGM相关
+const bgmList = ref<any[]>([])
+const bgmLoading = ref(false)
+const showBgmDialog = ref(false)
+const bgmUploading = ref(false)
+const bgmFileUploading = ref(false)
+const bgmInputRef = ref<HTMLInputElement>()
+const previewAudioRef = ref<HTMLAudioElement>()
+const previewingId = ref(0)
+const bgmForm = reactive({
+  name: '',
+  url: '',
+})
+const bgmColumns = [
+  { colKey: 'name', title: '音乐名称', minWidth: 200 },
+  { colKey: 'isActive', title: '启用状态', width: 100 },
+  { colKey: 'preview', title: '试听', width: 100 },
+  { colKey: 'operation', title: '操作', width: 100 },
+]
 
 // Logo 上传相关
 const logoInputRef = ref<HTMLInputElement>()
@@ -704,6 +821,8 @@ function handleTabChange(value: string) {
     loadAuditLogs()
   } else if (value === 'print') {
     loadPrintConfig()
+  } else if (value === 'bgm') {
+    loadBgmList()
   }
 }
 
@@ -751,6 +870,139 @@ async function savePrintConfig() {
 function resetPrintForm() {
   if (originalPrintForm.value) {
     Object.assign(printForm, originalPrintForm.value)
+  }
+}
+
+// ============ BGM相关函数 ============
+
+// 加载BGM列表
+async function loadBgmList() {
+  bgmLoading.value = true
+  try {
+    const res = await getBgmList()
+    if (res.code === 0) {
+      bgmList.value = res.data
+    }
+  } catch (error) {
+    console.error('加载BGM列表失败:', error)
+  } finally {
+    bgmLoading.value = false
+  }
+}
+
+// 触发BGM文件上传
+function triggerBgmUpload() {
+  bgmInputRef.value?.click()
+}
+
+// 处理BGM文件选择
+async function handleBgmFileSelect(event: Event) {
+  const input = event.target as HTMLInputElement
+  const files = input.files
+  if (!files || files.length === 0) return
+
+  const file = files[0]
+
+  // 检查文件类型
+  if (!['audio/mp3', 'audio/mpeg'].includes(file.type)) {
+    MessagePlugin.warning('只支持 MP3 格式的音频文件')
+    input.value = ''
+    return
+  }
+
+  // 检查文件大小（10MB）
+  if (file.size > 10 * 1024 * 1024) {
+    MessagePlugin.warning('音频文件大小不能超过 10MB')
+    input.value = ''
+    return
+  }
+
+  // 自动填充文件名
+  if (!bgmForm.name) {
+    bgmForm.name = file.name.replace(/\.[^/.]+$/, '')
+  }
+
+  bgmFileUploading.value = true
+  try {
+    const result = await uploadAudio(file)
+    bgmForm.url = result.url
+    MessagePlugin.success('文件上传成功')
+  } catch (error: any) {
+    MessagePlugin.error(error.message || '文件上传失败')
+  } finally {
+    bgmFileUploading.value = false
+    input.value = ''
+  }
+}
+
+// 提交上传BGM
+async function handleUploadBgm() {
+  if (!bgmForm.name) {
+    MessagePlugin.warning('请输入音乐名称')
+    return
+  }
+  if (!bgmForm.url) {
+    MessagePlugin.warning('请上传音乐文件')
+    return
+  }
+
+  bgmUploading.value = true
+  try {
+    const res = await createBgm({
+      name: bgmForm.name,
+      url: bgmForm.url,
+    })
+    if (res.code === 0) {
+      MessagePlugin.success('BGM添加成功')
+      showBgmDialog.value = false
+      bgmForm.name = ''
+      bgmForm.url = ''
+      loadBgmList()
+    } else {
+      MessagePlugin.error(res.message || '添加失败')
+    }
+  } catch (error) {
+    MessagePlugin.error('添加失败')
+  } finally {
+    bgmUploading.value = false
+  }
+}
+
+// 切换BGM状态
+async function handleBgmStatusChange(row: any) {
+  try {
+    await updateBgm(row.id, { isActive: row.isActive })
+    MessagePlugin.success(row.isActive ? '已启用' : '已禁用')
+  } catch (error) {
+    MessagePlugin.error('状态更新失败')
+    row.isActive = !row.isActive
+  }
+}
+
+// 删除BGM
+async function handleDeleteBgm(row: any) {
+  try {
+    await deleteBgm(row.id)
+    MessagePlugin.success('删除成功')
+    loadBgmList()
+  } catch (error) {
+    MessagePlugin.error('删除失败')
+  }
+}
+
+// 试听BGM
+function previewBgm(row: any) {
+  if (!previewAudioRef.value) return
+
+  if (previewingId.value === row.id) {
+    // 暂停
+    previewAudioRef.value.pause()
+    previewingId.value = 0
+  } else {
+    // 播放
+    previewAudioRef.value.src = row.url
+    previewAudioRef.value.play()
+    previewingId.value = row.id
   }
 }
 
@@ -1105,5 +1357,49 @@ onMounted(() => {
 .receipt-preview .footer-text {
   text-align: center;
   margin: 8px 0;
+}
+
+/* BGM设置样式 */
+.section-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+.bgm-actions {
+  margin-bottom: 24px;
+}
+
+.bgm-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bgm-icon {
+  color: #e53935;
+}
+
+.bgm-upload-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #52c41a;
+  font-size: 14px;
+}
+
+.upload-success-icon {
+  color: #52c41a;
+}
+
+.upload-tip {
+  font-size: 12px;
+  color: #999;
 }
 </style>

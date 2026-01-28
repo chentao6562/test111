@@ -219,6 +219,34 @@ export async function uploadVideo(req: Request, res: Response) {
 }
 
 /**
+ * 上传音频（BGM）
+ * POST /api/upload/audio
+ */
+export async function uploadAudio(req: Request, res: Response) {
+  try {
+    if (!req.file) {
+      validationError(res, '请选择要上传的音频');
+      return;
+    }
+
+    const file = req.file;
+    const today = new Date();
+    const dateDir = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    success(res, {
+      url: `/uploads/${dateDir}/${file.filename}`,
+      filename: file.filename,
+      originalName: file.originalname,
+      size: file.size,
+      mimetype: file.mimetype,
+    }, '音频上传成功');
+  } catch (err: any) {
+    console.error('上传音频失败:', err);
+    error(res, err.message || '上传音频失败', 500);
+  }
+}
+
+/**
  * 删除图片
  * DELETE /api/upload/image
  */

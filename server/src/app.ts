@@ -88,6 +88,10 @@ import { incrementRequestCount, incrementErrorCount } from './controllers/health
 // 【2026-01-28 微信分享】导入微信JSSDK路由
 import wechatRouter from './routes/wechat';
 
+// 【2026-01-28 BGM背景音乐】导入BGM路由
+import adminBgmRouter from './routes/adminBgm';
+import * as bgmController from './controllers/bgmController';
+
 // 【2026-01-16 预约模式升级】导入预约过期检查定时任务
 import { startReservationExpiryTask } from './tasks/reservationExpiryTask';
 // 【2026-01-17 备货环节】导入备货提醒定时任务
@@ -273,6 +277,10 @@ app.use('/api/h5/activity-summary', require('./routes/h5ActivitySummary').defaul
 
 // 【2026-01-28 微信分享】微信JSSDK配置API（无需登录）
 app.use('/api/wechat', wechatRouter);
+
+// 【2026-01-28 BGM背景音乐】BGM API
+app.use('/api/admin/bgm', adminRateLimiter, adminBgmRouter);  // 管理后台BGM管理
+app.get('/api/bgm/random', bgmController.getRandomBgm);       // 公开API：获取随机BGM
 
 // 【2026-01-20】公开统计API（无需登录）
 app.get('/api/agents/public-stats', async (req: Request, res: Response) => {

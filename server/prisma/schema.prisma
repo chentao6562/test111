@@ -2587,3 +2587,19 @@ model PackageAgentPrice {
   @@index([agentId])
   @@map("package_agent_prices")
 }
+
+// ============ 【2026-01-28 BGM背景音乐】============
+
+// BGM音乐表
+model BgmMusic {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)  // 音乐名称
+  url       String   @db.VarChar(500)  // 文件URL
+  duration  Int?     // 时长（秒）
+  isActive  Boolean  @default(true) @map("is_active")  // 是否启用
+  sortOrder Int      @default(0) @map("sort_order")    // 排序
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("bgm_musics")
+}

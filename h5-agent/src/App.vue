@@ -3,6 +3,8 @@ import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import { useCartStore } from './stores/cart'
+import OfflineNotice from './components/OfflineNotice.vue'
+import BgmPlayer from './components/BgmPlayer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -65,6 +67,12 @@ onUnmounted(() => {
 
 <template>
   <div class="app-container">
+    <!-- 离线状态提示 -->
+    <OfflineNotice />
+
+    <!-- 【2026-01-28】BGM背景音乐播放器 -->
+    <BgmPlayer />
+
     <!-- 页面内容 -->
     <router-view v-slot="{ Component }">
       <keep-alive :include="['Home', 'Category', 'Cart', 'My']">

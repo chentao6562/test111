@@ -311,14 +311,15 @@ onUnmounted(() => {
 
     <!-- 拼团详情 -->
     <template v-else-if="detail">
-      <!-- 状态卡片 -->
-      <div class="status-card" :style="{ backgroundColor: GroupBuyStatusColors[detail.status] }">
-        <div class="status-icon">
-          <t-icon :name="detail.status === 'FORMING' ? 'user-add' : detail.status === 'FULL' ? 'check-circle' : 'info-circle'" size="48px" />
+      <!-- 状态栏（紧凑版） -->
+      <div class="status-bar" :style="{ backgroundColor: GroupBuyStatusColors[detail.status] }">
+        <div class="status-left">
+          <t-icon :name="detail.status === 'FORMING' ? 'user-add' : detail.status === 'FULL' ? 'check-circle' : 'info-circle'" size="20px" />
+          <span class="status-text">{{ GroupBuyStatusLabels[detail.status] }}</span>
         </div>
-        <div class="status-text">{{ GroupBuyStatusLabels[detail.status] }}</div>
-        <div class="countdown" v-if="detail.status === GroupBuyStatus.FORMING && remainingTime">
-          剩余 {{ remainingTime }}
+        <div class="status-right" v-if="detail.status === GroupBuyStatus.FORMING && remainingTime">
+          <t-icon name="time" size="14px" />
+          <span>{{ remainingTime }}</span>
         </div>
       </div>
 
@@ -353,6 +354,17 @@ onUnmounted(() => {
             已成团，到店提货时领取赠品
           </div>
         </template>
+        <!-- 快捷信息行 -->
+        <div class="quick-info">
+          <div class="quick-item">
+            <t-icon name="location" size="14px" />
+            <span>{{ detail.regionName || '未指定区域' }}</span>
+          </div>
+          <div class="quick-item">
+            <t-icon name="calendar" size="14px" />
+            <span>{{ formatDate(detail.pickupDate) }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- 【2026-01-25】多档位赠品阶梯 -->
@@ -431,10 +443,10 @@ onUnmounted(() => {
       <div class="location-card">
         <div class="card-title">顺路拼团信息</div>
         <div class="location-info">
-          <div class="info-row" v-if="detail.regionName">
+          <div class="info-row">
             <t-icon name="location" size="16px" class="info-icon" />
             <span class="info-label">出发区域：</span>
-            <span class="info-value highlight">{{ detail.regionName }}</span>
+            <span class="info-value highlight">{{ detail.regionName || '未指定出发区域' }}</span>
           </div>
           <div class="info-row">
             <t-icon name="calendar" size="16px" class="info-icon" />
@@ -539,26 +551,36 @@ onUnmounted(() => {
   padding: 120px;
 }
 
-.status-card {
+/* 紧凑状态栏 */
+.status-bar {
   margin-top: 44px;
-  padding: 32px 20px;
-  text-align: center;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: #fff;
 }
 
-.status-icon {
-  margin-bottom: 12px;
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.status-text {
-  font-size: 20px;
+.status-left .status-text {
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 8px;
 }
 
-.countdown {
-  font-size: 14px;
-  opacity: 0.9;
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
 .progress-card {
@@ -610,6 +632,28 @@ onUnmounted(() => {
 
 .progress-tip.success {
   color: #4CAF50;
+}
+
+/* 快捷信息行 */
+.quick-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed #eee;
+}
+
+.quick-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #666;
+}
+
+.quick-item .t-icon {
+  color: #ff6b35;
 }
 
 .gift-card {
