@@ -7,6 +7,7 @@ import { useUserStore } from '../stores/user'
 import QRCodeComponent from '../components/QRCode.vue'
 import { generateProductPoster, downloadPoster } from '../utils/posterGenerator'
 import { getPromotionCopies, getBrandAssets } from '../api/promotionMaterial'
+import { getDisplayPrice, getOriginalPrice } from '../utils/priceUtils'
 import type { PromotionCopy, BrandAsset } from '../api/promotionMaterial'
 
 const router = useRouter()
@@ -101,8 +102,8 @@ const generatePoster = async () => {
       product: {
         name: product.name,
         image: fullImageUrl,
-        price: Number(product.displayPrice),
-        originalPrice: product.masterRetailPrice ? Number(product.masterRetailPrice) : undefined,
+        price: getDisplayPrice(product),
+        originalPrice: getOriginalPrice(product) || undefined,
         unit: product.unit
       },
       salesperson: {

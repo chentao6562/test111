@@ -377,7 +377,7 @@ const handleWelcomeClose = () => {
           <p class="contact-title">客服电话</p>
           <p class="contact-phone">13190531439 / 15849390600</p>
         </div>
-        <p class="copyright">© 2024 蒙庆烟花 版权所有</p>
+        <p class="copyright">© 2024 蒙庆烟花 版权所有 | <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="icp-link">蒙ICP备2026000904号</a></p>
       </div>
     </div>
 
@@ -872,6 +872,15 @@ const handleWelcomeClose = () => {
 .copyright {
   font-size: 10px;
   color: #ccc;
+}
+
+.copyright .icp-link {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.copyright .icp-link:hover {
+  text-decoration: underline;
 }
 
 /* 背景装饰 */

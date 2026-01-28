@@ -52,7 +52,7 @@
       </div>
 
       <div class="login-footer">
-        <p class="copyright">© 2026 蒙庆烟花 v1.0.0</p>
+        <p class="copyright">© 2026 蒙庆烟花 v1.0.0 | <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="icp-link">蒙ICP备2026000904号</a></p>
       </div>
     </div>
   </div>
@@ -198,5 +198,14 @@ async function handleLogin() {
 .copyright {
   font-size: 12px;
   color: var(--text-tertiary);
+}
+
+.copyright .icp-link {
+  color: var(--text-tertiary);
+  text-decoration: none;
+}
+
+.copyright .icp-link:hover {
+  text-decoration: underline;
 }
 </style>
