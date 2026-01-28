@@ -826,17 +826,16 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
   // 58mm纸实际打印宽度约48mm，80mm纸约72mm
   const printWidth = config.paperWidth === 80 ? '72mm' : '48mm'
 
-  // 生成商品明细HTML - 单行紧凑格式
+  // 生成商品明细HTML
   const itemsHtml = data.items.map(item => {
-    const name = item.name.length > 8 ? item.name.slice(0, 8) + '..' : item.name
-    return `<div class="item">${name} x${item.quantity} ¥${item.subtotal.toFixed(0)}</div>`
+    return `<div class="item">${item.name} x${item.quantity} ¥${item.subtotal.toFixed(2)}</div>`
   }).join('')
 
-  // 赠品HTML - 单行
-  const giftHtml = data.gift ? `<div class="row">赠:${data.gift.name}${data.gift.delivered ? '✓' : ''}</div>` : ''
+  // 赠品HTML
+  const giftHtml = data.gift ? `<div class="row">赠品: ${data.gift.name} ${data.gift.delivered ? '[已发]' : '[待发]'}</div>` : ''
 
-  // 代金券HTML - 单行
-  const couponHtml = data.couponDeduction && data.couponDeduction > 0 ? `<div class="row">券抵:-¥${data.couponDeduction.toFixed(0)}</div>` : ''
+  // 代金券HTML
+  const couponHtml = data.couponDeduction && data.couponDeduction > 0 ? `<div class="row">券抵: -¥${data.couponDeduction.toFixed(2)}</div>` : ''
 
   const printContent = `<!DOCTYPE html>
 <html>
@@ -845,35 +844,36 @@ function printHTML(data: ReceiptData, config: PrintConfig) {
 <title>小票</title>
 <style>
 @page{size:${printWidth} auto;margin:0}
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;color:#000!important}
 html,body{width:${printWidth};margin:0;padding:0}
-body{font-family:'Microsoft YaHei','SimHei','SimSun',sans-serif;padding:2mm;font-size:12px;line-height:1.4;-webkit-print-color-adjust:exact}
-.title{text-align:center;font-size:10px;font-weight:bold}
-.sub{text-align:center;font-size:7px;margin-bottom:1mm}
-.line{border-bottom:1px dashed #000;margin:1mm 0}
-.row{font-size:7px;margin:0.5mm 0}
-.item{font-size:7px;margin:0.5mm 0}
-.total{font-size:9px;font-weight:bold;text-align:right}
-.ft{text-align:center;font-size:6px;color:#333;margin-top:1mm}
-@media print{html,body{width:${printWidth}!important}}
+body{font-family:'SimHei','Microsoft YaHei',sans-serif;padding:2mm;font-size:12pt;line-height:1.5;color:#000;font-weight:bold}
+.title{text-align:center;font-size:14pt;font-weight:bold;margin-bottom:2mm}
+.sub{text-align:center;font-size:11pt;margin-bottom:2mm}
+.line{border-bottom:1px dashed #000;margin:2mm 0}
+.row{font-size:10pt;margin:1mm 0}
+.item{font-size:10pt;margin:1mm 0}
+.total{font-size:12pt;font-weight:bold;text-align:right;margin:1mm 0}
+.ft{text-align:center;font-size:9pt;margin-top:1mm}
+@media print{html,body{width:${printWidth}!important}*{color:#000!important;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
 <div class="title">${config.storeName}</div>
 <div class="sub">提货凭证</div>
 <div class="line"></div>
-<div class="row">${data.reservationNo}</div>
-<div class="row">${data.customerName} ${maskPhone(data.customerPhone)}</div>
+<div class="row">单号: ${data.reservationNo}</div>
+<div class="row">客户: ${data.customerName}</div>
+<div class="row">电话: ${maskPhone(data.customerPhone)}</div>
 <div class="line"></div>
 ${itemsHtml}
 <div class="line"></div>
 ${giftHtml}
-<div class="row">金额:¥${data.totalAmount.toFixed(0)}</div>
+<div class="row">金额: ¥${data.totalAmount.toFixed(2)}</div>
 ${couponHtml}
 <div class="line"></div>
-<div class="total">实付:¥${data.actualPayment.toFixed(0)}</div>
+<div class="total">实付: ¥${data.actualPayment.toFixed(2)}</div>
 <div class="line"></div>
-<div class="row">${getPaymentLabel(data.paymentMethod)}</div>
+<div class="row">支付: ${getPaymentLabel(data.paymentMethod)}</div>
 <div class="ft">${formatDateTime(data.printTime)}</div>
 <div class="ft">${config.footerText}</div>
 </body>
