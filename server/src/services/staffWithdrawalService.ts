@@ -226,6 +226,7 @@ export async function getWithdrawalDetail(id: number) {
 
 /**
  * 审核提现申请
+ * 【并发安全修复】使用FOR UPDATE行锁防止重复审核
  */
 export async function reviewWithdrawal(
   id: number,
@@ -233,22 +234,25 @@ export async function reviewWithdrawal(
   action: 'APPROVED' | 'REJECTED',
   reason?: string
 ) {
-  const withdrawal = await prisma.staffWithdrawal.findUnique({
-    where: { id },
-  });
+  // 使用事务和行锁确保并发安全
+  return prisma.$transaction(async (tx) => {
+    // 使用行锁获取提现记录（FOR UPDATE）
+    const withdrawals = await tx.$queryRaw<any[]>`
+      SELECT id, status, staffId, amount FROM staff_withdrawals WHERE id = ${id} FOR UPDATE
+    `;
 
-  if (!withdrawal) {
-    throw new Error('提现记录不存在');
-  }
+    if (!withdrawals || withdrawals.length === 0) {
+      throw new Error('提现记录不存在');
+    }
 
-  if (withdrawal.status !== 'PENDING') {
-    throw new Error('该提现申请已处理');
-  }
+    const withdrawal = withdrawals[0];
 
-  if (action === 'REJECTED') {
-    // 拒绝：退回余额
-    await prisma.$transaction(async (tx) => {
-      // 退回余额
+    if (withdrawal.status !== 'PENDING') {
+      throw new Error('该提现申请已处理');
+    }
+
+    if (action === 'REJECTED') {
+      // 拒绝：退回余额
       await tx.systemUser.update({
         where: { id: withdrawal.staffId },
         data: {
@@ -266,53 +270,64 @@ export async function reviewWithdrawal(
           rejectReason: reason || '审核未通过',
         },
       });
-    });
-  } else {
-    // 通过
-    await prisma.staffWithdrawal.update({
-      where: { id },
-      data: {
-        status: 'APPROVED',
-        reviewedBy: adminId,
-        reviewedAt: new Date(),
-      },
-    });
-  }
+    } else {
+      // 通过
+      await tx.staffWithdrawal.update({
+        where: { id },
+        data: {
+          status: 'APPROVED',
+          reviewedBy: adminId,
+          reviewedAt: new Date(),
+        },
+      });
+    }
 
-  return await getWithdrawalDetail(id);
+    // 在事务内获取更新后的记录
+    return tx.staffWithdrawal.findUnique({ where: { id } });
+  });
 }
 
 /**
  * 确认打款完成
+ * 【并发安全修复】使用FOR UPDATE行锁防止重复打款
  */
 export async function completeWithdrawal(
   id: number,
   adminId: number,
   remark?: string
 ) {
-  const withdrawal = await prisma.staffWithdrawal.findUnique({
-    where: { id },
+  // 使用事务和行锁确保并发安全
+  return prisma.$transaction(async (tx) => {
+    // 使用行锁获取提现记录（FOR UPDATE）
+    const withdrawals = await tx.$queryRaw<any[]>`
+      SELECT id, status, staffId, amount FROM staff_withdrawals WHERE id = ${id} FOR UPDATE
+    `;
+
+    if (!withdrawals || withdrawals.length === 0) {
+      throw new Error('提现记录不存在');
+    }
+
+    const withdrawal = withdrawals[0];
+
+    if (withdrawal.status !== 'APPROVED') {
+      throw new Error('只有已审核通过的提现才能确认打款完成');
+    }
+
+    // 更新状态为COMPLETED
+    const updatedWithdrawal = await tx.staffWithdrawal.update({
+      where: { id },
+      data: {
+        status: 'COMPLETED',
+        completedBy: adminId,
+        completedAt: new Date(),
+        completeRemark: remark,
+      },
+    });
+
+    console.log(`员工提现${id}已确认打款完成，操作人：${adminId}`);
+
+    return updatedWithdrawal;
   });
-
-  if (!withdrawal) {
-    throw new Error('提现记录不存在');
-  }
-
-  if (withdrawal.status !== 'APPROVED') {
-    throw new Error('该提现申请不是已通过状态');
-  }
-
-  await prisma.staffWithdrawal.update({
-    where: { id },
-    data: {
-      status: 'COMPLETED',
-      completedBy: adminId,
-      completedAt: new Date(),
-      completeRemark: remark,
-    },
-  });
-
-  return await getWithdrawalDetail(id);
 }
 
 /**

@@ -178,56 +178,57 @@ function truncateName(name: string): string {
 </script>
 
 <style scoped>
+/* 超紧凑样式 - 适配58mm热敏打印机（实际打印宽度约48mm） */
 .order-receipt {
-  width: 58mm;
-  max-width: 58mm;
-  padding: 2mm;
+  width: 48mm;
+  max-width: 48mm;
+  padding: 1mm;
   background: #fff;
-  font-family: 'Courier New', Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.3;
+  font-family: SimSun, 'Courier New', monospace;
+  font-size: 8px;
+  line-height: 1.15;
   color: #000;
   box-sizing: border-box;
 }
 
 .receipt-header {
   text-align: center;
-  padding: 1.5mm 0;
+  padding: 0.5mm 0;
 }
 
 .store-name {
-  font-size: 14px;
+  font-size: 10px;
   font-weight: bold;
 }
 
 .divider {
   border-top: 1px dashed #000;
-  margin: 1.5mm 0;
+  margin: 0.8mm 0;
 }
 
 .divider.thick {
-  border-top: 1.5px solid #000;
+  border-top: 1px solid #000;
 }
 
 .receipt-section {
-  padding: 0.5mm 0;
+  padding: 0.3mm 0;
 }
 
 .section-title {
   font-weight: bold;
-  font-size: 10px;
-  margin-bottom: 0.5mm;
+  font-size: 8px;
+  margin-bottom: 0.3mm;
 }
 
 .receipt-row {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  margin: 0.5mm 0;
+  font-size: 7px;
+  margin: 0.3mm 0;
 }
 
 .receipt-row .label {
-  color: #333;
+  color: #000;
 }
 
 .receipt-row .value {
@@ -236,30 +237,31 @@ function truncateName(name: string): string {
 
 .receipt-row .value.bold {
   font-weight: bold;
-  font-size: 12px;
+  font-size: 9px;
 }
 
 .receipt-row .value.paid {
-  color: #10b981;
+  color: #000;
 }
 
 .receipt-row .value.unpaid {
-  color: #ef4444;
+  color: #000;
+  font-weight: bold;
 }
 
 .receipt-row.total {
-  font-size: 11px;
+  font-size: 8px;
 }
 
 .product-item {
   display: flex;
   align-items: baseline;
-  margin: 0.5mm 0;
-  font-size: 10px;
+  margin: 0.3mm 0;
+  font-size: 7px;
 }
 
 .product-index {
-  width: 12px;
+  width: 8px;
   flex-shrink: 0;
 }
 
@@ -272,40 +274,40 @@ function truncateName(name: string): string {
 
 .product-qty {
   flex-shrink: 0;
-  margin-left: 3px;
+  margin-left: 2px;
   font-weight: bold;
 }
 
 .code-section {
   text-align: center;
-  padding: 2mm 0;
+  padding: 1mm 0;
 }
 
 .code-label {
-  font-size: 10px;
-  color: #333;
-  margin-bottom: 0.5mm;
+  font-size: 7px;
+  color: #000;
+  margin-bottom: 0.3mm;
 }
 
 .code-value {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: bold;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .code-value.pending {
-  font-size: 12px;
-  color: #666;
+  font-size: 8px;
+  color: #333;
   letter-spacing: 0;
 }
 
 .receipt-footer {
   text-align: center;
-  padding: 1.5mm 0;
+  padding: 0.5mm 0;
 }
 
 .footer-text {
-  font-size: 9px;
+  font-size: 6px;
   color: #333;
 }
 </style>
