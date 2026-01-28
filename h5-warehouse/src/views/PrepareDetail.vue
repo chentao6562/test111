@@ -117,8 +117,23 @@
               <t-icon name="image" size="20px" />
             </div>
             <div class="item-info">
-              <div class="item-name">{{ item.productName }}</div>
+              <div class="item-name">
+                {{ item.productName }}
+                <t-tag v-if="item.isPackage" theme="primary" size="small" variant="light">套餐</t-tag>
+              </div>
               <div class="item-qty">数量：{{ item.quantity }}{{ item.unit || '件' }}</div>
+              <!-- 套餐商品详情展开 -->
+              <div v-if="item.isPackage && item.packageItems" class="package-items">
+                <div class="package-title">套餐内容：</div>
+                <div
+                  v-for="(pkg, idx) in parsePackageItems(item.packageItems)"
+                  :key="idx"
+                  class="package-item"
+                >
+                  <span class="pkg-name">{{ pkg.productName }}</span>
+                  <span class="pkg-qty">x{{ pkg.quantity }}</span>
+                </div>
+              </div>
             </div>
             <div class="item-action">
               <t-button
@@ -353,6 +368,25 @@ function handleImageError(event: Event) {
   const img = event.target as HTMLImageElement
   img.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect fill="#f5f5f5" width="60" height="60"/><text x="50%" y="50%" fill="#999" font-size="10" text-anchor="middle" dy=".3em">无图</text></svg>')
   img.onerror = null
+}
+
+// 解析套餐商品详情
+interface PackageItem {
+  productId: number
+  productName: string
+  quantity: number
+  price?: number
+}
+
+function parsePackageItems(packageItemsJson: string | null): PackageItem[] {
+  if (!packageItemsJson) return []
+  try {
+    const items = JSON.parse(packageItemsJson)
+    return Array.isArray(items) ? items : []
+  } catch (e) {
+    console.error('解析套餐商品失败:', e)
+    return []
+  }
 }
 
 // 全选/取消全选
@@ -807,6 +841,54 @@ async function submitIssue() {
 .item-qty {
   font-size: 12px;
   color: var(--text-tertiary);
+}
+
+/* 套餐商品详情样式 */
+.package-items {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid var(--primary);
+}
+
+.package-title {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.package-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-primary);
+  padding: 3px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.package-item:last-child {
+  border-bottom: none;
+}
+
+.pkg-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pkg-qty {
+  color: var(--primary);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.item-name .t-tag {
+  margin-left: 6px;
+  vertical-align: middle;
 }
 
 .item-action {
