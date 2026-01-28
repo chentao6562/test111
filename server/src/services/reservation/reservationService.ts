@@ -722,6 +722,11 @@ export async function getReservationDetail(id: number): Promise<ReservationDetai
       subtotal: Number(item.price) * item.quantity,
       isFlashSale: item.isFlashSale || false,  // 【2026-01-25修复】秒杀商品标记
       isBargain: item.isBargain || false,      // 【2026-01-25修复】砍价商品标记
+      // 【2026-01-28修复】套餐商品字段
+      isPackage: item.isPackage || false,
+      packageId: item.packageId || undefined,
+      packageName: item.packageName || undefined,
+      packageItems: item.packageItems || undefined,
     })),
     store: {
       id: reservation.store.id,

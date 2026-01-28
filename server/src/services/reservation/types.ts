@@ -134,6 +134,13 @@ export interface ReservationDetail {
     price: number;
     subtotal: number;
     prepared?: boolean;      // 是否已备货
+    isFlashSale?: boolean;   // 【2026-01-25】秒杀商品标记
+    isBargain?: boolean;     // 【2026-01-25】砍价商品标记
+    // 【2026-01-28】套餐商品支持
+    isPackage?: boolean;     // 是否为套餐
+    packageId?: number;      // 套餐ID
+    packageName?: string;    // 套餐名称
+    packageItems?: string;   // 套餐内商品JSON字符串
   }[];
   store: {
     id: number;
