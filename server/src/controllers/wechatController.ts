@@ -21,11 +21,11 @@ export async function getJssdkConfigHandler(req: Request, res: Response) {
       });
     }
 
-    // 检查配置是否可用
+    // 检查配置是否可用 - 【2026-01-29】未配置时静默失败，不返回错误
     if (!isWechatConfigured()) {
-      return res.status(503).json({
-        code: 503,
-        message: '微信分享功能暂未配置',
+      return res.json({
+        code: 0,
+        data: null,  // 返回空数据，前端会静默处理
       });
     }
 
