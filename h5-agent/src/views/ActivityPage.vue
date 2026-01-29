@@ -10,6 +10,8 @@ import { Toast } from 'tdesign-mobile-vue'
 import { get, getOptimizedImageUrl } from '../api'
 import { useCartStore } from '../stores/cart'
 import { useUserStore } from '../stores/user'
+// 【2026-01-29修复】统一价格工具函数
+import { getDisplayPrice } from '../utils/priceUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -25,6 +27,9 @@ interface Product {
   name: string
   images: string
   retailPrice: number
+  // 【2026-01-29修复】添加显示价格相关字段
+  displayPrice?: number
+  agentPrice?: number
   unit: string
   stock: number
   lockStock: number
@@ -151,7 +156,8 @@ const addToCart = async (product: Product) => {
         productId: product.id,
         productName: product.name,
         productImage: product.images,
-        price: product.retailPrice,
+        // 【2026-01-29修复】使用统一价格工具函数
+        price: getDisplayPrice(product),
         quantity: 1,
         stock: availableStock,
         canSell: true
@@ -291,7 +297,8 @@ onMounted(() => {
                   <h4 class="product-name">{{ product.name }}</h4>
                   <div class="product-price">
                     <span class="price-symbol">¥</span>
-                    <span class="price-value">{{ formatPrice(product.retailPrice) }}</span>
+                    <!-- 【2026-01-29修复】使用统一价格工具函数 -->
+                    <span class="price-value">{{ formatPrice(getDisplayPrice(product)) }}</span>
                     <span class="price-unit">/{{ product.unit || '件' }}</span>
                   </div>
                   <button

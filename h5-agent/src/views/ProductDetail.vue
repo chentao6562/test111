@@ -7,6 +7,8 @@ import { useCartStore } from '../stores/cart'
 import { useUserStore } from '../stores/user'
 import { shareProduct } from '../utils/share'
 import { preloadVideo, clearPreloadCache } from '../utils/videoPreload'
+// 【2026-01-29修复】统一使用价格工具函数，禁止直接使用 retailPrice || agentPrice
+import { getDisplayPrice as getPriceUtil, getOriginalPrice as getOriginalPriceUtil, shouldShowOriginalPrice } from '../utils/priceUtils'
 import Hls from 'hls.js'
 
 const route = useRoute()
@@ -357,18 +359,20 @@ const availableStock = computed(() => {
 })
 
 // 实际显示价格（秒杀模式使用秒杀价）
+// 【2026-01-29修复】使用统一价格工具函数，优先级：displayPrice > agentPrice > retailPrice
 const displayPrice = computed(() => {
   if (!product.value) return 0
   if (isFlashSale.value) {
     return flashPrice.value
   }
-  return parseFloat(product.value.agentPrice) || 0
+  return getPriceUtil(product.value)
 })
 
 // 原价（用于划线价显示）
+// 【2026-01-29修复】使用统一价格工具函数
 const originalPrice = computed(() => {
   if (!product.value) return 0
-  return parseFloat(product.value.retailPrice) || 0
+  return getOriginalPriceUtil(product.value)
 })
 
 // 省钱金额
@@ -911,7 +915,8 @@ watch(videoUrl, (newUrl) => {
           <span class="pdd-price-meta">已预约 {{ product.salesCount || 100 }}+ 件</span>
         </div>
         <div class="pdd-price-compare">
-          <span class="pdd-original-price">¥{{ product.retailPrice }}</span>
+          <!-- 【2026-01-29修复】使用统一价格工具函数判断是否显示原价 -->
+          <span class="pdd-original-price" v-if="shouldShowOriginalPrice(product)">¥{{ originalPrice }}</span>
           <span class="pdd-save-tag" v-if="savedAmount > 10">
             省¥{{ savedAmount.toFixed(0) }}
           </span>
