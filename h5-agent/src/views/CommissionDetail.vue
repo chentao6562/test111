@@ -7,7 +7,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Toast } from 'tdesign-mobile-vue'
-import { get } from '../api'
+import { get, getOptimizedImageUrl } from '../api'
 
 const router = useRouter()
 const route = useRoute()
@@ -207,9 +207,10 @@ onMounted(() => {
           <div class="product-item" v-for="item in detail.reservation.items" :key="item.productId">
             <div class="product-main">
               <img
-                :src="item.productImage || '/placeholder.png'"
+                :src="getOptimizedImageUrl(item.productImage, 'small')"
                 class="product-image"
                 alt=""
+                @error="(e: Event) => (e.target as HTMLImageElement).src = '/placeholder.png'"
               />
               <div class="product-info">
                 <div class="product-name">{{ item.productName }}</div>
