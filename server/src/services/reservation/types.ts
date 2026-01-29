@@ -87,9 +87,9 @@ export interface CreateReservationInput {
   customerName: string;
   customerPhone: string;
   pickupDate: string;    // YYYY-MM-DD
-  items: ReservationItemInput[];
-  flashSaleItems?: FlashSaleItemInput[];  // 【2026-01-20 秒杀系统】秒杀商品列表
-  bargainItems?: BargainItemInput[];      // 【2026-01-23 砍价系统】砍价商品列表
+  items?: ReservationItemInput[];          // 【2026-01-29修复】改为可选，支持只有砍价商品的预约
+  flashSaleItems?: FlashSaleItemInput[];   // 【2026-01-20 秒杀系统】秒杀商品列表
+  bargainItems?: BargainItemInput[];       // 【2026-01-23 砍价系统】砍价商品列表
   salespersonId?: number;
   storeId: number;
   remark?: string;

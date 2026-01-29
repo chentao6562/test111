@@ -460,7 +460,7 @@ export async function getProductDetail(req: Request, res: Response) {
  */
 export async function createGuestReservation(req: Request, res: Response) {
   try {
-    const { customerName, customerPhone, pickupDate, items, flashSaleItems, salespersonId, storeId, regionId, regionName } = req.body;
+    const { customerName, customerPhone, pickupDate, items, flashSaleItems, bargainItems, salespersonId, storeId, regionId, regionName } = req.body;
 
     // 参数验证
     if (!customerName || typeof customerName !== 'string' || customerName.trim().length === 0) {
@@ -475,7 +475,12 @@ export async function createGuestReservation(req: Request, res: Response) {
       validationError(res, '请选择提货日期');
       return;
     }
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    // 【2026-01-29修复】至少需要一种商品（普通商品、秒杀商品或砍价商品）
+    const hasItems = Array.isArray(items) && items.length > 0;
+    const hasFlashSaleItems = Array.isArray(flashSaleItems) && flashSaleItems.length > 0;
+    const hasBargainItems = Array.isArray(bargainItems) && bargainItems.length > 0;
+
+    if (!hasItems && !hasFlashSaleItems && !hasBargainItems) {
       validationError(res, '请选择商品');
       return;
     }
@@ -520,68 +525,74 @@ export async function createGuestReservation(req: Request, res: Response) {
       }
     }
 
-    // 获取推销员定价，构建完整的items
-    const productIds = items.map((item: any) => item.productId);
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds }, status: 'ACTIVE' },
-    });
-
-    if (products.length !== productIds.length) {
-      validationError(res, '部分商品不存在或已下架');
-      return;
-    }
-
-    // 获取推销员定价
-    const agentPrices = await prisma.agentPrice.findMany({
-      where: { agentId: salespersonId, productId: { in: productIds } },
-    });
-    const priceMap = new Map(agentPrices.map(p => [p.productId, p]));
-
-    // 如果是二级，获取一级的subPrice
-    let level1Prices: Map<number, number> = new Map();
-    if (salesperson.type === 'LEVEL2' && salesperson.parentId) {
-      const l1Prices = await prisma.agentPrice.findMany({
-        where: { agentId: salesperson.parentId, productId: { in: productIds } },
+    // 【2026-01-29修复】只有普通商品时才进行商品验证和定价处理
+    let reservationItems: any[] = [];
+    if (hasItems) {
+      // 获取推销员定价，构建完整的items
+      const productIds = items.map((item: any) => item.productId);
+      const products = await prisma.product.findMany({
+        where: { id: { in: productIds }, status: 'ACTIVE' },
       });
-      for (const p of l1Prices) {
-        if (p.subPrice) {
-          level1Prices.set(p.productId, Number(p.subPrice));
+
+      if (products.length !== productIds.length) {
+        validationError(res, '部分商品不存在或已下架');
+        return;
+      }
+
+      // 获取推销员定价
+      const agentPrices = await prisma.agentPrice.findMany({
+        where: { agentId: salespersonId, productId: { in: productIds } },
+      });
+      const priceMap = new Map(agentPrices.map(p => [p.productId, p]));
+
+      // 如果是二级，获取一级的subPrice
+      let level1Prices: Map<number, number> = new Map();
+      if (salesperson.type === 'LEVEL2' && salesperson.parentId) {
+        const l1Prices = await prisma.agentPrice.findMany({
+          where: { agentId: salesperson.parentId, productId: { in: productIds } },
+        });
+        for (const p of l1Prices) {
+          if (p.subPrice) {
+            level1Prices.set(p.productId, Number(p.subPrice));
+          }
+        }
+
+        // 检查所有商品是否都有subPrice
+        for (const item of items) {
+          if (!level1Prices.has(item.productId)) {
+            const product = products.find(p => p.id === item.productId);
+            validationError(res, `商品"${product?.name}"暂不可购买`);
+            return;
+          }
         }
       }
 
-      // 检查所有商品是否都有subPrice
-      for (const item of items) {
-        if (!level1Prices.has(item.productId)) {
-          const product = products.find(p => p.id === item.productId);
-          validationError(res, `商品"${product?.name}"暂不可购买`);
-          return;
-        }
-      }
+      // 构建预约商品
+      reservationItems = items.map((item: any) => {
+        const product = products.find(p => p.id === item.productId)!;
+        const agentPrice = priceMap.get(item.productId);
+        const price = agentPrice?.retailPrice ? Number(agentPrice.retailPrice) : Number(product.retailPrice);
+
+        return {
+          productId: item.productId,
+          productName: product.name,
+          quantity: item.quantity,
+          price,
+        };
+      });
     }
-
-    // 构建预约商品
-    const reservationItems = items.map((item: any) => {
-      const product = products.find(p => p.id === item.productId)!;
-      const agentPrice = priceMap.get(item.productId);
-      const price = agentPrice?.retailPrice ? Number(agentPrice.retailPrice) : Number(product.retailPrice);
-
-      return {
-        productId: item.productId,
-        productName: product.name,
-        quantity: item.quantity,
-        price,
-      };
-    });
 
     // 调用预约服务
     // 【2026-01-20 秒杀系统】支持秒杀商品
     // 【2026-01-21 顺路拼团】支持区域信息
+    // 【2026-01-29修复】支持砍价商品
     const result = await createReservation({
       customerName: customerName.trim(),
       customerPhone,
       pickupDate,
-      items: reservationItems,
+      items: reservationItems.length > 0 ? reservationItems : undefined,  // 【2026-01-29修复】items改为可选
       flashSaleItems: flashSaleItems || undefined,  // 传递秒杀商品
+      bargainItems: bargainItems || undefined,      // 【2026-01-29修复】传递砍价商品
       salespersonId,
       storeId: targetStoreId,
       regionId: regionId || undefined,      // 【2026-01-21 顺路拼团】区域ID

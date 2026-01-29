@@ -66,7 +66,7 @@ export async function checkCustomer(req: Request, res: Response) {
  */
 export async function create(req: Request, res: Response) {
   try {
-    const { customerName, customerPhone, pickupDate, items, flashSaleItems, storeId, remark, salespersonId: frontendSalespersonId, regionId, regionName } = req.body;
+    const { customerName, customerPhone, pickupDate, items, flashSaleItems, bargainItems, storeId, remark, salespersonId: frontendSalespersonId, regionId, regionName } = req.body;
 
     // 【调试日志】记录请求参数
     console.log('[预约创建] 请求参数:', JSON.stringify({
@@ -74,30 +74,48 @@ export async function create(req: Request, res: Response) {
       customerPhone: customerPhone ? customerPhone.slice(0, 3) + '****' + customerPhone.slice(-4) : null,
       pickupDate,
       items,
+      bargainItems,  // 【2026-01-29修复】添加砍价商品日志
       storeId,
       salespersonId: frontendSalespersonId
     }));
 
     // 基本验证
-    if (!customerName || !customerPhone || !pickupDate || !items || !storeId) {
-      console.log('[预约创建] 验证失败: 缺少必填字段', { customerName: !!customerName, customerPhone: !!customerPhone, pickupDate: !!pickupDate, items: !!items, storeId: !!storeId });
+    // 【2026-01-29修复】items 改为可选（允许只有砍价商品的预约）
+    if (!customerName || !customerPhone || !pickupDate || !storeId) {
+      console.log('[预约创建] 验证失败: 缺少必填字段', { customerName: !!customerName, customerPhone: !!customerPhone, pickupDate: !!pickupDate, storeId: !!storeId });
       return badRequest(res, '请填写完整预约信息');
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
+    // 【2026-01-29修复】至少需要一种商品（普通商品、秒杀商品或砍价商品）
+    const hasItems = Array.isArray(items) && items.length > 0;
+    const hasFlashSaleItems = Array.isArray(flashSaleItems) && flashSaleItems.length > 0;
+    const hasBargainItems = Array.isArray(bargainItems) && bargainItems.length > 0;
+
+    if (!hasItems && !hasFlashSaleItems && !hasBargainItems) {
       return badRequest(res, '请选择预约商品');
     }
 
-    // 【2026-01-23 安全修复】验证商品数据的基本格式
-    for (const item of items) {
-      if (!item.productId || typeof item.productId !== 'number' || item.productId <= 0) {
-        return badRequest(res, '商品ID无效');
+    // 【2026-01-23 安全修复】验证普通商品数据的基本格式（如果有的话）
+    if (hasItems) {
+      for (const item of items) {
+        if (!item.productId || typeof item.productId !== 'number' || item.productId <= 0) {
+          return badRequest(res, '商品ID无效');
+        }
+        if (!item.quantity || typeof item.quantity !== 'number' || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+          return badRequest(res, '商品数量必须是正整数');
+        }
+        if (item.quantity > 9999) {
+          return badRequest(res, '单个商品数量不能超过9999');
+        }
       }
-      if (!item.quantity || typeof item.quantity !== 'number' || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
-        return badRequest(res, '商品数量必须是正整数');
-      }
-      if (item.quantity > 9999) {
-        return badRequest(res, '单个商品数量不能超过9999');
+    }
+
+    // 【2026-01-29修复】验证砍价商品数据格式
+    if (hasBargainItems) {
+      for (const item of bargainItems) {
+        if (!item.bargainCode || typeof item.bargainCode !== 'string') {
+          return badRequest(res, '砍价码无效');
+        }
       }
     }
 
@@ -142,12 +160,14 @@ export async function create(req: Request, res: Response) {
 
     // 【2026-01-20 秒杀系统】支持秒杀商品
     // 【2026-01-21 顺路拼团】支持区域信息
+    // 【2026-01-29修复】支持砍价商品
     const result = await createReservation({
       customerName,
       customerPhone,
       pickupDate,
-      items,
+      items: items || undefined,  // 【2026-01-29修复】items改为可选
       flashSaleItems: flashSaleItems || undefined,  // 传递秒杀商品
+      bargainItems: bargainItems || undefined,      // 【2026-01-29修复】传递砍价商品
       salespersonId,
       storeId,
       remark,

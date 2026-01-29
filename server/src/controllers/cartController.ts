@@ -32,6 +32,11 @@ export async function getCartList(req: Request, res: Response) {
         selected: item.selected,
         // 【2026-01-26】添加特价商品标识
         isSpecialPrice: item.isSpecialPrice || false,
+        // 【2026-01-29修复】添加砍价商品字段
+        isBargainItem: item.isBargainItem || false,
+        bargainId: item.bargainId || null,
+        bargainCode: item.bargainCode || null,
+        bargainPrice: item.isBargainItem ? item.price : null,  // 砍价商品的价格就是砍后价
         product: {
           id: item.productId,
           name: item.name,

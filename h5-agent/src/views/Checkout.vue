@@ -25,6 +25,11 @@ interface CartItem {
   id: number
   productId: number
   quantity: number
+  // 【2026-01-29修复】添加砍价商品字段
+  isBargainItem?: boolean
+  bargainId?: number | null
+  bargainCode?: string | null
+  bargainPrice?: number | null
   product: {
     id: number
     name: string
@@ -402,10 +407,16 @@ const loadSelectedItems = async () => {
       hasSpecialPriceItems.value = rawItems.some((item: any) => item.isSpecialPrice)
 
       // 转换为 CartItem 格式（selected=true时返回的数据已经包含product嵌套结构）
+      // 【2026-01-29修复】保留砍价商品信息
       cartItems.value = rawItems.filter((item: any) => item.quantity > 0).map((item: any) => ({
         id: item.id,
         productId: item.productId,
         quantity: item.quantity,
+        // 【2026-01-29修复】砍价商品字段
+        isBargainItem: item.isBargainItem || false,
+        bargainId: item.bargainId || null,
+        bargainCode: item.bargainCode || null,
+        bargainPrice: item.bargainPrice || null,
         product: item.product || {
           id: item.productId,
           name: item.name,
@@ -466,10 +477,18 @@ const submitReservation = async () => {
 
   submitting.value = true
   try {
-    const items = cartItems.value.map(item => ({
-      productId: item.productId,
-      quantity: item.quantity
-    }))
+    // 【2026-01-29修复】提取砍价商品，构建 bargainItems 数组
+    const bargainItems: Array<{ bargainCode: string }> = cartItems.value
+      .filter(item => item.isBargainItem && item.bargainCode)
+      .map(item => ({ bargainCode: item.bargainCode! }))
+
+    // 【2026-01-29修复】普通商品（排除砍价商品）
+    const items = cartItems.value
+      .filter(item => !item.isBargainItem)
+      .map(item => ({
+        productId: item.productId,
+        quantity: item.quantity
+      }))
 
     // 【2026-01-20 秒杀系统】构建秒杀商品列表
     const flashItems: Array<{ flashSaleItemId: number; quantity: number }> = []
@@ -484,7 +503,8 @@ const submitReservation = async () => {
     // 访客模式使用shop API
     if (isGuestMode.value && salespersonId.value) {
       const res = await post<{ id: number; reservationNo: string }>('/shop/reservations', {
-        items,
+        items: items.length > 0 ? items : undefined,  // 【2026-01-29修复】可能没有普通商品
+        bargainItems: bargainItems.length > 0 ? bargainItems : undefined,  // 【2026-01-29修复】砍价商品
         flashSaleItems: flashItems.length > 0 ? flashItems : undefined,  // 【2026-01-20】秒杀商品
         customerName: name,
         customerPhone: phone,
@@ -500,7 +520,8 @@ const submitReservation = async () => {
       cartStore.clearGuestCart()
     } else {
       const res = await post<{ id: number; reservationNo: string }>('/reservations', {
-        items,
+        items: items.length > 0 ? items : undefined,  // 【2026-01-29修复】可能没有普通商品
+        bargainItems: bargainItems.length > 0 ? bargainItems : undefined,  // 【2026-01-29修复】砍价商品
         flashSaleItems: flashItems.length > 0 ? flashItems : undefined,  // 【2026-01-20】秒杀商品
         customerName: name,
         customerPhone: phone,

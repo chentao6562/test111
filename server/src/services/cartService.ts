@@ -74,6 +74,22 @@ export async function getCartItems(agentId: number, salespersonId?: number) {
     }
   }
 
+  // 【2026-01-29修复】查询砍价商品的bargainCode，用于预约时传递
+  const bargainIds = items
+    .filter(item => item.isBargainItem && item.bargainId)
+    .map(item => item.bargainId!);
+
+  let bargainCodeMap = new Map<number, string>();
+  if (bargainIds.length > 0) {
+    const bargains = await prisma.bargain.findMany({
+      where: { id: { in: bargainIds } },
+      select: { id: true, code: true },
+    });
+    for (const b of bargains) {
+      bargainCodeMap.set(b.id, b.code);
+    }
+  }
+
   return items.map((item) => {
     const product = item.product;
 
@@ -95,6 +111,7 @@ export async function getCartItems(agentId: number, salespersonId?: number) {
     // 【2026-01-23】砍价商品使用砍价后的价格
     if ((item as any).isBargainItem && (item as any).bargainPrice !== null) {
       const bargainPrice = Number((item as any).bargainPrice);
+      const bargainId = (item as any).bargainId;
 
       return {
         id: item.id,
@@ -111,7 +128,9 @@ export async function getCartItems(agentId: number, salespersonId?: number) {
         specs: product.specs,
         // 【2026-01-23】砍价商品标识
         isBargainItem: true,
-        bargainId: (item as any).bargainId,
+        bargainId: bargainId,
+        // 【2026-01-29修复】添加砍价码用于预约时传递
+        bargainCode: bargainId ? bargainCodeMap.get(bargainId) || null : null,
         // 【2026-01-26】特价商品标识
         isSpecialPrice: product.isSpecialPrice || false,
       };
@@ -152,6 +171,7 @@ export async function getCartItems(agentId: number, salespersonId?: number) {
       // 【2026-01-23】普通商品标识
       isBargainItem: false,
       bargainId: null,
+      bargainCode: null,  // 【2026-01-29修复】保持数据结构一致
       // 【2026-01-26】特价商品标识
       isSpecialPrice: product.isSpecialPrice || false,
     };

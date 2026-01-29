@@ -105,13 +105,16 @@ export async function createReservation(input: CreateReservationInput): Promise<
     };
   }
 
-  // 3. 验证商品和库存
-  const productIds = items.map(item => item.productId);
-  const products = await prisma.product.findMany({
-    where: { id: { in: productIds } },
-  });
+  // 【2026-01-29修复】支持只有砍价商品的预约（items可能为空）
+  const safeItems = items || [];
 
-  if (products.length !== productIds.length) {
+  // 3. 验证商品和库存（如果有普通商品）
+  const productIds = safeItems.map(item => item.productId);
+  const products = productIds.length > 0
+    ? await prisma.product.findMany({ where: { id: { in: productIds } } })
+    : [];
+
+  if (productIds.length > 0 && products.length !== productIds.length) {
     return {
       success: false,
       message: '部分商品不存在',
@@ -121,7 +124,7 @@ export async function createReservation(input: CreateReservationInput): Promise<
   // 检查库存
   // 【2026-01-22 安全修复】添加库存非负检查和数据异常处理
   // 【2026-01-27 BUG修复】添加数量必须大于0的验证
-  for (const item of items) {
+  for (const item of safeItems) {
     // 【2026-01-27】验证数量必须大于0
     if (!item.quantity || item.quantity <= 0) {
       return {
@@ -330,7 +333,7 @@ export async function createReservation(input: CreateReservationInput): Promise<
 
     // 【2026-01-22 BUG修复】检查商品价格，允许降级到供货价
     // 如果一级未设置subPrice，使用商品的supplyPrice作为二级的拿货价
-    for (const item of items) {
+    for (const item of safeItems) {
       const subPrice = level1Prices.get(item.productId);
       if (subPrice === null || subPrice === undefined) {
         const product = products.find(p => p.id === item.productId);
@@ -354,7 +357,7 @@ export async function createReservation(input: CreateReservationInput): Promise<
   // 【安全】价格从数据库获取，不使用前端传入的price
   let totalAmount = 0;
   let giftEligibleAmount = 0; // 【2026-01-26】赠品计算金额（排除特价商品）
-  const reservationItems = items.map(item => {
+  const reservationItems = safeItems.map(item => {
     const product = products.find(p => p.id === item.productId)!;
 
     // 【2026-01-19修复】获取零售价的优先级：
@@ -524,7 +527,7 @@ export async function createReservation(input: CreateReservationInput): Promise<
 
       // 【并发安全】使用原子操作锁定库存，同时检查库存是否足够
       // 使用 $executeRaw 执行原子 UPDATE，只有当库存足够时才更新
-      for (const item of items) {
+      for (const item of safeItems) {
         const product = products.find(p => p.id === item.productId)!;
         const requiredStock = item.quantity;
 
