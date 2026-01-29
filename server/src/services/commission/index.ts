@@ -31,6 +31,7 @@ export {
   getCommissionRecords,
   getPromotionData,
   getInviteRecords,
+  getCommissionRecordDetailForAgent, // 【2026-01-29】H5端分润详情
 } from './commissionCenterService';
 
 // 提现服务
@@ -65,7 +66,7 @@ export {
 
 // 默认导出（保持向后兼容）
 import { calculateCommission, rollbackCommission } from './commissionCalculator';
-import { getCommissionCenter, getCommissionRecords, getPromotionData, getInviteRecords } from './commissionCenterService';
+import { getCommissionCenter, getCommissionRecords, getPromotionData, getInviteRecords, getCommissionRecordDetailForAgent } from './commissionCenterService';
 import { createWithdrawal, getAgentWithdrawals, getWithdrawals, getWithdrawalDetail, reviewWithdrawal, completeWithdrawal } from './withdrawalService';
 import { getTeamStats, getTeamMembers } from './teamService';
 import { getRules, createRule, updateRule, deleteRule, getAdminCommissionRecords, settleCommissions, settleCommissionsByDate, getCommissionStatistics, getCommissionRecordDetail } from './commissionRuleService';
@@ -74,6 +75,7 @@ export default {
   calculateCommission,
   getCommissionCenter,
   getCommissionRecords,
+  getCommissionRecordDetailForAgent, // 【2026-01-29】H5端分润详情
   createWithdrawal,
   getAgentWithdrawals,
   getTeamStats,

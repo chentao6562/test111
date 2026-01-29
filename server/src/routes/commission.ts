@@ -5,6 +5,7 @@ import { withdrawRateLimiter } from '../middlewares/rateLimit';
 import {
   getCommissionCenter,
   getCommissionRecords,
+  getCommissionRecordDetailForAgent, // 【2026-01-29】H5端分润详情
   createWithdrawal,
   getAgentWithdrawals,
   getTeamStats,
@@ -28,6 +29,9 @@ router.get('/center', getCommissionCenter);
 
 // 获取分润记录列表
 router.get('/records', getCommissionRecords);
+
+// 【2026-01-29】获取分润记录详情（H5端）
+router.get('/records/:id', getCommissionRecordDetailForAgent);
 
 // 提现申请（关键操作，添加防重放保护和提现速率限制）
 router.post('/withdraw', withdrawRateLimiter, criticalOperationGuard, createWithdrawal);

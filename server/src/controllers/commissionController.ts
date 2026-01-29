@@ -184,6 +184,36 @@ export async function getInviteRecords(req: Request, res: Response) {
   }
 }
 
+/**
+ * 【2026-01-29】H5端：获取分润记录详情
+ * 用于推销员查看单条分润的详细信息，包括订单、商品、利润分配
+ */
+export async function getCommissionRecordDetailForAgent(req: Request, res: Response) {
+  try {
+    const agentId = (req as any).user?.id;
+    if (!agentId) {
+      return error(res, '请先登录', 401);
+    }
+
+    const { id } = req.params;
+    const recordId = parseInt(id);
+
+    if (isNaN(recordId) || recordId <= 0) {
+      return error(res, '无效的记录ID', 422);
+    }
+
+    const data = await commissionService.getCommissionRecordDetailForAgent(recordId, agentId);
+    if (!data) {
+      return error(res, '分润记录不存在或无权查看', 404);
+    }
+
+    return success(res, data);
+  } catch (err: any) {
+    console.error('获取分润记录详情失败:', err);
+    return error(res, err.message || '获取分润记录详情失败');
+  }
+}
+
 // ==================== 管理后台 API ====================
 
 /**
@@ -585,6 +615,7 @@ export default {
   // 代理商端
   getCommissionCenter,
   getCommissionRecords,
+  getCommissionRecordDetailForAgent, // 【2026-01-29】H5端分润详情
   createWithdrawal,
   getAgentWithdrawals,
   getTeamStats,

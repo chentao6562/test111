@@ -101,6 +101,15 @@ const loadMore = () => {
   loadRecords()
 }
 
+// 【2026-01-29】提现按钮点击处理（支持禁用状态提示）
+const handleWithdrawClick = () => {
+  if (!summary.value || summary.value.withdrawableAmount < 100) {
+    Toast({ message: '最低提现金额100元，当前余额不足', theme: 'warning' })
+    return
+  }
+  applyWithdraw()
+}
+
 // 申请提现【2026-01-17 预约模式适配】
 const applyWithdraw = () => {
   if (!summary.value || summary.value.withdrawableAmount < 100) {
@@ -136,6 +145,11 @@ const goBack = () => {
   router.back()
 }
 
+// 【2026-01-29】跳转分润详情
+const goToDetail = (recordId: number) => {
+  router.push(`/commission/${recordId}`)
+}
+
 onMounted(() => {
   loadSummary()
   loadRecords()
@@ -166,8 +180,8 @@ onMounted(() => {
             theme="primary"
             size="small"
             shape="round"
-            :disabled="summary.withdrawableAmount < 100"
-            @click="applyWithdraw"
+            :class="{ 'btn-disabled': summary.withdrawableAmount < 100 }"
+            @click="handleWithdrawClick"
           >
             申请提现
           </t-button>
@@ -211,9 +225,9 @@ onMounted(() => {
         <p>暂无分润记录</p>
       </div>
 
-      <!-- 记录列表【2026-01-17 预约模式适配】 -->
+      <!-- 记录列表【2026-01-17 预约模式适配】【2026-01-29 增加点击跳转详情】 -->
       <div class="records-list" v-else>
-        <div class="record-item" v-for="record in records" :key="record.id">
+        <div class="record-item" v-for="record in records" :key="record.id" @click="goToDetail(record.id)">
           <div class="record-left">
             <div class="record-type">
               {{ typeMap[record.type] || record.type }}
@@ -232,6 +246,7 @@ onMounted(() => {
             >
               {{ statusMap[record.status]?.text || record.status }}
             </div>
+            <t-icon name="chevron-right" size="16px" class="record-arrow" />
           </div>
         </div>
 
@@ -310,6 +325,11 @@ onMounted(() => {
   font-size: 36px;
   font-weight: 600;
   margin-bottom: 16px;
+}
+
+/* 【2026-01-29】禁用按钮样式（保持可点击但显示提示） */
+.btn-disabled {
+  opacity: 0.6 !important;
 }
 
 .summary-stats {
@@ -391,8 +411,15 @@ onMounted(() => {
 .record-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 16px 0;
   border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.record-item:active {
+  background-color: #f9f9f9;
 }
 
 .record-item:last-child {
@@ -421,6 +448,15 @@ onMounted(() => {
 
 .record-right {
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.record-arrow {
+  color: #ccc;
+  margin-top: 4px;
 }
 
 .record-amount {

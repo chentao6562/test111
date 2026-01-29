@@ -269,3 +269,106 @@ function getTypeLabel(type: string) {
   };
   return labels[type] || '推销员';
 }
+
+/**
+ * 【2026-01-29】H5端：获取分润记录详情
+ * 复用管理后台详情逻辑，增加推销员权限校验和客户手机号脱敏
+ */
+export async function getCommissionRecordDetailForAgent(recordId: number, agentId: number) {
+  // 1. 先验证该记录是否属于当前推销员
+  const fundFlow = await prisma.fundFlow.findFirst({
+    where: {
+      id: recordId,
+      agentId, // 关键：只能查看自己的记录
+      type: 'PROFIT',
+    },
+  });
+
+  if (!fundFlow) {
+    return null;
+  }
+
+  // 2. 获取关联预约的完整详情
+  if (fundFlow.relatedType !== 'RESERVATION' || !fundFlow.relatedId) {
+    // 非预约类型的利润记录，返回基础信息
+    return {
+      id: fundFlow.id,
+      type: 'PROFIT',
+      amount: Number(fundFlow.amount),
+      status: 'settled',
+      createdAt: fundFlow.createdAt,
+      remark: fundFlow.remark,
+      reservation: null,
+    };
+  }
+
+  // 3. 获取预约详情
+  const reservation = await prisma.reservation.findUnique({
+    where: { id: fundFlow.relatedId },
+    include: {
+      items: true,
+      store: { select: { id: true, name: true } },
+    },
+  });
+
+  if (!reservation) {
+    return {
+      id: fundFlow.id,
+      type: 'PROFIT',
+      amount: Number(fundFlow.amount),
+      status: 'settled',
+      createdAt: fundFlow.createdAt,
+      remark: fundFlow.remark,
+      reservation: null,
+    };
+  }
+
+  // 4. 构建详情数据（对客户手机号脱敏）
+  const amount = Number(fundFlow.amount);
+  const totalAmount = Number(reservation.totalAmount);
+
+  return {
+    id: fundFlow.id,
+    type: 'PROFIT',
+    amount,
+    rate: totalAmount > 0 ? Math.round((amount / totalAmount) * 10000) / 100 : 0,
+    status: 'settled',
+    createdAt: fundFlow.createdAt,
+    remark: fundFlow.remark,
+    reservation: {
+      id: reservation.id,
+      reservationNo: reservation.reservationNo,
+      customerName: reservation.customerName,
+      // 客户手机号脱敏：138****1234
+      customerPhone: reservation.customerPhone?.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') || '',
+      pickupDate: reservation.pickupDate,
+      totalAmount,
+      status: reservation.status,
+      completedAt: reservation.completedAt,
+      storeName: reservation.store?.name || '蒙庆烟花',
+      // 利润分配
+      profitDistribution: {
+        masterProfit: Number(reservation.masterProfit || 0),
+        level1Profit: Number(reservation.level1Profit || 0),
+        level2Profit: Number(reservation.level2Profit || 0),
+        totalProfit: Number(reservation.masterProfit || 0) + Number(reservation.level1Profit || 0) + Number(reservation.level2Profit || 0),
+      },
+      // 商品明细
+      items: reservation.items.map(item => ({
+        productId: item.productId,
+        productName: item.productName,
+        productImage: item.productImage,
+        quantity: item.quantity,
+        price: Number(item.price),
+        subtotal: Number(item.price) * item.quantity,
+        // 价格快照（成本分析）
+        priceSnapshot: {
+          costPrice: Number(item.snapshotCostPrice || 0),
+          supplyPrice: Number(item.snapshotSupplyPrice || 0),
+          level1Price: item.snapshotLevel1Price ? Number(item.snapshotLevel1Price) : null,
+          retailPrice: Number(item.snapshotRetailPrice || item.price),
+        },
+      })),
+    },
+  };
+}

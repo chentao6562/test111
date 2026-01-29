@@ -77,6 +77,13 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '分润中心', requiresAuth: true }
   },
   {
+    // 【2026-01-29】分润详情页
+    path: '/commission/:id',
+    name: 'CommissionDetail',
+    component: () => import('../views/CommissionDetail.vue'),
+    meta: { title: '分润详情', requiresAuth: true }
+  },
+  {
     path: '/team',
     name: 'Team',
     component: () => import('../views/Team.vue'),

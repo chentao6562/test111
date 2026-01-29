@@ -26,10 +26,12 @@ const route = useRoute()
 const userStore = useUserStore()
 
 // 状态Tab（value 为 number 或 number 数组，title为对应的页面标题）
+// 【2026-01-29修改】Tab从4个改为5个：全部、待确认、已确认、可提货、已完成
 const statusTabs: Array<{ label: string; value?: number | number[]; title: string }> = [
   { label: '全部', value: undefined, title: '我的预约' },
   { label: '待确认', value: 0, title: '待确认预约' },
-  { label: '处理中', value: [2, 7, 8, 9], title: '处理中预约' },
+  { label: '已确认', value: 2, title: '已确认预约' },
+  { label: '可提货', value: 9, title: '可提货预约' },
   { label: '已完成', value: 3, title: '已完成预约' },
 ]
 const activeTab = ref(0)
