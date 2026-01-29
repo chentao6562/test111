@@ -62,8 +62,12 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
     img.onerror = reject
-    // 添加时间戳避免缓存问题
-    img.src = src.includes('?') ? src : `${src}?t=${Date.now()}`
+    // Data URL 不需要添加时间戳，普通URL添加时间戳避免缓存问题
+    if (src.startsWith('data:')) {
+      img.src = src
+    } else {
+      img.src = src.includes('?') ? src : `${src}?t=${Date.now()}`
+    }
   })
 }
 

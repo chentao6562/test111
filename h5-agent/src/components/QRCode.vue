@@ -37,9 +37,18 @@ const generateQRCode = async () => {
   }
 }
 
-// 暴露canvas引用供父组件使用
+// 获取二维码图片的DataURL
+const getDataUrl = (): string => {
+  if (canvas.value) {
+    return canvas.value.toDataURL('image/png')
+  }
+  return ''
+}
+
+// 暴露canvas引用和获取DataURL的方法供父组件使用
 defineExpose({
-  canvas
+  canvas,
+  getDataUrl
 })
 
 onMounted(generateQRCode)

@@ -78,6 +78,7 @@ const getProductImage = (product: ProductItem): string => {
 const openPosterDialog = (product: ProductItem) => {
   selectedProduct.value = product
   posterDataUrl.value = ''
+  posterQrDataUrl.value = ''  // 重置二维码，等待重新生成
   posterDialogVisible.value = true
 }
 
