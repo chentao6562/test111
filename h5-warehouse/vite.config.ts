@@ -37,7 +37,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://39.104.58.26',
+        target: 'http://39.104.113.121',
         changeOrigin: true
       }
     }
