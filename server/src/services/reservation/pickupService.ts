@@ -207,8 +207,12 @@ export async function completePickup(
   // 【2026-01-17 库存检查移到事务中使用行级锁，见下方事务内的检查】
 
   // 获取赠品成本（从GiftTier表获取）
+  // 【2026-01-29】自购订单不发放赠品（没有利润承担赠品成本）
   let giftCost = 0;
-  if (reservation.giftTierId) {
+  if (reservation.isSelfPurchase) {
+    console.log(`[pickupService] 自购订单${reservation.reservationNo}，跳过赠品发放`);
+    // 自购订单giftCost保持为0，不发放赠品
+  } else if (reservation.giftTierId) {
     const giftTier = await prisma.giftTier.findUnique({
       where: { id: reservation.giftTierId },
       select: { giftCost: true },
@@ -218,11 +222,13 @@ export async function completePickup(
 
   // 【2026-01-21 拼团到店】获取拼团信息（用于赠品成本扣除）
   // 【改进】每个成员核销时各自承担自己的那份赠品成本，而非最后一人承担全部
+  // 【2026-01-29】自购订单不获取拼团赠品
   let groupBuyInfo: Awaited<ReturnType<typeof getGroupBuyByReservation>> = null;
   let groupBuyBonusCost = 0;
   const groupBuyEnabled = await getConfigValue('group_buy_enabled');
 
-  if (groupBuyEnabled === 'true') {
+  // 【2026-01-29】自购订单不获取拼团赠品
+  if (groupBuyEnabled === 'true' && !reservation.isSelfPurchase) {
     try {
       groupBuyInfo = await getGroupBuyByReservation(reservationId);
       if (groupBuyInfo) {
@@ -394,7 +400,8 @@ export async function completePickup(
         completedAt: new Date(),
         completedBy: staffId,
         paymentMethod,
-        giftDelivered: deliverGift && !!reservation.giftName,
+        // 【2026-01-29】自购订单不发放赠品
+        giftDelivered: deliverGift && !!reservation.giftName && !reservation.isSelfPurchase,
         // 保存利润分配
         masterProfit: totalMasterProfit,
         level1Profit: totalLevel1Profit,
@@ -610,8 +617,9 @@ export async function completePickup(
       details: {
         paymentMethod,
         totalAmount: Number(reservation.totalAmount),
-        giftDelivered: deliverGift && !!reservation.giftName,
-        giftName: reservation.giftName,
+        // 【2026-01-29】自购订单不发放赠品
+        giftDelivered: deliverGift && !!reservation.giftName && !reservation.isSelfPurchase,
+        giftName: reservation.isSelfPurchase ? null : reservation.giftName,
         profitDistribution: {
           masterProfit: totalMasterProfit,
           level1Profit: totalLevel1Profit,
@@ -676,8 +684,9 @@ export async function completePickup(
       reservationNo: reservation.reservationNo,
       totalAmount,
       paymentMethod,
-      giftDelivered: deliverGift && !!reservation.giftName,
-      giftName: reservation.giftName,
+      // 【2026-01-29】自购订单不发放赠品
+      giftDelivered: deliverGift && !!reservation.giftName && !reservation.isSelfPurchase,
+      giftName: reservation.isSelfPurchase ? null : reservation.giftName,
       // 返回利润信息
       profitSettled: true,
       masterProfit: totalMasterProfit,
