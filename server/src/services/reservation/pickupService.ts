@@ -196,7 +196,11 @@ export async function completePickup(
   }
 
   // 【2026-01-17】支持状态2（已确认）和状态9（待提货）核销
+  // 【2026-01-29修复】优化错误提示，区分已核销和其他状态
   if (!isPickupableStatus(reservation.status)) {
+    if (reservation.status === ReservationStatus.COMPLETED) {
+      return { success: false, message: '该订单已核销完成，无需重复操作' };
+    }
     return { success: false, message: '当前状态不可核销' };
   }
 

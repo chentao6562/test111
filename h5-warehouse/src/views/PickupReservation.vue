@@ -755,8 +755,13 @@ async function handleComplete() {
 
     // 刷新统计
     loadTodayStats()
-  } catch (error) {
+  } catch (error: any) {
     console.error('核销失败:', error)
+    // 【2026-01-29修复】添加错误提示，避免用户无感知
+    Toast({
+      message: error?.message || '核销失败，请稍后重试',
+      theme: 'error'
+    })
   } finally {
     completing.value = false
   }
