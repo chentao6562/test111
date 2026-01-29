@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Toast } from 'tdesign-mobile-vue'
-import { get } from '../api'
+import { get, getOptimizedImageUrl } from '../api'
 import { useUserStore } from '../stores/user'
 import QRCodeComponent from '../components/QRCode.vue'
 import { generateProductPoster, downloadPoster } from '../utils/posterGenerator'
@@ -16,12 +16,26 @@ const userStore = useUserStore()
 // 当前Tab
 const activeTab = ref('poster')
 
-// 用户ID
-const userId = computed(() => userStore.userInfo?.id)
-const userName = computed(() => userStore.userInfo?.name || '推销员')
+// 推销员信息（用于二维码和海报）
+const currentSalespersonId = computed(() => userStore.currentSalespersonId)
+const userName = computed(() => {
+  // 优先使用扫码绑定的推销员名称
+  if (userStore.salespersonInfo?.name) {
+    return userStore.salespersonInfo.name
+  }
+  return userStore.userInfo?.name || '推销员'
+})
+// 是否可以生成海报（需要有推销员ID）
+const canGeneratePoster = computed(() => !!currentSalespersonId.value)
 
 // 基础URL（用于模板中）
 const baseUrl = computed(() => typeof window !== 'undefined' ? window.location.origin : '')
+
+// 二维码内容（包含推销员ID）
+const qrContent = computed(() => {
+  if (!currentSalespersonId.value) return ''
+  return `${baseUrl.value}/?s=${currentSalespersonId.value}`
+})
 
 // ============ 商品海报 ============
 interface ProductItem {
@@ -46,7 +60,7 @@ const posterTemplate = ref<'red' | 'gold' | 'simple'>('red')
 const loadProducts = async () => {
   productsLoading.value = true
   try {
-    const res = await get<any>('/shop/products', { s: userId.value, pageSize: 50 })
+    const res = await get<any>('/shop/products', { s: currentSalespersonId.value, pageSize: 50 })
     products.value = res.data?.list || []
   } catch (error) {
     Toast({ message: '加载商品失败', theme: 'error' })
@@ -55,14 +69,9 @@ const loadProducts = async () => {
   }
 }
 
-// 获取商品图片
+// 获取商品图片（使用优化后的URL）
 const getProductImage = (product: ProductItem): string => {
-  try {
-    const images = typeof product.images === 'string' ? JSON.parse(product.images) : product.images
-    return Array.isArray(images) && images.length > 0 ? images[0] : ''
-  } catch {
-    return typeof product.images === 'string' ? product.images : ''
-  }
+  return getOptimizedImageUrl(product.images, 'medium')
 }
 
 // 打开海报生成弹窗
@@ -85,6 +94,10 @@ const onPosterQrReady = () => {
 
 // 生成海报
 const generatePoster = async () => {
+  if (!canGeneratePoster.value) {
+    Toast({ message: '请先登录后再生成海报', theme: 'warning' })
+    return
+  }
   if (!selectedProduct.value || !posterQrDataUrl.value) {
     Toast({ message: '请等待二维码生成', theme: 'warning' })
     return
@@ -432,12 +445,19 @@ onMounted(() => {
         </div>
 
         <div class="dialog-content">
+          <!-- 未登录提示 -->
+          <div v-if="!canGeneratePoster" class="login-tip">
+            <t-icon name="info-circle" size="24px" />
+            <p>请先登录后再生成海报</p>
+            <t-button size="small" theme="primary" @click="router.push('/login')">去登录</t-button>
+          </div>
+
           <!-- 隐藏的二维码组件用于生成 -->
-          <div style="position: absolute; left: -9999px;">
+          <div v-if="canGeneratePoster" style="position: absolute; left: -9999px;">
             <QRCodeComponent
               v-if="selectedProduct"
               ref="posterQrRef"
-              :content="`${baseUrl}/?s=${userId}`"
+              :content="qrContent"
               :size="200"
               @ready="onPosterQrReady"
             />
@@ -995,6 +1015,22 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* 未登录提示 */
+.login-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #666;
+  text-align: center;
+}
+
+.login-tip p {
+  margin: 12px 0;
+  font-size: 14px;
 }
 
 /* 素材预览弹窗 */
