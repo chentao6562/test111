@@ -842,9 +842,14 @@ export async function createPackageReservation(input: CreatePackageReservationIn
   }
   const reservationNo = `${prefix}${seq.toString().padStart(5, '0')}`;
 
-  // 6. 计算套餐价格（根据用户类型使用不同价格）
-  // 【2026-01-26修复】代理商应显示拿货价，普通客户显示零售价
+  // 6. 计算套餐价格（与普通商品保持一致的定价逻辑）
+  // 【2026-01-29修复】统一定价逻辑：
+  //   1. 优先使用推销员设置的 retailPrice（零售价）
+  //   2. 二级没设置 retailPrice 时，使用一级给的 subPrice
+  //   3. 最后才使用套餐建议零售价 masterRetailPrice
+  // 【2026-01-29修复】保存snapshotLevel1Price用于分润计算
   let totalAmount = Number(pkg.masterRetailPrice);
+  let snapshotLevel1Price: number | null = null; // 一级给二级的价格快照
 
   if (salespersonId) {
     const salesperson = await prisma.agent.findUnique({
@@ -853,11 +858,34 @@ export async function createPackageReservation(input: CreatePackageReservationIn
     });
 
     if (salesperson) {
-      if (salesperson.isMaster || salesperson.type === 'LEVEL1') {
-        // 总代理或一级推销员：使用供货价
-        totalAmount = Number(pkg.supplyPrice);
+      // 查询推销员对此套餐的定价
+      const agentPrice = await prisma.packageAgentPrice.findUnique({
+        where: {
+          packageId_agentId: {
+            packageId,
+            agentId: salespersonId,
+          },
+        },
+      });
+
+      if (salesperson.isMaster) {
+        // 总代理直销：使用建议零售价
+        totalAmount = Number(pkg.masterRetailPrice);
+      } else if (salesperson.type === 'LEVEL1') {
+        // 一级推销员：优先使用自己设置的零售价
+        if (agentPrice?.retailPrice) {
+          totalAmount = Number(agentPrice.retailPrice);
+        } else {
+          // 未设置零售价，使用建议零售价
+          totalAmount = Number(pkg.masterRetailPrice);
+        }
+        // 记录一级设置的subPrice（用于二级分润计算）
+        if (agentPrice?.subPrice) {
+          snapshotLevel1Price = Number(agentPrice.subPrice);
+        }
       } else if (salesperson.type === 'LEVEL2' && salesperson.parentId) {
-        // 二级推销员：使用一级给的价格
+        // 二级推销员
+        // 先获取一级给二级的价格
         const parentPrice = await prisma.packageAgentPrice.findUnique({
           where: {
             packageId_agentId: {
@@ -866,11 +894,26 @@ export async function createPackageReservation(input: CreatePackageReservationIn
             },
           },
         });
+
+        // 保存一级给二级的价格（用于分润计算）
         if (parentPrice?.subPrice) {
+          snapshotLevel1Price = Number(parentPrice.subPrice);
+        } else {
+          // 一级没设置subPrice，降级使用供货价
+          snapshotLevel1Price = Number(pkg.supplyPrice);
+          console.log(`[packageService] 套餐${packageId}一级未设置subPrice，降级使用供货价${pkg.supplyPrice}`);
+        }
+
+        // 计算零售价（优先级：二级retailPrice > 一级subPrice > 建议零售价）
+        if (agentPrice?.retailPrice) {
+          // 二级自己设置了零售价
+          totalAmount = Number(agentPrice.retailPrice);
+        } else if (parentPrice?.subPrice) {
+          // 二级没设置零售价，使用一级给的subPrice
           totalAmount = Number(parentPrice.subPrice);
         } else {
-          // 如果一级没设置给二级的价，使用供货价
-          totalAmount = Number(pkg.supplyPrice);
+          // 都没设置，使用建议零售价
+          totalAmount = Number(pkg.masterRetailPrice);
         }
       }
     }
@@ -915,6 +958,9 @@ export async function createPackageReservation(input: CreatePackageReservationIn
       price: Number(item.snapshotRetailPrice || item.product.retailPrice),
     })));
 
+    // 【2026-01-29修复】保存完整的价格快照用于分润计算
+    // snapshotRetailPrice 应为实际成交价格（而非建议零售价）
+    // snapshotLevel1Price 用于二级推销员订单的一级利润计算
     await tx.reservationItem.create({
       data: {
         reservationId: reservation.id,
@@ -925,7 +971,8 @@ export async function createPackageReservation(input: CreatePackageReservationIn
         price: totalAmount,
         snapshotCostPrice: pkg.costPrice,
         snapshotSupplyPrice: pkg.supplyPrice,
-        snapshotRetailPrice: pkg.masterRetailPrice,
+        snapshotLevel1Price: snapshotLevel1Price, // 【2026-01-29】一级给二级的价格
+        snapshotRetailPrice: totalAmount, // 【2026-01-29修复】使用实际成交价格
         isPackage: true,
         packageId: pkg.id,
         packageName: pkg.name,
