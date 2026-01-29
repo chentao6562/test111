@@ -66,6 +66,13 @@ const router = createRouter({
     {
       path: '/pickup-reservation',
       name: 'PickupReservation',
+      component: () => import('@/views/PickupReservationNew.vue'),
+      meta: { requiresAuth: true }
+    },
+    // 【2026-01-29】旧版核销页面备份
+    {
+      path: '/pickup-reservation-old',
+      name: 'PickupReservationOld',
       component: () => import('@/views/PickupReservation.vue'),
       meta: { requiresAuth: true }
     },

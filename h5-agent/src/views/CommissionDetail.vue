@@ -12,12 +12,11 @@ import { get, getOptimizedImageUrl } from '../api'
 const router = useRouter()
 const route = useRoute()
 
-// 详情数据类型
+// 详情数据类型（只显示本级相关价格）
 interface PriceSnapshot {
-  costPrice: number
-  supplyPrice: number
-  level1Price: number | null
-  retailPrice: number
+  myCostPrice: number    // 我的拿货价（根据层级动态返回）
+  retailPrice: number    // 零售价
+  unitProfit: number     // 单件利润
 }
 
 interface ProductItem {
@@ -30,13 +29,6 @@ interface ProductItem {
   priceSnapshot: PriceSnapshot
 }
 
-interface ProfitDistribution {
-  masterProfit: number
-  level1Profit: number
-  level2Profit: number
-  totalProfit: number
-}
-
 interface ReservationDetail {
   id: number
   reservationNo: string
@@ -47,7 +39,6 @@ interface ReservationDetail {
   status: number
   completedAt: string
   storeName: string
-  profitDistribution: ProfitDistribution
   items: ProductItem[]
 }
 
@@ -178,28 +169,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- 利润分配 -->
-      <div class="section-card" v-if="detail.reservation?.profitDistribution">
-        <div class="section-title">利润分配</div>
-        <div class="profit-grid">
-          <div class="profit-item">
-            <div class="profit-item-value">{{ formatPrice(detail.reservation.profitDistribution.masterProfit) }}</div>
-            <div class="profit-item-label">总代利润</div>
-          </div>
-          <div class="profit-item">
-            <div class="profit-item-value">{{ formatPrice(detail.reservation.profitDistribution.level1Profit) }}</div>
-            <div class="profit-item-label">一级利润</div>
-          </div>
-          <div class="profit-item">
-            <div class="profit-item-value">{{ formatPrice(detail.reservation.profitDistribution.level2Profit) }}</div>
-            <div class="profit-item-label">二级利润</div>
-          </div>
-        </div>
-        <div class="profit-total">
-          总利润：{{ formatPrice(detail.reservation.profitDistribution.totalProfit) }}
-        </div>
-      </div>
-
       <!-- 商品明细 -->
       <div class="section-card" v-if="detail.reservation?.items && detail.reservation.items.length > 0">
         <div class="section-title">商品明细 (共{{ totalItemCount }}件)</div>
@@ -221,15 +190,13 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <!-- 价格快照 -->
+            <!-- 价格快照（只显示本级相关价格） -->
             <div class="price-snapshot">
-              <span class="snapshot-item">成本 {{ formatPrice(item.priceSnapshot.costPrice) }}</span>
+              <span class="snapshot-item">拿货价 {{ formatPrice(item.priceSnapshot.myCostPrice) }}</span>
               <span class="snapshot-divider">|</span>
-              <span class="snapshot-item">供货 {{ formatPrice(item.priceSnapshot.supplyPrice) }}</span>
-              <span class="snapshot-divider" v-if="item.priceSnapshot.level1Price">|</span>
-              <span class="snapshot-item" v-if="item.priceSnapshot.level1Price">给二级 {{ formatPrice(item.priceSnapshot.level1Price) }}</span>
+              <span class="snapshot-item">零售价 {{ formatPrice(item.priceSnapshot.retailPrice) }}</span>
               <span class="snapshot-divider">|</span>
-              <span class="snapshot-item">零售 {{ formatPrice(item.priceSnapshot.retailPrice) }}</span>
+              <span class="snapshot-item profit-highlight">单件利润 {{ formatPrice(item.priceSnapshot.unitProfit) }}</span>
             </div>
           </div>
         </div>
@@ -367,41 +334,6 @@ onMounted(() => {
   font-weight: 600;
 }
 
-/* 利润分配 */
-.profit-grid {
-  display: flex;
-  padding: 16px;
-  gap: 8px;
-}
-
-.profit-item {
-  flex: 1;
-  text-align: center;
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 12px 8px;
-}
-
-.profit-item-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #E53935;
-  margin-bottom: 4px;
-}
-
-.profit-item-label {
-  font-size: 12px;
-  color: #999;
-}
-
-.profit-total {
-  text-align: center;
-  padding: 12px 16px;
-  border-top: 1px solid #f5f5f5;
-  font-size: 14px;
-  color: #666;
-}
-
 /* 商品列表 */
 .product-list {
   padding: 0 16px 16px;
@@ -472,6 +404,11 @@ onMounted(() => {
 
 .snapshot-divider {
   color: #ddd;
+}
+
+.profit-highlight {
+  color: #E53935;
+  font-weight: 500;
 }
 
 /* 空状态 */

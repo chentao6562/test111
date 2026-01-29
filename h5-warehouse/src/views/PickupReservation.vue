@@ -342,7 +342,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onErrorCaptured } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Toast, Dialog } from 'tdesign-mobile-vue'
 import {
@@ -435,6 +435,8 @@ const selectedCouponIds = ref<number[]>([])
 const showPrinterSetup = ref(false)
 const isPrinting = ref(false)
 const printConfig = ref<PrintConfig | null>(null)
+
+// 【已移除】onErrorCaptured 可能导致白屏问题
 
 // 计算代金券抵扣金额
 const couponDeduction = computed(() => {

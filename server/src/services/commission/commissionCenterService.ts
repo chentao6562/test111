@@ -272,10 +272,20 @@ function getTypeLabel(type: string) {
 
 /**
  * 【2026-01-29】H5端：获取分润记录详情
- * 复用管理后台详情逻辑，增加推销员权限校验和客户手机号脱敏
+ * 只显示当前推销员自己的利润和价格信息，不显示上级利润和定价
  */
 export async function getCommissionRecordDetailForAgent(recordId: number, agentId: number) {
-  // 1. 先验证该记录是否属于当前推销员
+  // 1. 获取推销员信息（确定层级）
+  const agent = await prisma.agent.findUnique({
+    where: { id: agentId },
+    select: { id: true, type: true, isMaster: true },
+  });
+
+  if (!agent) {
+    return null;
+  }
+
+  // 2. 验证该记录是否属于当前推销员
   const fundFlow = await prisma.fundFlow.findFirst({
     where: {
       id: recordId,
@@ -288,7 +298,7 @@ export async function getCommissionRecordDetailForAgent(recordId: number, agentI
     return null;
   }
 
-  // 2. 获取关联预约的完整详情
+  // 3. 获取关联预约的完整详情
   if (fundFlow.relatedType !== 'RESERVATION' || !fundFlow.relatedId) {
     // 非预约类型的利润记录，返回基础信息
     return {
@@ -302,7 +312,7 @@ export async function getCommissionRecordDetailForAgent(recordId: number, agentI
     };
   }
 
-  // 3. 获取预约详情
+  // 4. 获取预约详情
   const reservation = await prisma.reservation.findUnique({
     where: { id: fundFlow.relatedId },
     include: {
@@ -323,9 +333,24 @@ export async function getCommissionRecordDetailForAgent(recordId: number, agentI
     };
   }
 
-  // 4. 构建详情数据（对客户手机号脱敏）
+  // 5. 构建详情数据（只显示本级利润和价格）
   const amount = Number(fundFlow.amount);
   const totalAmount = Number(reservation.totalAmount);
+
+  // 根据推销员层级确定拿货价
+  // 总代: 拿货价 = 成本价
+  // 一级: 拿货价 = 供货价
+  // 二级: 拿货价 = 一级给的价(level1Price)
+  const getMyCostPrice = (item: any): number => {
+    if (agent.isMaster) {
+      return Number(item.snapshotCostPrice || 0);
+    } else if (agent.type === 'LEVEL1') {
+      return Number(item.snapshotSupplyPrice || 0);
+    } else {
+      // LEVEL2 或其他
+      return Number(item.snapshotLevel1Price || item.snapshotSupplyPrice || 0);
+    }
+  };
 
   return {
     id: fundFlow.id,
@@ -346,29 +371,26 @@ export async function getCommissionRecordDetailForAgent(recordId: number, agentI
       status: reservation.status,
       completedAt: reservation.completedAt,
       storeName: reservation.store?.name || '蒙庆烟花',
-      // 利润分配
-      profitDistribution: {
-        masterProfit: Number(reservation.masterProfit || 0),
-        level1Profit: Number(reservation.level1Profit || 0),
-        level2Profit: Number(reservation.level2Profit || 0),
-        totalProfit: Number(reservation.masterProfit || 0) + Number(reservation.level1Profit || 0) + Number(reservation.level2Profit || 0),
-      },
-      // 商品明细
-      items: reservation.items.map(item => ({
-        productId: item.productId,
-        productName: item.productName,
-        productImage: item.productImage,
-        quantity: item.quantity,
-        price: Number(item.price),
-        subtotal: Number(item.price) * item.quantity,
-        // 价格快照（成本分析）
-        priceSnapshot: {
-          costPrice: Number(item.snapshotCostPrice || 0),
-          supplyPrice: Number(item.snapshotSupplyPrice || 0),
-          level1Price: item.snapshotLevel1Price ? Number(item.snapshotLevel1Price) : null,
-          retailPrice: Number(item.snapshotRetailPrice || item.price),
-        },
-      })),
+      // 商品明细（只显示本级相关价格）
+      items: reservation.items.map(item => {
+        const myCostPrice = getMyCostPrice(item);
+        const retailPrice = Number(item.snapshotRetailPrice || item.price);
+        const unitProfit = retailPrice - myCostPrice;
+        return {
+          productId: item.productId,
+          productName: item.productName,
+          productImage: item.productImage,
+          quantity: item.quantity,
+          price: Number(item.price),
+          subtotal: Number(item.price) * item.quantity,
+          // 价格快照（只显示本级相关价格）
+          priceSnapshot: {
+            myCostPrice,      // 我的拿货价
+            retailPrice,      // 零售价
+            unitProfit,       // 单件利润
+          },
+        };
+      }),
     },
   };
 }

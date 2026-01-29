@@ -4,19 +4,10 @@
  */
 
 import { request } from './request'
+import type { PrintConfig } from '@/services/bluetoothPrinter'
 
-/**
- * 打印配置接口
- */
-export interface PrintConfig {
-  enablePrint: boolean
-  storeName: string
-  storePhone: string
-  storeAddress: string
-  footerText: string
-  showQRCode: boolean
-  paperWidth: 58 | 80
-}
+// 重新导出 PrintConfig 类型，保持向后兼容
+export type { PrintConfig }
 
 /**
  * 获取打印配置
