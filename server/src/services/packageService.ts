@@ -827,6 +827,19 @@ export async function createPackageReservation(input: CreatePackageReservationIn
     }
   }
 
+  // 4.5 【2026-01-29】检测是否推销员自购
+  let isSelfPurchase = false;
+  if (salespersonId && customerPhone) {
+    const agentForSelfCheck = await prisma.agent.findUnique({
+      where: { id: salespersonId },
+      select: { phone: true },
+    });
+    if (agentForSelfCheck && agentForSelfCheck.phone === customerPhone) {
+      isSelfPurchase = true;
+      console.log(`[packageService] 检测到自购：推销员${salespersonId}手机号${customerPhone}与客户手机号相同`);
+    }
+  }
+
   // 5. 生成预约号
   const today = new Date();
   const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
@@ -842,16 +855,38 @@ export async function createPackageReservation(input: CreatePackageReservationIn
   }
   const reservationNo = `${prefix}${seq.toString().padStart(5, '0')}`;
 
-  // 6. 计算套餐价格（与普通商品保持一致的定价逻辑）
-  // 【2026-01-29修复】统一定价逻辑：
-  //   1. 优先使用推销员设置的 retailPrice（零售价）
-  //   2. 二级没设置 retailPrice 时，使用一级给的 subPrice
-  //   3. 最后才使用套餐建议零售价 masterRetailPrice
-  // 【2026-01-29修复】保存snapshotLevel1Price用于分润计算
+  // 6. 计算套餐价格
+  // 【2026-01-29修复】自购检测和定价逻辑：
+  //   - 自购时：使用供货价（拿货价），不产生分润
+  //   - 非自购：使用推销员设置的零售价
   let totalAmount = Number(pkg.masterRetailPrice);
   let snapshotLevel1Price: number | null = null; // 一级给二级的价格快照
 
-  if (salespersonId) {
+  if (isSelfPurchase) {
+    // 【2026-01-29】推销员自购：使用供货价（拿货价）
+    if (salespersonLevel === 2 && parentSalespersonId) {
+      // 二级推销员自购：使用一级给的subPrice
+      const parentPrice = await prisma.packageAgentPrice.findUnique({
+        where: {
+          packageId_agentId: {
+            packageId,
+            agentId: parentSalespersonId,
+          },
+        },
+      });
+      if (parentPrice?.subPrice) {
+        totalAmount = Number(parentPrice.subPrice);
+        snapshotLevel1Price = Number(parentPrice.subPrice);
+      } else {
+        // 一级没设置subPrice，使用套餐供货价
+        totalAmount = Number(pkg.supplyPrice);
+      }
+    } else {
+      // 一级/总代自购：使用套餐供货价
+      totalAmount = Number(pkg.supplyPrice);
+    }
+    console.log(`[packageService] 自购订单使用拿货价：${totalAmount}`);
+  } else if (salespersonId) {
     const salesperson = await prisma.agent.findUnique({
       where: { id: salespersonId },
       select: { type: true, isMaster: true, parentId: true },
@@ -921,7 +956,8 @@ export async function createPackageReservation(input: CreatePackageReservationIn
 
   // 7. 在事务中创建预约并锁定库存
   return prisma.$transaction(async (tx) => {
-    // 创建预约（注：Reservation模型没有remark字段，备注信息暂不保存）
+    // 创建预约
+    // 【2026-01-29】添加isSelfPurchase标记，自购订单核销时不计算分润
     const reservation = await tx.reservation.create({
       data: {
         reservationNo,
@@ -934,6 +970,7 @@ export async function createPackageReservation(input: CreatePackageReservationIn
         parentSalespersonId,
         agentId,
         totalAmount,
+        isSelfPurchase, // 【2026-01-29】自购标记
         status: 0, // 待确认
       },
     });

@@ -1087,6 +1087,9 @@ model Reservation {
   settled   Boolean   @default(false) // 是否已结算
   settledAt DateTime? // 结算时间
 
+  // 【2026-01-29】自购标记
+  isSelfPurchase Boolean @default(false) @map("is_self_purchase") // 是否推销员自购（自购不计分润）
+
   // 利润分配
   masterProfit Decimal @default(0) @db.Decimal(10, 2) // 总代理利润
   level1Profit Decimal @default(0) @db.Decimal(10, 2) // 一级推销员利润

@@ -293,6 +293,19 @@ export async function createReservation(input: CreateReservationInput): Promise<
     }
   }
 
+  // 4.5 【2026-01-29】检测是否推销员自购
+  let isSelfPurchase = false;
+  if (salespersonId && customerPhone) {
+    const agentForSelfCheck = await prisma.agent.findUnique({
+      where: { id: salespersonId },
+      select: { phone: true },
+    });
+    if (agentForSelfCheck && agentForSelfCheck.phone === customerPhone) {
+      isSelfPurchase = true;
+      console.log(`[reservationService] 检测到自购：推销员${salespersonId}手机号${customerPhone}与客户手机号相同`);
+    }
+  }
+
   // 5. 【2026-01-17修复】获取推销员设置的零售价（不信任前端传入的价格）
   // 查询推销员的定价设置
   let salespersonPrices: Map<number, { retailPrice: number | null; subPrice: number | null }> = new Map();
@@ -360,13 +373,29 @@ export async function createReservation(input: CreateReservationInput): Promise<
   const reservationItems = safeItems.map(item => {
     const product = products.find(p => p.id === item.productId)!;
 
-    // 【2026-01-19修复】获取零售价的优先级：
-    // 1. 推销员自己设置的retailPrice
-    // 2. （二级）上级给的subPrice
-    // 3. 商品默认零售价
+    // 【2026-01-29修复】自购检测和定价逻辑：
+    // - 自购时：使用供货价（拿货价），不产生分润
+    // - 非自购：使用推销员设置的零售价
     let retailPrice: number;
     const priceInfo = salespersonPrices.get(item.productId);
-    if (priceInfo?.retailPrice !== null && priceInfo?.retailPrice !== undefined) {
+
+    if (isSelfPurchase) {
+      // 【2026-01-29】推销员自购：使用供货价/拿货价
+      if (salespersonLevel === 2 && level1Prices.has(item.productId)) {
+        // 二级推销员自购：使用一级给的subPrice
+        const subPrice = level1Prices.get(item.productId);
+        if (subPrice !== null && subPrice !== undefined && subPrice > 0) {
+          retailPrice = subPrice;
+        } else {
+          // subPrice未设置，使用供货价
+          retailPrice = Number(product.supplyPrice);
+        }
+      } else {
+        // 一级/总代自购：使用供货价
+        retailPrice = Number(product.supplyPrice);
+      }
+      console.log(`[reservationService] 自购商品${product.name}使用拿货价：${retailPrice}`);
+    } else if (priceInfo?.retailPrice !== null && priceInfo?.retailPrice !== undefined) {
       // 推销员自己设置了零售价
       retailPrice = priceInfo.retailPrice;
     } else if (salespersonLevel === 2 && level1Prices.has(item.productId)) {
@@ -586,6 +615,7 @@ export async function createReservation(input: CreateReservationInput): Promise<
           status: ReservationStatus.PENDING,
           callCount: 0,
           customerRiskLevel: customerCheck.riskLevel,
+          isSelfPurchase, // 【2026-01-29】自购标记
           regionName, // 【2026-01-21 顺路拼团】区域名称
           // 【2026-01-21 顺路拼团】区域关联
           ...(regionId ? { region: { connect: { id: regionId } } } : {}),

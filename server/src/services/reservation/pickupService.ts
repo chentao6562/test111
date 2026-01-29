@@ -249,7 +249,12 @@ export async function completePickup(
   let totalLevel1Profit = 0;
   let totalLevel2Profit = 0;
 
-  for (const item of reservation.items) {
+  // 【2026-01-29】自购订单不计算分润
+  if (reservation.isSelfPurchase) {
+    console.log(`[pickupService] 自购订单${reservation.reservationNo}跳过分润计算，利润归零`);
+    // 自购订单利润全部为0，直接跳过计算循环
+  } else {
+    for (const item of reservation.items) {
     // 【2026-01-22 修复】秒杀商品（snapshotCostPrice为null）不参与利润分配
     // 秒杀商品是特价促销，利润全部归门店，推销员不参与分润
     if (item.isFlashSale || item.snapshotCostPrice === null) {
@@ -274,7 +279,8 @@ export async function completePickup(
     totalMasterProfit += itemProfit.masterProfit;
     totalLevel1Profit += itemProfit.level1Profit;
     totalLevel2Profit += itemProfit.level2Profit;
-  }
+    }
+  } // 【2026-01-29】自购判断结束
 
   // 【2026-01-20 BUG修复】赠品成本由最终销售的推销员承担，而非总代理
   // 【2026-01-21 拼团到店】增加拼团赠品成本扣除
