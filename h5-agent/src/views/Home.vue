@@ -362,9 +362,10 @@ const loadHotDeals = async () => {
           id: item.productId || item.product?.id,
           name: item.product?.name || item.title,
           images: images,
-          // 【2026-01-27修复】提取displayPrice字段，保证getDisplayPrice函数能正确使用
-          displayPrice: item.product?.displayPrice || item.product?.agentPrice,
-          agentPrice: item.product?.agentPrice || item.product?.retailPrice,
+          // 【2026-01-29修复】直接使用后端返回的价格字段，由getDisplayPrice函数处理降级逻辑
+          // 禁止使用 || 拼接，避免 displayPrice=0 时被错误降级
+          displayPrice: item.product?.displayPrice,
+          agentPrice: item.product?.agentPrice,
           retailPrice: item.product?.retailPrice,
           badge: item.badge,
           isPackage: false
