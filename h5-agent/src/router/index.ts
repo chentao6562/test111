@@ -96,6 +96,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/TeamGrant.vue'),
     meta: { title: '团队返券', requiresAuth: true }
   },
+  // 【2026-01-30】下级订单（一级查看二级的订单）
+  {
+    path: '/team-orders',
+    name: 'TeamOrders',
+    component: () => import('../views/TeamOrders.vue'),
+    meta: { title: '下级订单', requiresAuth: true }
+  },
   {
     path: '/promotion',
     name: 'Promotion',

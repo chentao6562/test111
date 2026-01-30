@@ -146,6 +146,50 @@ export async function getTeamMembers(req: Request, res: Response) {
 }
 
 /**
+ * 【2026-01-30】获取下级订单列表
+ * 一级推销员可查看直属二级的订单，总代理可查看所有推销员的订单
+ */
+export async function getTeamOrders(req: Request, res: Response) {
+  try {
+    const agentId = (req as any).user?.id;
+    if (!agentId) {
+      return error(res, '请先登录', 401);
+    }
+
+    const { memberId, page = '1', pageSize = '20', status, startDate, endDate } = req.query;
+
+    // 解析状态参数（支持逗号分隔的多状态）
+    let statusValue: number | number[] | undefined;
+    if (status !== undefined && status !== '') {
+      const statusStr = status as string;
+      if (statusStr.includes(',')) {
+        statusValue = statusStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      } else {
+        const parsed = parseInt(statusStr);
+        if (!isNaN(parsed)) {
+          statusValue = parsed;
+        }
+      }
+    }
+
+    const data = await commissionService.getTeamOrders({
+      agentId,
+      memberId: memberId ? parseInt(memberId as string) : undefined,
+      page: parseInt(page as string) || 1,
+      pageSize: parseInt(pageSize as string) || 20,
+      status: statusValue,
+      startDate: startDate as string,
+      endDate: endDate as string,
+    });
+
+    return success(res, data);
+  } catch (err: any) {
+    console.error('获取下级订单失败:', err);
+    return error(res, err.message || '获取下级订单失败');
+  }
+}
+
+/**
  * 获取推广中心数据
  */
 export async function getPromotionData(req: Request, res: Response) {
@@ -620,6 +664,7 @@ export default {
   getAgentWithdrawals,
   getTeamStats,
   getTeamMembers,
+  getTeamOrders, // 【2026-01-30】下级订单
   getPromotionData,
   getInviteRecords,
   // 晋升相关

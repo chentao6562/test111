@@ -48,6 +48,7 @@ export {
 export {
   getTeamStats,
   getTeamMembers,
+  getTeamOrders,
   getLevelLabel,
 } from './teamService';
 
@@ -68,7 +69,7 @@ export {
 import { calculateCommission, rollbackCommission } from './commissionCalculator';
 import { getCommissionCenter, getCommissionRecords, getPromotionData, getInviteRecords, getCommissionRecordDetailForAgent } from './commissionCenterService';
 import { createWithdrawal, getAgentWithdrawals, getWithdrawals, getWithdrawalDetail, reviewWithdrawal, completeWithdrawal } from './withdrawalService';
-import { getTeamStats, getTeamMembers } from './teamService';
+import { getTeamStats, getTeamMembers, getTeamOrders } from './teamService';
 import { getRules, createRule, updateRule, deleteRule, getAdminCommissionRecords, settleCommissions, settleCommissionsByDate, getCommissionStatistics, getCommissionRecordDetail } from './commissionRuleService';
 
 export default {
@@ -80,6 +81,7 @@ export default {
   getAgentWithdrawals,
   getTeamStats,
   getTeamMembers,
+  getTeamOrders, // 【2026-01-30】下级订单查询
   getPromotionData,
   getInviteRecords,
   getRules,

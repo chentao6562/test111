@@ -208,3 +208,218 @@ export async function getTeamMembers(params: {
     totalPages: Math.ceil(total / pageSize),
   };
 }
+
+/**
+ * 状态标签映射
+ */
+const StatusLabels: Record<number, string> = {
+  0: '待确认',
+  1: '确认中',
+  2: '已确认',
+  3: '已完成',
+  4: '已取消',
+  5: '已过期',
+  6: '确认失败',
+  7: '待备货',
+  8: '备货中',
+  9: '待提货',
+};
+
+/**
+ * 手机号脱敏
+ */
+function maskPhone(phone: string): string {
+  if (!phone || phone.length < 11) return phone;
+  return phone.substring(0, 3) + '****' + phone.substring(7);
+}
+
+/**
+ * 【2026-01-30】获取下级订单列表
+ * 一级推销员可查看直属二级的订单，总代理可查看所有推销员的订单
+ */
+export async function getTeamOrders(params: {
+  agentId: number;
+  memberId?: number;
+  page?: number;
+  pageSize?: number;
+  status?: number | number[];
+  startDate?: string;
+  endDate?: string;
+}) {
+  const { agentId, memberId, page = 1, pageSize = 20, status, startDate, endDate } = params;
+
+  // 1. 获取当前用户信息
+  const agent = await prisma.agent.findUnique({
+    where: { id: agentId },
+    select: { id: true, type: true, isMaster: true },
+  });
+
+  if (!agent) {
+    throw new Error('用户不存在');
+  }
+
+  // 2. 确定可查看的下级ID列表
+  let subordinateIds: number[] = [];
+
+  if (agent.isMaster) {
+    // 总代理：可查看所有推销员的订单
+    if (memberId) {
+      subordinateIds = [memberId];
+    } else {
+      const allAgents = await prisma.agent.findMany({
+        where: { type: { in: ['LEVEL1', 'LEVEL2'] } },
+        select: { id: true },
+      });
+      subordinateIds = allAgents.map(a => a.id);
+    }
+  } else if (agent.type === 'LEVEL1') {
+    // 一级推销员：只能查看直属二级的订单
+    if (memberId) {
+      // 验证 memberId 是否是自己的下级
+      const member = await prisma.agent.findUnique({
+        where: { id: memberId },
+        select: { parentId: true },
+      });
+      if (member?.parentId !== agentId) {
+        throw new Error('无权查看该成员的订单');
+      }
+      subordinateIds = [memberId];
+    } else {
+      // 获取所有直属二级
+      const directMembers = await prisma.agent.findMany({
+        where: { parentId: agentId },
+        select: { id: true },
+      });
+      subordinateIds = directMembers.map(m => m.id);
+    }
+  } else {
+    // 二级推销员或普通用户：没有下级
+    return {
+      list: [],
+      total: 0,
+      page,
+      pageSize,
+      summary: {
+        totalOrders: 0,
+        totalAmount: 0,
+        completedOrders: 0,
+        completedAmount: 0,
+      },
+    };
+  }
+
+  // 如果没有下级，返回空
+  if (subordinateIds.length === 0) {
+    return {
+      list: [],
+      total: 0,
+      page,
+      pageSize,
+      summary: {
+        totalOrders: 0,
+        totalAmount: 0,
+        completedOrders: 0,
+        completedAmount: 0,
+      },
+    };
+  }
+
+  // 3. 构建查询条件
+  const where: any = {
+    salespersonId: { in: subordinateIds },
+  };
+
+  // 状态筛选
+  if (status !== undefined) {
+    if (Array.isArray(status)) {
+      where.status = { in: status };
+    } else {
+      where.status = status;
+    }
+  }
+
+  // 日期筛选
+  if (startDate) {
+    where.createdAt = { ...where.createdAt, gte: new Date(startDate) };
+  }
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setDate(end.getDate() + 1);
+    where.createdAt = { ...where.createdAt, lt: end };
+  }
+
+  // 4. 并行执行查询
+  const [list, total, summaryAll, summaryCompleted] = await Promise.all([
+    // 订单列表
+    prisma.reservation.findMany({
+      where,
+      include: {
+        store: { select: { id: true, name: true } },
+        items: { select: { id: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    // 总数
+    prisma.reservation.count({ where }),
+    // 汇总统计（全部）
+    prisma.reservation.aggregate({
+      where: { salespersonId: { in: subordinateIds } },
+      _count: true,
+      _sum: { totalAmount: true },
+    }),
+    // 汇总统计（已完成）
+    prisma.reservation.aggregate({
+      where: { salespersonId: { in: subordinateIds }, status: 3 },
+      _count: true,
+      _sum: { totalAmount: true },
+    }),
+  ]);
+
+  // 5. 补充推销员信息
+  const agentIds = [...new Set(list.map(r => r.salespersonId).filter(Boolean))] as number[];
+  const agents = await prisma.agent.findMany({
+    where: { id: { in: agentIds } },
+    select: { id: true, name: true, phone: true, type: true },
+  });
+  const agentMap = new Map(agents.map(a => [a.id, a]));
+
+  // 6. 格式化返回结果
+  return {
+    list: list.map(r => {
+      const salesperson = r.salespersonId ? agentMap.get(r.salespersonId) : null;
+      return {
+        id: r.id,
+        reservationNo: r.reservationNo,
+        customerName: r.customerName,
+        customerPhone: maskPhone(r.customerPhone),
+        pickupDate: r.pickupDate,
+        totalAmount: Number(r.totalAmount),
+        status: r.status,
+        statusLabel: StatusLabels[r.status] || '未知',
+        giftName: r.giftName,
+        itemCount: r.items.length,
+        storeName: r.store?.name || '蒙庆烟花',
+        createdAt: r.createdAt,
+        salesperson: salesperson
+          ? {
+              id: salesperson.id,
+              name: salesperson.name,
+              phone: maskPhone(salesperson.phone),
+              level: getLevelLabel(salesperson.type),
+            }
+          : null,
+      };
+    }),
+    total,
+    page,
+    pageSize,
+    summary: {
+      totalOrders: summaryAll._count || 0,
+      totalAmount: Number(summaryAll._sum.totalAmount || 0),
+      completedOrders: summaryCompleted._count || 0,
+      completedAmount: Number(summaryCompleted._sum.totalAmount || 0),
+    },
+  };
+}

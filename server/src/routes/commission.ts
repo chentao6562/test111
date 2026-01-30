@@ -10,6 +10,7 @@ import {
   getAgentWithdrawals,
   getTeamStats,
   getTeamMembers,
+  getTeamOrders, // 【2026-01-30】下级订单
   getPromotionData,
   getInviteRecords,
   // 【2026-01-17】晋升相关
@@ -46,6 +47,9 @@ router.get('/team-stats', getTeamStats);
 
 // 获取团队成员列表
 router.get('/team-members', getTeamMembers);
+
+// 【2026-01-30】获取下级订单列表
+router.get('/team-orders', getTeamOrders);
 
 // ========== 推广中心 ==========
 

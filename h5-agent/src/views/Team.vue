@@ -11,6 +11,13 @@ const userStore = useUserStore()
 // 是否是一级推销员（可以给下级发券）
 const isLevel1 = computed(() => userStore.userInfo?.type === 'LEVEL1')
 
+// 是否有下级（一级推销员或总代理）
+const hasSubordinates = computed(() => {
+  const userType = userStore.userInfo?.type
+  // 总代理或一级推销员有下级
+  return userType === 'LEVEL1'
+})
+
 interface TeamMember {
   id: number
   name: string
@@ -203,6 +210,18 @@ onMounted(() => {
       </div>
     </div>
 
+    <!-- 【2026-01-30】下级订单入口（一级推销员或总代理显示）-->
+    <div class="action-card" v-if="hasSubordinates">
+      <div class="action-item" @click="router.push('/team-orders')">
+        <div class="action-icon">📋</div>
+        <div class="action-info">
+          <div class="action-title">下级订单</div>
+          <div class="action-desc">查看下级推销员的客户预约</div>
+        </div>
+        <t-icon name="chevron-right" size="20px" class="action-arrow" />
+      </div>
+    </div>
+
     <!-- 筛选栏 -->
     <div class="filter-bar">
       <div
@@ -247,6 +266,12 @@ onMounted(() => {
               <span>本月业绩: ¥{{ (member.monthlyPerformance || 0).toFixed(0) }}</span>
               <span>加入: {{ formatDate(member.joinDate) }}</span>
             </div>
+          </div>
+          <!-- 【2026-01-30】查看订单按钮 -->
+          <div class="member-actions" v-if="hasSubordinates">
+            <button class="action-btn" @click.stop="router.push(`/team-orders?memberId=${member.id}`)">
+              查看订单
+            </button>
           </div>
         </div>
 
@@ -499,6 +524,28 @@ onMounted(() => {
   gap: 12px;
   font-size: 12px;
   color: #999;
+}
+
+/* 【2026-01-30】查看订单按钮 */
+.member-actions {
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #E53935;
+  background: #fff5f5;
+  border: 1px solid #E53935;
+  border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.action-btn:active {
+  background: #ffebee;
 }
 
 .load-more {
