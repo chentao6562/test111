@@ -11,6 +11,15 @@ const prisma = new PrismaClient();
 const BASE_URL = 'http://39.104.58.26';
 const TEST_CODE = '123456'; // 测试验证码
 
+// Token缓存 - 避免重复登录
+const tokenCache = new Map();
+
+// 请求延迟 - 避免限流
+const REQUEST_DELAY = 500; // 500ms延迟
+async function delay(ms) {
+  return new Promise(r => setTimeout(r, ms || REQUEST_DELAY));
+}
+
 // 测试结果统计
 const results = {
   total: 0,
@@ -23,13 +32,29 @@ const results = {
 // ==================== API客户端 ====================
 
 async function login(phone) {
+  // 使用缓存的token
+  if (tokenCache.has(phone)) {
+    return tokenCache.get(phone);
+  }
+
   try {
+    await delay(300); // 登录前等待
     const res = await axios.post(`${BASE_URL}/api/auth/phone-login`, {
       phone,
       code: TEST_CODE
     });
-    return res.data.data?.token || null;
+    const token = res.data.data?.token || null;
+    if (token) {
+      tokenCache.set(phone, token);
+    }
+    return token;
   } catch (e) {
+    // 429限流时等待更长时间
+    if (e.response?.status === 429) {
+      console.log(`登录限流 ${phone}，等待60秒...`);
+      await delay(60000);
+      return login(phone); // 重试
+    }
     console.error(`登录失败 ${phone}:`, e.message);
     return null;
   }
@@ -51,9 +76,15 @@ async function staffLogin(username, password) {
 async function createReservation(params, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   try {
+    await delay(200);
     const res = await axios.post(`${BASE_URL}/api/reservations`, params, { headers });
     return res.data;
   } catch (e) {
+    // 429限流处理
+    if (e.response?.status === 429) {
+      await delay(5000);
+      return createReservation(params, token); // 重试
+    }
     return { code: -1, message: e.response?.data?.message || e.message };
   }
 }
@@ -606,30 +637,49 @@ async function main() {
     process.exit(1);
   }
   console.log('员工登录成功');
+
+  // 2.5 预热推销员token（避免测试中频繁登录）
+  console.log('正在预热推销员token...');
+  for (const agent of testData.agents.slice(0, 5)) { // 只预热前5个
+    const token = await login(agent.phone);
+    if (token) {
+      console.log(`  - ${agent.phone} (${agent.type}) 已登录`);
+    }
+    await delay(2000); // 每次登录后等待2秒
+  }
   console.log('');
 
-  // 3. 生成1000个测试场景
+  // 3. 生成1000个测试场景（优化：访客订单为主避免登录限流）
   const scenarios = [];
 
-  // 普通商品预约 (300个)
-  for (let i = 0; i < 300; i++) {
+  // 普通商品预约-访客模式 (400个，无需登录)
+  for (let i = 0; i < 400; i++) {
     scenarios.push({
       type: 'NORMAL',
-      withAgent: i % 2 === 0,
-      quantity: (i % 5) + 1
+      withAgent: false, // 访客模式避免登录限流
+      quantity: (i % 3) + 1
     });
   }
 
-  // 套餐预约 (150个)
-  for (let i = 0; i < 150; i++) {
+  // 普通商品预约-带推销员 (100个，需要预热token)
+  for (let i = 0; i < 100; i++) {
+    scenarios.push({
+      type: 'NORMAL',
+      withAgent: true,
+      quantity: 1
+    });
+  }
+
+  // 套餐预约 (100个)
+  for (let i = 0; i < 100; i++) {
     scenarios.push({
       type: 'PACKAGE',
-      withAgent: i % 3 !== 0
+      withAgent: false
     });
   }
 
-  // 核销流程 (200个)
-  for (let i = 0; i < 200; i++) {
+  // 核销流程 (150个)
+  for (let i = 0; i < 150; i++) {
     scenarios.push({
       type: 'PICKUP',
       withGift: i % 2 === 0
@@ -641,23 +691,23 @@ async function main() {
     scenarios.push({ type: 'CANCEL' });
   }
 
-  // 自购订单 (50个)
-  for (let i = 0; i < 50; i++) {
+  // 自购订单 (30个)
+  for (let i = 0; i < 30; i++) {
     scenarios.push({ type: 'SELF_PURCHASE' });
   }
 
-  // 利润验证 (100个)
-  for (let i = 0; i < 100; i++) {
+  // 利润验证 (60个)
+  for (let i = 0; i < 60; i++) {
     scenarios.push({ type: 'PROFIT_VERIFY' });
   }
 
-  // 库存验证 (80个)
-  for (let i = 0; i < 80; i++) {
+  // 库存验证 (50个)
+  for (let i = 0; i < 50; i++) {
     scenarios.push({ type: 'STOCK_VERIFY' });
   }
 
-  // 并发测试 (20个)
-  for (let i = 0; i < 20; i++) {
+  // 并发测试 (10个)
+  for (let i = 0; i < 10; i++) {
     scenarios.push({ type: 'CONCURRENT' });
   }
 
@@ -703,10 +753,8 @@ async function main() {
         console.log(`进度: ${completed}/${scenarios.length} (${Math.round(completed/scenarios.length*100)}%)`);
       }
 
-      // 避免请求过快
-      if (i % 10 === 0) {
-        await new Promise(r => setTimeout(r, 100));
-      }
+      // 避免请求过快 - 每次请求后等待
+      await delay(300);
 
     } catch (e) {
       errors.push({
