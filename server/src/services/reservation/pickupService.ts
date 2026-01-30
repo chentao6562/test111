@@ -361,6 +361,12 @@ export async function completePickup(
   const masterAgent = await priceService.getMasterAgent();
   const masterAgentId = masterAgent?.id || null;
 
+  // 【2026-01-30修复】验证总代理存在，否则无法正确分润
+  if (!masterAgentId) {
+    console.error(`[pickupService] 系统错误：总代理不存在，无法完成核销`);
+    throw new Error('系统配置错误：请联系管理员设置总代理账户');
+  }
+
   // 确定一级和二级推销员ID
   let level1AgentId: number | null = null;
   let level2AgentId: number | null = null;

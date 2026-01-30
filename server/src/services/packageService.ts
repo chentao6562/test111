@@ -738,10 +738,11 @@ export interface CreatePackageReservationInput {
   storeId: number;
   salespersonId?: number;
   remark?: string;
+  userId?: number;  // 【2026-01-30修复】下单用户ID，用于自购判断
 }
 
 export async function createPackageReservation(input: CreatePackageReservationInput) {
-  const { packageId, customerName, customerPhone, pickupDate, storeId, salespersonId, remark } = input;
+  const { packageId, customerName, customerPhone, pickupDate, storeId, salespersonId, remark, userId } = input;
 
   // 1. 获取套餐详情
   const pkg = await prisma.productPackage.findUnique({
@@ -827,7 +828,8 @@ export async function createPackageReservation(input: CreatePackageReservationIn
     }
   }
 
-  // 4.5 【2026-01-29】检测是否推销员自购
+  // 4.5 【2026-01-30修复】检测是否推销员自购
+  // 自购条件：1.手机号匹配 2.下单用户ID等于推销员ID（身份验证）
   let isSelfPurchase = false;
   if (salespersonId && customerPhone) {
     const agentForSelfCheck = await prisma.agent.findUnique({
@@ -835,8 +837,13 @@ export async function createPackageReservation(input: CreatePackageReservationIn
       select: { phone: true },
     });
     if (agentForSelfCheck && agentForSelfCheck.phone === customerPhone) {
-      isSelfPurchase = true;
-      console.log(`[packageService] 检测到自购：推销员${salespersonId}手机号${customerPhone}与客户手机号相同`);
+      // 【2026-01-30修复】增加身份验证：只有当下单用户ID等于推销员ID时才标记为自购
+      if (userId && userId === salespersonId) {
+        isSelfPurchase = true;
+        console.log(`[packageService] 检测到自购：推销员${salespersonId}(userId=${userId})手机号${customerPhone}与客户手机号相同`);
+      } else {
+        console.log(`[packageService] 手机号匹配但非自购：推销员${salespersonId}, 下单用户userId=${userId || '访客'}, 客户手机${customerPhone}`);
+      }
     }
   }
 

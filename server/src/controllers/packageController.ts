@@ -357,6 +357,7 @@ export async function createPackageReservation(req: Request, res: Response) {
     // 获取推销员ID（可选）
     const salespersonId = user?.type === 'agent' ? user.id : undefined;
 
+    // 【2026-01-30修复】传递userId用于自购判断
     const result = await packageService.createPackageReservation({
       packageId: parseInt(id),
       customerName,
@@ -365,6 +366,7 @@ export async function createPackageReservation(req: Request, res: Response) {
       storeId: finalStoreId,
       salespersonId,
       remark,
+      userId: user?.id,
     });
 
     if (!result.success) {
