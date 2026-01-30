@@ -293,7 +293,8 @@ export async function createReservation(input: CreateReservationInput): Promise<
     }
   }
 
-  // 4.5 【2026-01-29】检测是否推销员自购
+  // 4.5 【2026-01-30修复】检测是否推销员自购
+  // 自购条件：1.手机号匹配 2.下单用户ID等于推销员ID（身份验证）
   let isSelfPurchase = false;
   if (salespersonId && customerPhone) {
     const agentForSelfCheck = await prisma.agent.findUnique({
@@ -301,8 +302,14 @@ export async function createReservation(input: CreateReservationInput): Promise<
       select: { phone: true },
     });
     if (agentForSelfCheck && agentForSelfCheck.phone === customerPhone) {
-      isSelfPurchase = true;
-      console.log(`[reservationService] 检测到自购：推销员${salespersonId}手机号${customerPhone}与客户手机号相同`);
+      // 【2026-01-30修复】增加身份验证：只有当下单用户ID等于推销员ID时才标记为自购
+      // 防止普通客户填写推销员手机号被误判为自购
+      if (input.userId && input.userId === salespersonId) {
+        isSelfPurchase = true;
+        console.log(`[reservationService] 检测到自购：推销员${salespersonId}(userId=${input.userId})手机号${customerPhone}与客户手机号相同`);
+      } else {
+        console.log(`[reservationService] 手机号匹配但非自购：推销员${salespersonId}, 下单用户userId=${input.userId || '访客'}, 客户手机${customerPhone}`);
+      }
     }
   }
 

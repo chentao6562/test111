@@ -128,6 +128,7 @@ export async function createConfig(req: Request, res: Response) {
       startTime,
       endTime,
       isActive,
+      memberGiftsJson,  // 【2026-01-29】多档位赠品配置
     } = req.body;
 
     if (!name) {
@@ -149,6 +150,7 @@ export async function createConfig(req: Request, res: Response) {
         endTime: endTime ? new Date(endTime) : null,
         isActive: isActive !== false,
         createdBy: adminId,
+        memberGiftsJson: memberGiftsJson || null,  // 【2026-01-29】多档位赠品配置
       },
     });
 
@@ -180,6 +182,7 @@ export async function updateConfig(req: Request, res: Response) {
       startTime,
       endTime,
       isActive,
+      memberGiftsJson,  // 【2026-01-29】多档位赠品配置
     } = req.body;
 
     const config = await prisma.groupBuyConfig.update({
@@ -194,6 +197,7 @@ export async function updateConfig(req: Request, res: Response) {
         startTime: startTime ? new Date(startTime) : null,
         endTime: endTime ? new Date(endTime) : null,
         isActive,
+        memberGiftsJson: memberGiftsJson !== undefined ? memberGiftsJson : undefined,  // 【2026-01-29】多档位赠品配置
       },
     });
 

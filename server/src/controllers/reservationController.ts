@@ -161,6 +161,7 @@ export async function create(req: Request, res: Response) {
     // 【2026-01-20 秒杀系统】支持秒杀商品
     // 【2026-01-21 顺路拼团】支持区域信息
     // 【2026-01-29修复】支持砍价商品
+    // 【2026-01-30修复】传递userId用于自购判断
     const result = await createReservation({
       customerName,
       customerPhone,
@@ -173,6 +174,7 @@ export async function create(req: Request, res: Response) {
       remark,
       regionId: regionId || undefined,      // 【2026-01-21 顺路拼团】区域ID
       regionName: regionName || undefined,  // 区域名称
+      userId: user?.id,  // 【2026-01-30修复】传递登录用户ID用于自购判断
     });
 
     if (result.success) {

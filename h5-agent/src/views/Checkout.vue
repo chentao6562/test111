@@ -99,18 +99,19 @@ const loadingNearby = ref(false)
 
 // 获取选中的区域ID（乡镇/街道级）
 const selectedRegionId = computed(() => {
-  if (selectedRegion.value.length === 2) {
-    // 【2026-01-26修复】确保返回数字类型
+  if (selectedRegion.value && selectedRegion.value.length >= 2) {
+    // 【2026-01-29修复】确保返回数字类型，处理各种值类型
     const id = selectedRegion.value[1]
-    return typeof id === 'string' ? parseInt(id, 10) : id
+    if (id === null || id === undefined) return null
+    return typeof id === 'string' ? parseInt(id, 10) : Number(id)
   }
   return null
 })
 
 // 获取选中的区域名称（用于显示）
 const selectedRegionName = computed(() => {
-  console.log('[Checkout] Computing regionName, id:', selectedRegionId.value, 'treeLen:', regionTree.value.length)
-  if (selectedRegionId.value && regionTree.value.length > 0) {
+  console.log('[Checkout] Computing regionName, selectedRegion:', selectedRegion.value, 'id:', selectedRegionId.value, 'treeLen:', regionTree.value.length)
+  if (selectedRegionId.value && selectedRegionId.value > 0 && regionTree.value.length > 0) {
     const name = getRegionFullName(selectedRegionId.value, regionTree.value)
     console.log('[Checkout] Got regionName:', name)
     return name
@@ -144,7 +145,7 @@ const loadRegionData = async () => {
   }
 }
 
-// 【2026-01-25修复】区域选择事件 - 使用pick事件，选择第二级时自动关闭
+// 【2026-01-29修复】区域选择事件 - 使用pick事件，选择第二级时自动关闭并强制更新
 const onRegionPick = (context: { value: string | number; label: string; index: number; level: number }) => {
   console.log('Region pick:', context.value, 'level:', context.level)
   // level=0 是第一级（区县），level=1 是第二级（乡镇/街道）
@@ -157,11 +158,16 @@ const onRegionPick = (context: { value: string | number; label: string; index: n
   }
 }
 
-// 【2026-01-26修复】区域选择变更事件 - 确保选择后正确触发相关操作
-const onRegionChange = (value: number[]) => {
-  console.log('Region change:', value, 'regionTree length:', regionTree.value.length)
+// 【2026-01-29修复】区域选择变更事件 - 确保选择后正确触发相关操作
+const onRegionChange = (value: number[] | string[]) => {
+  console.log('Region change:', value, 'type:', typeof value, 'regionTree length:', regionTree.value.length)
+  // 【2026-01-29】确保值是数字数组
+  if (Array.isArray(value)) {
+    selectedRegion.value = value.map(v => typeof v === 'string' ? parseInt(v, 10) : v)
+    console.log('Normalized selectedRegion:', selectedRegion.value)
+  }
   // 选择完成后加载附近拼团
-  if (value.length === 2 && pickupDate.value) {
+  if (selectedRegion.value.length === 2 && pickupDate.value) {
     loadNearbyGroupBuys()
   }
 }

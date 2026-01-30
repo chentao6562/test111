@@ -95,6 +95,7 @@ export interface CreateReservationInput {
   remark?: string;
   regionId?: number;     // 【2026-01-21 顺路拼团】区域ID
   regionName?: string;   // 区域名称
+  userId?: number;       // 【2026-01-30修复】下单用户ID，用于自购判断
 }
 
 // 预约响应

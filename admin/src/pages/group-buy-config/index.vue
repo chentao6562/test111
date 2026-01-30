@@ -24,6 +24,17 @@ interface GroupBuyConfig {
   isActive: boolean
   createdAt: string
   updatedAt: string
+  memberGiftsJson?: string | null  // 【2026-01-29】多档位赠品配置
+}
+
+// 【2026-01-29】多档位赠品配置类型
+interface TierGiftConfig {
+  count: number           // 成团人数档位
+  memberGifts: string[]   // 团员赠品列表
+  memberGiftCost: number  // 团员赠品成本
+  leaderGift: string      // 团长奖励
+  leaderCount: number     // 团长奖励数量
+  leaderGiftCost: number  // 团长奖励成本
 }
 
 // 系统配置
@@ -61,7 +72,14 @@ const formData = ref({
   bonusGiftCost: 0,
   startTime: '',
   endTime: '',
-  isActive: true
+  isActive: true,
+  // 【2026-01-29】多档位赠品模式
+  useMultiTier: false,
+  giftTiers: [
+    { count: 3, memberGifts: ['28寸仙女棒×2盒'], memberGiftCost: 4, leaderGift: '超级棒棒糖', leaderCount: 1, leaderGiftCost: 10 },
+    { count: 5, memberGifts: ['水母派对×1盒'], memberGiftCost: 8, leaderGift: '超级棒棒糖', leaderCount: 2, leaderGiftCost: 20 },
+    { count: 10, memberGifts: ['水母派对×1盒', '迷你加特林×1个'], memberGiftCost: 18, leaderGift: '超级棒棒糖', leaderCount: 3, leaderGiftCost: 30 }
+  ] as TierGiftConfig[]
 })
 const editingId = ref<number | null>(null)
 
@@ -72,7 +90,7 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'requiredCount',
     title: '成团人数',
-    width: 100,
+    width: 120,
     cell: 'requiredCount'
   },
   {
@@ -90,7 +108,7 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'bonusGiftName',
     title: '成团赠品',
-    minWidth: 150,
+    minWidth: 200,
     cell: 'bonusGift'
   },
   {
@@ -113,6 +131,26 @@ const columns: PrimaryTableCol[] = [
     cell: 'action'
   }
 ]
+
+// 【2026-01-29】解析多档位赠品配置
+const parseGiftTiers = (json: string | null | undefined): TierGiftConfig[] => {
+  if (!json) return []
+  try {
+    const parsed = JSON.parse(json)
+    if (parsed.tiers && Array.isArray(parsed.tiers)) {
+      return parsed.tiers
+    }
+    return []
+  } catch {
+    return []
+  }
+}
+
+// 【2026-01-29】检查是否启用多档位模式
+const hasMultiTier = (row: GroupBuyConfig): boolean => {
+  const tiers = parseGiftTiers(row.memberGiftsJson)
+  return tiers.length > 0
+}
 
 // 状态选项
 const statusOptions = [
@@ -222,7 +260,13 @@ const handleAdd = () => {
     bonusGiftCost: 0,
     startTime: '',
     endTime: '',
-    isActive: true
+    isActive: true,
+    useMultiTier: false,
+    giftTiers: [
+      { count: 3, memberGifts: ['28寸仙女棒×2盒'], memberGiftCost: 4, leaderGift: '超级棒棒糖', leaderCount: 1, leaderGiftCost: 10 },
+      { count: 5, memberGifts: ['水母派对×1盒'], memberGiftCost: 8, leaderGift: '超级棒棒糖', leaderCount: 2, leaderGiftCost: 20 },
+      { count: 10, memberGifts: ['水母派对×1盒', '迷你加特林×1个'], memberGiftCost: 18, leaderGift: '超级棒棒糖', leaderCount: 3, leaderGiftCost: 30 }
+    ]
   }
   dialogVisible.value = true
 }
@@ -231,6 +275,7 @@ const handleAdd = () => {
 const handleEdit = (row: GroupBuyConfig) => {
   dialogTitle.value = '编辑拼团活动配置'
   editingId.value = row.id
+  const tiers = parseGiftTiers(row.memberGiftsJson)
   formData.value = {
     name: row.name,
     requiredCount: row.requiredCount,
@@ -240,7 +285,13 @@ const handleEdit = (row: GroupBuyConfig) => {
     bonusGiftCost: row.bonusGiftCost || 0,
     startTime: row.startTime ? row.startTime.slice(0, 16) : '',
     endTime: row.endTime ? row.endTime.slice(0, 16) : '',
-    isActive: row.isActive
+    isActive: row.isActive,
+    useMultiTier: tiers.length > 0,
+    giftTiers: tiers.length > 0 ? tiers : [
+      { count: 3, memberGifts: ['28寸仙女棒×2盒'], memberGiftCost: 4, leaderGift: '超级棒棒糖', leaderCount: 1, leaderGiftCost: 10 },
+      { count: 5, memberGifts: ['水母派对×1盒'], memberGiftCost: 8, leaderGift: '超级棒棒糖', leaderCount: 2, leaderGiftCost: 20 },
+      { count: 10, memberGifts: ['水母派对×1盒', '迷你加特林×1个'], memberGiftCost: 18, leaderGift: '超级棒棒糖', leaderCount: 3, leaderGiftCost: 30 }
+    ]
   }
   dialogVisible.value = true
 }
@@ -271,17 +322,41 @@ const handleSubmit = async () => {
     MessagePlugin.warning('请输入活动名称')
     return
   }
-  if (formData.value.requiredCount < 2) {
-    MessagePlugin.warning('成团人数至少为2人')
-    return
-  }
   if (formData.value.minAmount < 0) {
     MessagePlugin.warning('最低预约金额不能为负数')
     return
   }
-  if (!formData.value.bonusGiftName.trim()) {
-    MessagePlugin.warning('请输入成团赠品名称')
-    return
+
+  // 【2026-01-29】多档位模式下不需要验证单一赠品
+  if (!formData.value.useMultiTier) {
+    if (formData.value.requiredCount < 2) {
+      MessagePlugin.warning('成团人数至少为2人')
+      return
+    }
+    if (!formData.value.bonusGiftName.trim()) {
+      MessagePlugin.warning('请输入成团赠品名称')
+      return
+    }
+  } else {
+    // 多档位模式下验证档位配置
+    if (formData.value.giftTiers.length === 0) {
+      MessagePlugin.warning('请至少配置一个档位')
+      return
+    }
+    for (const tier of formData.value.giftTiers) {
+      if (tier.count < 2) {
+        MessagePlugin.warning('每个档位人数至少为2人')
+        return
+      }
+      if (tier.memberGifts.length === 0 || !tier.memberGifts[0]) {
+        MessagePlugin.warning('请配置团员赠品')
+        return
+      }
+      if (!tier.leaderGift) {
+        MessagePlugin.warning('请配置团长奖励')
+        return
+      }
+    }
   }
 
   // 验证时间范围
@@ -294,16 +369,29 @@ const handleSubmit = async () => {
 
   formLoading.value = true
   try {
-    const submitData = {
+    // 【2026-01-29】构建提交数据
+    const submitData: any = {
       name: formData.value.name,
-      requiredCount: formData.value.requiredCount,
       minAmount: formData.value.minAmount,
       formingHours: formData.value.formingHours,
-      bonusGiftName: formData.value.bonusGiftName || null,
-      bonusGiftCost: formData.value.bonusGiftCost,
       startTime: formData.value.startTime || null,
       endTime: formData.value.endTime || null,
       isActive: formData.value.isActive
+    }
+
+    if (formData.value.useMultiTier) {
+      // 多档位模式：requiredCount使用最小档位，赠品存入JSON
+      const sortedTiers = [...formData.value.giftTiers].sort((a, b) => a.count - b.count)
+      submitData.requiredCount = sortedTiers[0].count
+      submitData.bonusGiftName = `多档位（${sortedTiers.map(t => t.count + '人').join('/')}）`
+      submitData.bonusGiftCost = sortedTiers[0].memberGiftCost
+      submitData.memberGiftsJson = JSON.stringify({ tiers: formData.value.giftTiers })
+    } else {
+      // 单一赠品模式
+      submitData.requiredCount = formData.value.requiredCount
+      submitData.bonusGiftName = formData.value.bonusGiftName || null
+      submitData.bonusGiftCost = formData.value.bonusGiftCost
+      submitData.memberGiftsJson = null
     }
 
     if (editingId.value) {
@@ -319,6 +407,34 @@ const handleSubmit = async () => {
     MessagePlugin.error(error.message || '操作失败')
   } finally {
     formLoading.value = false
+  }
+}
+
+// 【2026-01-29】添加档位
+const addTier = () => {
+  const lastTier = formData.value.giftTiers[formData.value.giftTiers.length - 1]
+  formData.value.giftTiers.push({
+    count: lastTier ? lastTier.count + 5 : 3,
+    memberGifts: [''],
+    memberGiftCost: 0,
+    leaderGift: '',
+    leaderCount: 1,
+    leaderGiftCost: 0
+  })
+}
+
+// 【2026-01-29】删除档位
+const removeTier = (index: number) => {
+  if (formData.value.giftTiers.length > 1) {
+    formData.value.giftTiers.splice(index, 1)
+  }
+}
+
+// 【2026-01-29】更新团员赠品（逗号分隔转数组）
+const updateMemberGifts = (index: number, value: string) => {
+  formData.value.giftTiers[index].memberGifts = value.split('，').map(s => s.trim()).filter(Boolean)
+  if (formData.value.giftTiers[index].memberGifts.length === 0) {
+    formData.value.giftTiers[index].memberGifts = ['']
   }
 }
 
@@ -453,7 +569,14 @@ onMounted(() => {
 
         <!-- 成团人数 -->
         <template #requiredCount="{ row }">
-          <t-tag theme="primary">{{ row.requiredCount }}人成团</t-tag>
+          <template v-if="hasMultiTier(row)">
+            <t-space direction="vertical" size="small">
+              <t-tag v-for="tier in parseGiftTiers(row.memberGiftsJson)" :key="tier.count" theme="primary" variant="light">
+                {{ tier.count }}人档
+              </t-tag>
+            </t-space>
+          </template>
+          <t-tag v-else theme="primary">{{ row.requiredCount }}人成团</t-tag>
         </template>
 
         <!-- 最低预约金额 -->
@@ -468,12 +591,25 @@ onMounted(() => {
 
         <!-- 成团赠品 -->
         <template #bonusGift="{ row }">
-          <div v-if="row.bonusGiftName" class="gift-info">
-            <t-icon name="gift" size="16px" style="color: #f60" />
-            <span>{{ row.bonusGiftName }}</span>
-            <span class="cost-text" v-if="row.bonusGiftCost">(成本¥{{ row.bonusGiftCost }})</span>
-          </div>
-          <span v-else class="no-gift">未设置</span>
+          <template v-if="hasMultiTier(row)">
+            <t-space direction="vertical" size="small" class="multi-tier-gifts">
+              <div v-for="tier in parseGiftTiers(row.memberGiftsJson)" :key="tier.count" class="tier-gift-row">
+                <t-tag size="small" theme="warning">{{ tier.count }}人</t-tag>
+                <span class="tier-gift-text">
+                  团员：{{ tier.memberGifts.join(' + ') }}
+                  <span class="leader-gift">| 团长：{{ tier.leaderGift }}×{{ tier.leaderCount }}</span>
+                </span>
+              </div>
+            </t-space>
+          </template>
+          <template v-else>
+            <div v-if="row.bonusGiftName" class="gift-info">
+              <t-icon name="gift" size="16px" style="color: #f60" />
+              <span>{{ row.bonusGiftName }}</span>
+              <span class="cost-text" v-if="row.bonusGiftCost">(成本¥{{ row.bonusGiftCost }})</span>
+            </div>
+            <span v-else class="no-gift">未设置</span>
+          </template>
         </template>
 
         <!-- 活动时间 -->
@@ -568,26 +704,83 @@ onMounted(() => {
         <!-- 赠品设置 -->
         <t-divider>成团赠品</t-divider>
 
-        <t-form-item label="赠品名称" name="bonusGiftName" required>
-          <t-input
-            v-model="formData.bonusGiftName"
-            placeholder="例如：精美仙女棒1盒"
-            maxlength="100"
-          />
-          <div class="form-tip">成团后每人均可获得此赠品</div>
+        <!-- 【2026-01-29】多档位模式开关 -->
+        <t-form-item label="赠品模式">
+          <t-radio-group v-model="formData.useMultiTier">
+            <t-radio :value="false">单一赠品（所有人相同）</t-radio>
+            <t-radio :value="true">多档位阶梯（人越多赠品越好）</t-radio>
+          </t-radio-group>
         </t-form-item>
 
-        <t-form-item label="赠品成本" name="bonusGiftCost">
-          <t-input-number
-            v-model="formData.bonusGiftCost"
-            :min="0"
-            :max="9999"
-            :decimal-places="2"
-            suffix="元"
-            style="width: 200px"
-          />
-          <div class="form-tip">赠品成本将由成团成员平摊，从各自订单的总代利润中扣除</div>
-        </t-form-item>
+        <!-- 单一赠品模式 -->
+        <template v-if="!formData.useMultiTier">
+          <t-form-item label="赠品名称" name="bonusGiftName" required>
+            <t-input
+              v-model="formData.bonusGiftName"
+              placeholder="例如：精美仙女棒1盒"
+              maxlength="100"
+            />
+            <div class="form-tip">成团后每人均可获得此赠品</div>
+          </t-form-item>
+
+          <t-form-item label="赠品成本" name="bonusGiftCost">
+            <t-input-number
+              v-model="formData.bonusGiftCost"
+              :min="0"
+              :max="9999"
+              :decimal-places="2"
+              suffix="元"
+              style="width: 200px"
+            />
+            <div class="form-tip">赠品成本将由成团成员平摊，从各自订单的总代利润中扣除</div>
+          </t-form-item>
+        </template>
+
+        <!-- 多档位赠品模式 -->
+        <template v-else>
+          <t-form-item label="赠品档位配置">
+            <div class="tier-config-list">
+              <div v-for="(tier, index) in formData.giftTiers" :key="index" class="tier-config-item">
+                <div class="tier-header">
+                  <t-tag theme="primary">档位 {{ index + 1 }}</t-tag>
+                  <t-button v-if="formData.giftTiers.length > 1" theme="danger" variant="text" size="small" @click="removeTier(index)">
+                    <t-icon name="delete" />
+                  </t-button>
+                </div>
+                <t-space direction="vertical" size="small" style="width: 100%">
+                  <t-form-item label="成团人数" style="margin-bottom: 8px">
+                    <t-input-number v-model="tier.count" :min="2" :max="50" suffix="人" style="width: 120px" />
+                  </t-form-item>
+                  <t-form-item label="团员赠品" style="margin-bottom: 8px">
+                    <t-input
+                      :value="tier.memberGifts.join('，')"
+                      @change="updateMemberGifts(index, $event)"
+                      placeholder="多个赠品用中文逗号分隔，如：28寸仙女棒×2盒，水母派对×1盒"
+                    />
+                  </t-form-item>
+                  <t-form-item label="团员赠品成本" style="margin-bottom: 8px">
+                    <t-input-number v-model="tier.memberGiftCost" :min="0" :decimal-places="2" suffix="元" style="width: 150px" />
+                  </t-form-item>
+                  <t-form-item label="团长奖励" style="margin-bottom: 8px">
+                    <t-space>
+                      <t-input v-model="tier.leaderGift" placeholder="如：超级棒棒糖" style="width: 150px" />
+                      <span>×</span>
+                      <t-input-number v-model="tier.leaderCount" :min="1" :max="10" style="width: 80px" />
+                      <span>个</span>
+                    </t-space>
+                  </t-form-item>
+                  <t-form-item label="团长奖励成本" style="margin-bottom: 0">
+                    <t-input-number v-model="tier.leaderGiftCost" :min="0" :decimal-places="2" suffix="元" style="width: 150px" />
+                  </t-form-item>
+                </t-space>
+              </div>
+              <t-button theme="default" variant="dashed" block @click="addTier">
+                <t-icon name="add" /> 添加档位
+              </t-button>
+            </div>
+            <div class="form-tip">人数越多，赠品越好。团长额外获得奖励以激励拉人</div>
+          </t-form-item>
+        </template>
 
         <!-- 活动时间 -->
         <t-divider>活动时间</t-divider>
@@ -718,5 +911,45 @@ onMounted(() => {
   margin-top: 4px;
   font-size: 12px;
   color: var(--td-text-color-placeholder);
+}
+
+/* 【2026-01-29】多档位赠品样式 */
+.multi-tier-gifts {
+  .tier-gift-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+
+    .tier-gift-text {
+      color: #333;
+    }
+
+    .leader-gift {
+      color: #f40;
+    }
+  }
+}
+
+.tier-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.tier-config-item {
+  padding: 16px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+
+  .tier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
 }
 </style>
